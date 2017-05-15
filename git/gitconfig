@@ -1,0 +1,7 @@
+[user]
+	email = federico.carrone@gmail.com
+	name = unbalancedparentheses
+[rerere]
+	enabled = false
+[rebase]
+	autostash = true

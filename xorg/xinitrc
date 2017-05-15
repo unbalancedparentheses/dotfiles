@@ -1,0 +1,12 @@
+xrandr --setprovideroutputsource modesetting NVIDIA-0
+#echo Xft.dpi: 192 | xrdb -merge
+#xrandr --output HDMI-0 --dpi 192
+
+#disable the bell
+xset -b
+numlockx
+eval $(ssh-agent)
+export SSH_ASKPASS=gnome-ssh-askpass
+ssh-add < /dev/null
+xautolock -time 10 -locker slock&
+exec i3 

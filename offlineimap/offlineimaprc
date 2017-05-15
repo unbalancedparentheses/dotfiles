@@ -1,0 +1,62 @@
+[general]
+accounts = work, personal
+pythonfile = ~/.offlineimap.py
+
+[Account personal]
+localrepository = personal-local
+remoterepository = personal-remote
+status_backend = sqlite
+
+[Repository personal-local]
+type = Maildir
+localfolders = ~/.mail/personal
+
+[Repository personal-remote]
+maxconnections = 1
+sslcacertfile = ./.offlineimap-cert.pem
+type = Gmail
+remoteuser = federico.carrone@gmail.com
+remotepasseval = get_pass("federico.carrone@gmail.com")
+keepalive = 60
+holdconnectionopen = yes
+folderfilter = lambda folder: folder not in ['[Gmail]/Trash',
+                                             '[Gmail]/Important',
+                                             '[Gmail]/Spam',
+                                             '[Gmail]/Starred',
+                                             '[Gmail]/Drafts',
+                                             '[Gmail]/All Mail',
+                                             '[Gmail]/Chats',
+                                             ]
+
+[Account work]
+localrepository = work-local
+remoterepository = work-remote
+status_backend = sqlite
+
+[Repository work-local]
+type = Maildir
+localfolders = ~/.mail/work
+
+[Repository work-remote]
+maxconnections = 1
+sslcacertfile = ./.offlineimap-cert.pem
+type = Gmail
+remoteuser = federico.carrone@lambdaclass.com
+remotepasseval = get_pass("federico.carrone@lambdaclass.com")
+keepalive = 60
+holdconnectionopen = yes
+folderfilter = lambda folder: folder not in ['[Gmail]/Trash',
+                                             '[Gmail]/Important',
+                                             '[Gmail]/Spam',
+                                             '[Gmail]/Starred',
+                                             '[Gmail]/Drafts',
+                                             '[Gmail]/All Mail',
+                                             '[Gmail]/Chats',
+                                             ]
+[mbnames]
+enabled = yes
+filename = ~/.mutt/mailboxes
+header = "mailboxes "
+peritem = "+%(accountname)s/%(foldername)s"
+sep = " "
+footer = "\n"
