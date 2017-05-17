@@ -201,7 +201,9 @@ assign [class="Emacs"] $WS2
 #starting apps
 exec --no-startup-id $browser
 exec --no-startup-id i3-msg "workspace $WS3; exec $term"
+exec --no-startup-id i3-msg "workspace $WS5; exec slack"
 exec --no-startup-id $editor
+exec --no-startup-id parcellite
+exec --no-startup-id compton
 exec_always --no-startup-id $wallpaper
 exec_always --no-startup-id $numlockx
-exec_always --no-startup-id compton
