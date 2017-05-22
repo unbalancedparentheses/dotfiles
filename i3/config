@@ -46,6 +46,7 @@ floating_modifier Mod1
 
 # start a terminal
 bindsym Mod1+Return exec $term
+bindsym Mod4+Return exec stbig -e tmux
 
 # start a browser-small
 bindsym Mod1+Shift+Return exec $browser-small
