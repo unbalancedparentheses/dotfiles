@@ -57,7 +57,7 @@ configure_xorg:
 	-ln -si ${SOURCE}/xorg/xinitrc ~/.xinitrc
 
 configure_dunst:
-	-ln -si ${SOURCE}/dunst/ ~/.config/dunst
+	-ln -sin ${SOURCE}/dunst ~/.config/dunst
 
 configure_i3:
 	mkdir -p ~/.config/i3/
