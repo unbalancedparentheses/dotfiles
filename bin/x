@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+
+XorgHdmiConf='Section "ServerLayout"
+    Identifier "Layout0"
+EndSection
+
+Section "Device"
+    Identifier  "Device1"
+    Driver      "nvidia"
+    VendorName "NVIDIA Corporation"
+    BusID "PCI:01:00:0"
+    Option "AllowEmptyInitialConfiguration"
+EndSection'
+
+rm -f /etc/X11/xorg.conf
+rm -f /tmp/4k
+
+if [ "$1" = "t" ]
+then
+echo "$1"
+    echo "$XorgHdmiConf" > /etc/X11/xorg.conf
+fi
+
+if [ "$2" = "t" ]
+then
+    touch /tmp/4k
+fi
+
+startx

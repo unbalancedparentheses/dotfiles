@@ -4,6 +4,6 @@ while true
 do
 	imapfilter
 	offlineimap
-	#notmuch new
+	notmuch new
 	sleep 5
 done

@@ -77,7 +77,7 @@ configure_weechat:
 	-ln -si ${SOURCE}/weechat ~/.weechat
 
 configure_fish:
-	-ln -si ${SOURCE}/fish ~/.config/fish
+	-ln -sni ${SOURCE}/fish ~/.config/fish
 
 configure_git:
 	-ln -si ${SOURCE}/git/gitconfig ~/.gitconfig
@@ -91,3 +91,7 @@ configure_mail:
 	-ln -si ${SOURCE}/mutt/muttrc ~/.mutt/muttrc
 	mkdir -p ~/.imapfilter/
 	-ln -si ${SOURCE}/imapfilter/config.lua ~/.imapfilter/config.lua
+
+configure_bin:
+	-ln -sni ${SOURCE}/bin ~/bin
+	echo "export PATH=$PATH:~/bin/" > ~/.bash_profile
