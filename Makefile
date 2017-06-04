@@ -68,7 +68,7 @@ configure_bspwm:
 	-ln -si ${SOURCE}/sxhkd ~/.config/sxhkd
 
 # multiplatform
-configure_multi_platform: configure_tmux configure_weechat configure_fish configure_mail
+configure_multi_platform: configure_tmux configure_weechat configure_fish configure_mail configure_bin
 
 configure_tmux:
 	-ln -si ${SOURCE}/tmux/tmux.conf ~/.tmux.conf

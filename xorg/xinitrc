@@ -1,12 +1,13 @@
-# disable the bell
-xset -b
-numlockx
-
+# x script creates /tmp/4k to tell xinit that it should set 4k
 if [ -f /tmp/4k ]
 then
    echo Xft.dpi: 192 | xrdb -merge
    xrandr --output HDMI-0 --dpi 192
 fi
+
+# disable the bell
+xset -b
+numlockx
 
 # use
 eval $(ssh-agent)
