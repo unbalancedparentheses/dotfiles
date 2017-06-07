@@ -94,4 +94,4 @@ configure_mail:
 
 configure_bin:
 	-ln -sni ${SOURCE}/bin ~/bin
-	echo "export PATH=$PATH:~/bin/" > ~/.bash_profile
+	echo  'export PATH=$PATH:~/bin/' > ~/.bash_profile
