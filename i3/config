@@ -36,8 +36,8 @@ set $browser firefox
 set $browser-small luakit duckduckgo.com
 set $wallpaper nitrogen --restore
 set $clipboard-manager clipit
+set $volume-manager pasystray
 set $menu dmenu_run
-set $numlockx numlockx
 set $notification-daemon dunst
 set $irc $term -e weechat
 
@@ -206,5 +206,5 @@ exec --no-startup-id i3-msg "workspace $WS5; exec slack"
 exec --no-startup-id $editor
 exec --no-startup-id parcellite
 exec --no-startup-id compton
+exec --no-startup-id $volume-manager
 exec_always --no-startup-id $wallpaper
-exec_always --no-startup-id $numlockx
