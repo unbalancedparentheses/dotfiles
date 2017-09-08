@@ -18,4 +18,4 @@ ssh-add < /dev/null
 xautolock -time 10 -locker slock&
 
 # start i3
-exec i3
+exec bspwm 
