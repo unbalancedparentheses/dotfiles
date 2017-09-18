@@ -60,15 +60,13 @@ configure_dunst:
 	-ln -sin ${SOURCE}/dunst ~/.config/dunst
 
 configure_i3:
-	mkdir -p ~/.config/i3/
-	-ln -si ${SOURCE}/i3/config ~/.config/i3/config
+	-ln -sin ${SOURCE}/i3/config ~/.config/i3/config
 
 configure_bspwm:
 	-ln -sni ${SOURCE}/bspwm ~/.config/bspwm
 	-ln -sni ${SOURCE}/sxhkd ~/.config/sxhkd
 
 configure_polybar:
-	mkdir -p ~/.config/polybar/
 	-ln -sni ${SOURCE}/polybar ~/.config/polybar
 
 # multiplatform
