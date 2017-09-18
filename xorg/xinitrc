@@ -9,6 +9,7 @@ fi
 xset -b
 numlockx
 
+nitrogen --restore
 # use
 eval $(ssh-agent)
 export SSH_ASKPASS=gnome-ssh-askpass
