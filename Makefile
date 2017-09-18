@@ -51,7 +51,7 @@ configure_osx: configure_multi_platform
 # 	killall Dock
 
 # linux
-configure_linux: configure_multi_platform configure_xorg configure_dunst configure_i3
+configure_linux: configure_multi_platform configure_xorg configure_dunst configure_bspwm plybar
 
 configure_xorg:
 	-ln -si ${SOURCE}/xorg/xinitrc ~/.xinitrc
@@ -64,8 +64,12 @@ configure_i3:
 	-ln -si ${SOURCE}/i3/config ~/.config/i3/config
 
 configure_bspwm:
-	-ln -si ${SOURCE}/bspwm ~/.config/bspwm
-	-ln -si ${SOURCE}/sxhkd ~/.config/sxhkd
+	-ln -sni ${SOURCE}/bspwm ~/.config/bspwm
+	-ln -sni ${SOURCE}/sxhkd ~/.config/sxhkd
+
+configure_polybar:
+	mkdir -p ~/.config/polybar/
+	-ln -sni ${SOURCE}/polybar ~/.config/polybar
 
 # multiplatform
 configure_multi_platform: configure_tmux configure_weechat configure_fish configure_mail configure_bin
