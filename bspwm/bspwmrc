@@ -32,7 +32,6 @@ sxhkd&
 # open panel &
 polybar bar&
 
-nitrogen --restore
 compton&
 parcellite&
 pasystray&
