@@ -20,20 +20,18 @@ bspc rule -a Firefox desktop=^1
 bspc rule -a Emacs state=tiled desktop=^2
 bspc rule -a Slack state=tiled desktop=^4
 
-
 # start audio server
 pulseaudio --start
 
 #disable pc speaker
 xset -b
-+
 
+# start binding manager
+sxhkd&
 
 # open panel &
 polybar bar&
 
-
-sxhkd&
 nitrogen --restore
 compton&
 parcellite&
