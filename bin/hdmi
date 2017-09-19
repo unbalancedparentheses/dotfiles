@@ -13,17 +13,6 @@ Section "Device"
 EndSection'
 
 rm -f /etc/X11/xorg.conf
-rm -f /tmp/4k
 
-if [ "$1" = "t" ]
-then
-echo "$1"
-    echo "$XorgHdmiConf" > /etc/X11/xorg.conf
-fi
-
-if [ "$2" = "t" ]
-then
-    touch /tmp/4k
-fi
-
-startx
+echo "$XorgHdmiConf" > /etc/X11/xorg.conf
+sv restart /var/service/slim
