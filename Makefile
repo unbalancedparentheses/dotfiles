@@ -51,7 +51,7 @@ configure_osx: configure_multi_platform
 # 	killall Dock
 
 # linux
-configure_linux: configure_multi_platform configure_xorg configure_dunst 
+configure_linux: configure_multi_platform configure_xorg configure_dunst configure_dwm
 
 configure_xorg:
 	-ln -si ${SOURCE}/xorg/xinitrc ~/.xinitrc
@@ -65,6 +65,16 @@ configure_i3:
 configure_bspwm:
 	-ln -sni ${SOURCE}/bspwm ~/.config/bspwm
 	-ln -sni ${SOURCE}/sxhkd ~/.config/sxhkd
+
+configure_dwm:
+	git clone https://git.suckless.org/dwm tmp-dwm
+	cd tmp-dwm &&\
+	git checkout 6.1 &&\
+	patch < ../dwm-patches/dwm-6.1-unbalanced.diff &&\
+	patch < ../dwm-patches/dwm-6.1-systray.diff    &&\
+	sudo make clean install &&\
+	cd .. &&\
+	rm -rf tmp-dwm
 
 # multiplatform
 configure_multi_platform: configure_tmux configure_weechat configure_fish configure_mail
