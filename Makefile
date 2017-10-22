@@ -51,7 +51,7 @@ configure_osx: configure_multi_platform
 # 	killall Dock
 
 # linux
-configure_linux: configure_multi_platform configure_xorg configure_dunst configure_bspwm plybar
+configure_linux: configure_multi_platform configure_xorg configure_dunst 
 
 configure_xorg:
 	-ln -si ${SOURCE}/xorg/xinitrc ~/.xinitrc
@@ -66,11 +66,8 @@ configure_bspwm:
 	-ln -sni ${SOURCE}/bspwm ~/.config/bspwm
 	-ln -sni ${SOURCE}/sxhkd ~/.config/sxhkd
 
-configure_polybar:
-	-ln -sni ${SOURCE}/polybar ~/.config/polybar
-
 # multiplatform
-configure_multi_platform: configure_tmux configure_weechat configure_fish configure_mail configure_bin
+configure_multi_platform: configure_tmux configure_weechat configure_fish configure_mail
 
 configure_tmux:
 	-ln -si ${SOURCE}/tmux/tmux.conf ~/.tmux.conf
@@ -93,7 +90,3 @@ configure_mail:
 	-ln -si ${SOURCE}/mutt/muttrc ~/.mutt/muttrc
 	mkdir -p ~/.imapfilter/
 	-ln -si ${SOURCE}/imapfilter/config.lua ~/.imapfilter/config.lua
-
-configure_bin:
-	-ln -sni ${SOURCE}/bin ~/bin
-	echo  'export PATH=$PATH:~/bin/' > ~/.bash_profile
