@@ -22,5 +22,7 @@ xsetroot -name "$BAT | $CLK"
 sleep 1
 done &
 
+feh --bg-max --randomize wallpapers/&
+
 # start i3
 exec dwm 
