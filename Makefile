@@ -56,7 +56,7 @@ configure_linux: install_deps install_fish configure_multi_platform configure_xo
 install_deps:
 	xbps-install void-repo-multilib void-repo-multilib-nonfree void-repo-nonfree &&\
 	xbps-install -S &&\
-	xbps-install Thunar acpi alsa-tools alsa-utils bc cargo chromium cmake curl dmenu docker docker-compose dunst dwm emacs-gtk3 firefox font-fira-otf font-fira-ttf font-inconsolata-otf font-sourcecodepro fzf git glances gnome-ssh-askpass gnupg2 go htop libX11-devel libXft-devel libXinerama-devel libgit2-devel libressl-devel luakit mosh mtr ncurses-devel neomutt neovim ngrep nitrogen nmap notmuch numlockx offlineimap pass pfff pm-utils powertop ranger redshift ripgrep rust scrot slim slim-void-theme slock spotify st sysdig tig tmux ufw unzip vim vlc weechat wget wicd wicd-gtk wireshark xautolock xf86-video-nouveau xorg xorg-minimal xorg-server zip patch feh&&
+	xbps-install Thunar acpi alsa-tools alsa-utils bc cargo chromium cmake curl dmenu docker docker-compose dunst dwm emacs-gtk3 firefox font-fira-otf font-fira-ttf font-inconsolata-otf font-sourcecodepro fzf git glances gnome-ssh-askpass gnupg2 go htop libX11-devel libXft-devel libXinerama-devel libgit2-devel libressl-devel luakit mosh mtr ncurses-devel neomutt neovim ngrep nitrogen nmap notmuch numlockx offlineimap pass pfff pm-utils powertop ranger redshift ripgrep rust scrot slim slim-void-theme slock spotify st sysdig tig tmux ufw unzip vim vlc weechat wget wicd wicd-gtk wireshark xautolock xf86-video-nouveau xorg xorg-minimal xorg-server zip patch feh imapfilter pinentry-gtk&&
 
 install_fish:
 	wget https://fishshell.com/files/2.6.0/fish-2.6.0.tar.gz &&\
