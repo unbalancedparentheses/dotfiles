@@ -51,7 +51,7 @@ configure_osx: configure_multi_platform
 # 	killall Dock
 
 # linux
-configure_linux: install_deps install_fish configure_multi_platform configure_xorg configure_dunst configure_dwm configure_git
+configure_linux: install_deps install_fish configure_multi_platform configure_xorg configure_dunst configure_dwm configure_git configure_fonts configure_services
 
 install_deps:
 	xbps-install void-repo-multilib void-repo-multilib-nonfree void-repo-nonfree &&\
@@ -77,9 +77,9 @@ configure_dunst:
 configure_i3:
 	-ln -sin ${SOURCE}/i3/config ~/.config/i3/config
 
-configure_bspwm:
-	-ln -sni ${SOURCE}/bspwm ~/.config/bspwm
-	-ln -sni ${SOURCE}/sxhkd ~/.config/sxhkd
+configure_fonts:
+	ln -s ${SOURCE}/xorg/Xresources ~/.Xresources
+	ln -s ${SOURCE}/fonts.conf ~/.fonts.conf
 
 configure_dwm:
 	git clone https://git.suckless.org/dwm tmp-dwm
@@ -90,6 +90,13 @@ configure_dwm:
 	sudo make clean install &&\
 	cd .. &&\
 	rm -rf tmp-dwm
+
+configure_services:
+	sudo ln -s /etc/sv/wicd/ /var/service/
+	sudo ln -s /etc/sv/ufw/ /var/service/
+	sudo ln -s /etc/sv/openntpd/ /var/service/
+	sudo ln -s /etc/sv/slim /var/service/
+	sudo ln -s /etc/sv/docker/ /var/service/
 
 # multiplatform
 configure_multi_platform: configure_tmux configure_weechat configure_fish configure_mail
