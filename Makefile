@@ -51,12 +51,12 @@ configure_osx: configure_multi_platform
 # 	killall Dock
 
 # linux
-configure_linux: install_deps install_fish configure_multi_platform configure_xorg configure_dunst configure_dwm configure_git configure_fonts configure_services
+configure_linux: install_deps install_fish configure_multi_platform configure_xorg configure_dunst configure_dwm configure_git configure_fonts configure_services configure_slack install_kerl install_kiex
 
 install_deps:
 	xbps-install void-repo-multilib void-repo-multilib-nonfree void-repo-nonfree &&\
 	xbps-install -S &&\
-	xbps-install Thunar acpi alsa-tools alsa-utils bc cargo chromium cmake curl dmenu docker docker-compose dunst dwm emacs-gtk3 firefox font-fira-otf font-fira-ttf font-inconsolata-otf font-sourcecodepro fzf git glances gnome-ssh-askpass gnupg2 go htop libX11-devel libXft-devel libXinerama-devel libgit2-devel libressl-devel luakit mosh mtr ncurses-devel neomutt neovim ngrep nitrogen nmap notmuch numlockx offlineimap pass pfff pm-utils powertop ranger redshift ripgrep rust scrot slim slim-void-theme slock spotify st sysdig tig tmux ufw unzip vim vlc weechat wget wicd wicd-gtk wireshark xautolock xf86-video-nouveau xorg xorg-minimal xorg-server zip patch feh imapfilter pinentry-gtk&&
+	xbps-install Thunar acpi alsa-tools alsa-utils bc cargo chromium cmake curl dmenu docker docker-compose dunst dwm emacs-gtk3 firefox font-fira-otf font-fira-ttf font-inconsolata-otf font-sourcecodepro fzf git glances gnome-ssh-askpass gnupg2 go htop libX11-devel libXft-devel libXinerama-devel libgit2-devel libressl-devel luakit mosh mtr ncurses-devel neomutt neovim ngrep nitrogen nmap notmuch numlockx offlineimap pass pfff pm-utils powertop ranger redshift ripgrep rust scrot slim slim-void-theme slock spotify st sysdig tig tmux ufw unzip vim vlc weechat wget wicd wicd-gtk wireshark xautolock xf86-video-nouveau xorg xorg-minimal xorg-server zip patch feh imapfilter pinentry-gtk paper-gtk-theme paper-icon-theme lxappearance wxWidgets wxWidgets-devel&&
 
 install_fish:
 	wget https://fishshell.com/files/2.6.0/fish-2.6.0.tar.gz &&\
@@ -98,6 +98,18 @@ configure_services:
 	sudo ln -s /etc/sv/slim /var/service/
 	sudo ln -s /etc/sv/docker/ /var/service/
 
+configure_slack:
+	mkdir -p /tmp/slack &&\
+	cd /tmp/slack &&\
+	wget https://downloads.slack-edge.com/linux_releases/slack-desktop-2.8.2-amd64.deb &&\
+	ar x slack-desktop-2.8.2-amd64.deb &&\
+	tar xvf data.tar.xz &&\
+	cp -r usr/ /
+
+configure_wallpapers:
+	-ln -sin ${SOURCE}/wallpapers ~/wallpapers
+	feh --bg-max --randomize ~/wallpapers/
+
 # multiplatform
 configure_multi_platform: configure_tmux configure_weechat configure_fish configure_mail
 
@@ -123,6 +135,14 @@ configure_mail:
 	mkdir -p ~/.imapfilter/
 	-ln -si ${SOURCE}/imapfilter/config.lua ~/.imapfilter/config.lua
 
-configure_wallpapers:
-	-ln -sin ${SOURCE}/wallpapers ~/wallpapers
-	feh --bg-max --randomize ~/wallpapers/
+install_kerl:
+	curl -O https://raw.githubusercontent.com/kerl/kerl/master/kerl &&\
+	chmod a+x kerl &&\
+	sudo mv kerl /usr/local/bin/ &&\
+	kerl build 20.1 20.1 &&\
+	mkdir -p ~/erlang/20.1 &&\
+	kerl install 20.1 ~/erlang/20.1/
+
+install_kiex:
+	curl -sSL https://raw.githubusercontent.com/taylor/kiex/master/install | bash -s &&\
+	kiex install 1.4.5
