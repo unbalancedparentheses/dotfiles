@@ -14,7 +14,11 @@ xautolock -time 10 -locker slock&
 # flux like for linux with Buenos Aires latitude and longitude
 #redshift -l -34.603684:-58.381559&
 
+# network
 wicd-gtk -t&
+
+# parcellite
+parcellite&
 
 # update status in dwm
 while true; do
