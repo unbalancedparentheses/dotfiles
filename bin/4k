@@ -1,4 +1,0 @@
-#!/usr/bin/env sh
-
-echo Xft.dpi: 192 | xrdb -merge
-xrandr --output HDMI-0 --dpi 192

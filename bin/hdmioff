@@ -1,4 +1,0 @@
-#!/usr/bin/env sh
-rm -rf /etc/X11/xorg.conf
-
-sv restart /var/service/slim

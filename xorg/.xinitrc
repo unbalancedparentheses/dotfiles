@@ -1,0 +1,47 @@
+xrdb -merge ~/.Xresources
+
+# disable the bell
+xset -b
+
+# set a background
+feh --bg-max --randomize wallpapers/&
+
+# use
+eval $(ssh-agent)
+export SSH_ASKPASS=gnome-ssh-askpass
+ssh-add < /dev/null
+
+# lock computer via slock
+xautolock -time 5 -locker slock&
+
+# automount
+udiskie&
+
+# flux like for linux with Buenos Aires latitude and longitude
+redshift -l -34.603684:-58.381559&
+
+# notifications
+dunst&
+
+# network
+wicd-gtk -t&
+
+# parcellite
+parcellite&
+
+# pulseaudio
+pasystray&
+
+firefox&
+slack&
+
+# update status in dwm
+while true; do
+BAT=$(acpi | awk '{ print $4 }' | sed s/","//g)
+CLK=$( date +'%H:%M')
+xsetroot -name "$BAT | $CLK"
+sleep 120
+done &
+
+# start dwm
+exec dwm

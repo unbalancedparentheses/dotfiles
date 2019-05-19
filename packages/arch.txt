@@ -1,6 +1,0 @@
-- pgcli
-- mycli
-- clf
-- ipython
-- glances
-- mitmproxy

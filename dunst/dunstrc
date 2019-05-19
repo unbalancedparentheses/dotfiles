@@ -5,7 +5,7 @@
     browser = /usr/bin/firefox -new-tab
     follow = none
     format = "<b>%s</b>\n%b"
-    geometry = "300x5-10+10"
+    geometry = "300x5-10+50"
     history_length = 20
     horizontal_padding = 8
     idle_threshold = 120
