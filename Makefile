@@ -15,8 +15,8 @@ configure_dunst:
 	-ln -sin ${SOURCE}/dunst ~/.config/dunst
 
 configure_xorg:
-	-ln -s ${SOURCE}/xorg/Xresources ~/.Xresources
-	-ln -s ${SOURCE}/fonts.conf ~/.fonts.conf
+	-ln -sin ${SOURCE}/xorg/Xresources ~/.Xresources
+	-ln -sin ${SOURCE}/fonts.conf ~/.fonts.conf
 
 configure_dwm:
 	git clone https://git.suckless.org/dwm tmp-dwm
@@ -32,17 +32,17 @@ configure_parcellite:
 	-ln -sin ${SOURCE}/parcellite ~/.config/parcellite
 
 configure_tmux:
-	-ln -si ${SOURCE}/tmux/tmux.conf ~/.tmux.conf
+	-ln -sin ${SOURCE}/tmux/tmux.conf ~/.tmux.conf
 
 configure_fish:
-	-ln -sni ${SOURCE}/fish ~/.config/fish
+	-ln -sin ${SOURCE}/fish ~/.config/fish
 
 configure_git:
-	-ln -si ${SOURCE}/git/gitconfig ~/.gitconfig
+	-ln -sin ${SOURCE}/git/gitconfig ~/.gitconfig
 
 configure_services:
-	sudo ln -s /etc/sv/wicd/ /var/service/
-	sudo ln -s /etc/sv/ufw/ /var/service/
-	sudo ln -s /etc/sv/openntpd/ /var/service/
-	sudo ln -s /etc/sv/slim /var/service/
-	sudo ln -s /etc/sv/docker/ /var/service/
+	-sudo ln -s /etc/sv/wicd/ /var/service/
+	-sudo ln -s /etc/sv/ufw/ /var/service/
+	-sudo ln -s /etc/sv/openntpd/ /var/service/
+	-sudo ln -s /etc/sv/slim /var/service/
+	-sudo ln -s /etc/sv/docker/ /var/service/

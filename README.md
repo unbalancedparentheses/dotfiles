@@ -1,7 +1,7 @@
 :house_with_garden: dotfiles, sweet dotfiles
 ========
 
-# deploy
+## deploy
 
 ```
 git clone git@github.com:unbalancedparentheses/dotfiles.git ~/dotfiles
