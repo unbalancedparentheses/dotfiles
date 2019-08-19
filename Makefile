@@ -24,9 +24,7 @@ configure_dwm:
 	git checkout 6.1 &&\
 	patch < ../dwm-patches/dwm-6.1-unbalanced.diff &&\
 	patch < ../dwm-patches/dwm-6.1-systray.diff &&\
-	sudo make clean install &&\
-	cd .. &&\
-	rm -rf tmp-dwm
+	sudo make clean install
 
 configure_parcellite:
 	-ln -sin ${SOURCE}/parcellite ~/.config/parcellite
