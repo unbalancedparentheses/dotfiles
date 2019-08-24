@@ -33,7 +33,7 @@ configure_tmux:
 	-ln -sin ${SOURCE}/tmux/tmux.conf ~/.tmux.conf
 
 configure_fish:
-	-ln -sin ${SOURCE}/fish ~/.config/fish
+	-ln -sin ${SOURCE}/fish/* ~/.config/fish/
 
 configure_git:
 	-ln -sin ${SOURCE}/git/gitconfig ~/.gitconfig
