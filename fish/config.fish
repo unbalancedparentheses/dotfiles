@@ -7,4 +7,12 @@ end
 set -x PATH $PATH ~/.cargo/bin/ ~/bin/discord/
 set -x LC_ALL en_US.utf8
 set -x LANG en_US.utf8
+
+set -x PYENV_ROOT $HOME/.pyenv
+set -x PATH $PYENV_ROOT/bin $PATH
+
+status --is-interactive; and source (pyenv init -|psub)
+
 alias vim nvim
+alias p ipython
+alias e erl
