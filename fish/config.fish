@@ -11,7 +11,7 @@ set -x LANG en_US.utf8
 set -x PYENV_ROOT $HOME/.pyenv
 set -x PATH $PYENV_ROOT/bin $PATH
 
-status --is-interactive; and source (pyenv init -|psub)
+status --is-interactive; and source
 
 alias vim nvim
 alias p ipython

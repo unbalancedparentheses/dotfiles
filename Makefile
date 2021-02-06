@@ -26,9 +26,6 @@ configure_dwm:
 	patch < ../dwm-patches/dwm-6.1-systray.diff &&\
 	sudo make clean install
 
-configure_i3:
-	-ln -sin ${SOURCE}/i3/config ~/.config/i3/config
-
 configure_parcellite:
 	-ln -sin ${SOURCE}/parcellite ~/.config/parcellite
 
