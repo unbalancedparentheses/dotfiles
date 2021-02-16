@@ -1,3 +1,4 @@
+# merge x config
 xrdb -merge ~/.Xresources
 
 # disable the bell
@@ -6,7 +7,7 @@ xset -b
 # set a background
 feh --bg-max --randomize wallpapers/&
 
-# use
+# Use
 eval $(ssh-agent)
 export SSH_ASKPASS=gnome-ssh-askpass
 ssh-add < /dev/null
@@ -18,7 +19,7 @@ xautolock -time 5 -locker slock&
 udiskie&
 
 # flux like for linux with Buenos Aires latitude and longitude
-redshift -l -34.603684:-58.381559&
+#redshift -l -34.603684:-58.381559&
 
 # notifications
 dunst&
@@ -34,14 +35,18 @@ pasystray&
 
 firefox&
 slack&
+spotify&
+telegram-desktop&
 
 # update status in dwm
-while true; do
-BAT=$(acpi | awk '{ print $4 }' | sed s/","//g)
-CLK=$( date +'%H:%M')
-xsetroot -name "$BAT | $CLK"
-sleep 120
-done &
+# while true; do
+# BAT=$(acpi | awk '{ print $4 }' | sed s/","//g)
+# CLK=$( date +'%H:%M')
+# xsetroot -name "$BAT | $CLK"
+# sleep 120
+# done &
+
+cbatticon&
 
 # start dwm
 exec dwm

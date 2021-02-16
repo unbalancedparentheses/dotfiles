@@ -16,7 +16,8 @@ configure_dunst:
 
 configure_xorg:
 	-ln -sin ${SOURCE}/xorg/Xresources ~/.Xresources
-	-ln -sin ${SOURCE}/fonts.conf ~/.fonts.conf
+	-ln -sin ${SOURCE}/xorg/fonts.conf ~/.fonts.conf
+	-ln -sin ${SOURCE}/xorg/xinitrc ~/.xinitrc
 
 configure_dwm:
 	git clone https://git.suckless.org/dwm tmp-dwm
