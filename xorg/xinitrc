@@ -19,16 +19,17 @@ xautolock -time 5 -locker slock&
 udiskie&
 
 # flux like for linux with Buenos Aires latitude and longitude
-#redshift -l -34.603684:-58.381559&
+redshift -l -34.603684:-58.381559&
 
 # notifications
 dunst&
 
 # network
-wicd-gtk -t&
+nm-applet&
 
-# parcellite
-parcellite&
+# autocutsel sync betwen primary and clibpoard 
+autocutsel -fork -selection CLIPBOARD
+autocutsel -fork -selection PRIMARY
 
 # pulseaudio
 pasystray&
@@ -47,6 +48,8 @@ telegram-desktop&
 # done &
 
 cbatticon&
+
+slstatus&
 
 # start dwm
 exec dwm
