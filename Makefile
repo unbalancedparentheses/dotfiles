@@ -45,3 +45,5 @@ configure_services:
 	ln -s /etc/sv/ntpd/ /var/service/
 	ln -s /etc/sv/slim /var/service/
 	ln -s /etc/sv/docker/ /var/service/
+	ln -s /etc/sv/NetworkManager /var/service/
+	ln -s /etc/sv/dbus /var/service
