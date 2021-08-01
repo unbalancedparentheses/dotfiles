@@ -40,8 +40,8 @@ configure_git:
 	-ln -sin ${SOURCE}/git/gitconfig ~/.gitconfig
 
 configure_services:
-	-sudo ln -s /etc/sv/wicd/ /var/service/
-	-sudo ln -s /etc/sv/ufw/ /var/service/
-	-sudo ln -s /etc/sv/openntpd/ /var/service/
-	-sudo ln -s /etc/sv/slim /var/service/
-	-sudo ln -s /etc/sv/docker/ /var/service/
+	ln -s /etc/sv/ufw/ /var/service/
+	ln -s /etc/sv/nix-daemon/ /var/service/
+	ln -s /etc/sv/ntpd/ /var/service/
+	ln -s /etc/sv/slim /var/service/
+	ln -s /etc/sv/docker/ /var/service/
