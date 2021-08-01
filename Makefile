@@ -1,25 +1,33 @@
+.PHONY: dunst fish git tmux xorg 
 SOURCE=${CURDIR}
 UNAME := $(shell uname -s)
 
 ifeq ($(UNAME), Darwin)
-default: configure_osx
+default: _osx
 endif
 
 ifeq ($(UNAME), Linux)
-default: configure_linux
+default: linux
 endif
 
-configure_linux: configure_dunst configure_xorg configure_dwm configure_parcellite configure_tmux configure_fish configure_git configure_services
+linux: dunst xorg fonts dwm tmux fish git services
 
-configure_dunst:
-	-ln -sin ${SOURCE}/dunst ~/.config/dunst
+dunst:
+	ln -sin ${SOURCE}/dunst ~/.config/dunst
 
-configure_xorg:
-	-ln -sin ${SOURCE}/xorg/Xresources ~/.Xresources
-	-ln -sin ${SOURCE}/xorg/fonts.conf ~/.fonts.conf
-	-ln -sin ${SOURCE}/xorg/xinitrc ~/.xinitrc
+xorg:
+	ln -sin ${SOURCE}/xorg/Xresources ~/.Xresources
+	ln -sin ${SOURCE}/xorg/fonts.conf ~/.fonts.conf
+	ln -sin ${SOURCE}/xorg/xinitrc ~/.xinitrc
+	
+fonts:
+	sudo ln -s /usr/share/fontconfig/conf.avail/10-hinting-slight.conf /etc/fonts/conf.d/
+	sudo ln -s /usr/share/fontconfig/conf.avail/10-sub-pixel-rgb.conf /etc/fonts/conf.d/
+	sudo ln -s /usr/share/fontconfig/conf.avail/11-lcdfilter-default.conf /etc/fonts/conf.d/
+	sudo ln -s /usr/share/fontconfig/conf.avail/50-user.conf /etc/fonts/conf.d/
+	sudo ln -s /usr/share/fontconfig/conf.avail/70-no-bitmaps.conf /etc/fonts/conf.d/
 
-configure_dwm:
+dwm:
 	git clone https://git.suckless.org/dwm tmp-dwm
 	cd tmp-dwm &&\
 	git checkout 6.1 &&\
@@ -27,19 +35,16 @@ configure_dwm:
 	patch < ../dwm-patches/dwm-6.1-systray.diff &&\
 	sudo make clean install
 
-configure_parcellite:
-	-ln -sin ${SOURCE}/parcellite ~/.config/parcellite
+tmux:
+	ln -sin ${SOURCE}/tmux/tmux.conf ~/.tmux.conf
 
-configure_tmux:
-	-ln -sin ${SOURCE}/tmux/tmux.conf ~/.tmux.conf
+fish:
+	ln -sin ${SOURCE}/fish/* ~/.config/fish/
 
-configure_fish:
-	-ln -sin ${SOURCE}/fish/* ~/.config/fish/
+git:
+	ln -sin ${SOURCE}/git/gitconfig ~/.gitconfig
 
-configure_git:
-	-ln -sin ${SOURCE}/git/gitconfig ~/.gitconfig
-
-configure_services:
+services:
 	ln -s /etc/sv/ufw/ /var/service/
 	ln -s /etc/sv/nix-daemon/ /var/service/
 	ln -s /etc/sv/ntpd/ /var/service/
