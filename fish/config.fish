@@ -13,7 +13,7 @@ set -x PATH $PYENV_ROOT/bin $PATH
 
 status --is-interactive; and source
 
-alias p ipython
+alias p python
 alias e erl
 alias ls exa
 alias cat bat
