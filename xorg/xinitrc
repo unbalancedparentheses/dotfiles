@@ -5,7 +5,7 @@ xrdb -merge ~/.Xresources
 xset -b
 
 # set a background
-feh --bg-max --randomize wallpapers/&
+feh --bg-max --randomize ~/dotfiles/wallpapers/*
 
 # Use
 eval $(ssh-agent)
