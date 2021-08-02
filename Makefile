@@ -10,7 +10,7 @@ ifeq ($(UNAME), Linux)
 default: linux
 endif
 
-linux: dunst xorg fonts dwm slstatus tmux fish git services emacs
+linux: void dunst xorg fonts dwm slstatus tmux fish git docker services emacs nix
 
 dunst:
 	ln -sin ${SOURCE}/dunst ~/.config/dunst
@@ -49,6 +49,9 @@ fish:
 git:
 	-ln -sin ${SOURCE}/git/gitconfig ~/.gitconfig
 
+docker:
+	sudo usermod -aG docker ${USER}
+
 services:
 	-sudo ln -sin /etc/sv/ufw/ /var/service/
 	-sudo ln -sin /etc/sv/nix-daemon/ /var/service/
@@ -65,3 +68,8 @@ emacs:
 
 void:
 	cat packages | xargs echo "xbps-install -Sy" | sudo bash
+
+nix:
+	nix-channel --add https://nixos.org/channels/nixpkgs-unstable
+	nix-channel --update
+	nix-env -u

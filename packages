@@ -24,7 +24,6 @@ gcc
 gnome-ssh-askpass
 google-fonts-ttf
 htop
-julia
 kitty
 libXft-devel
 libXinerama-devel
@@ -53,7 +52,6 @@ udiskie
 ufw
 void-repo-multilib-nonfree
 void-repo-nonfree
-vscode
 xautolock
 xbacklight
 xclip
