@@ -1,4 +1,4 @@
-.PHONY: dunst fish git tmux xorg 
+.PHONY: dunst fish git tmux xorg nix
 SOURCE=${CURDIR}
 UNAME := $(shell uname -s)
 
@@ -10,7 +10,7 @@ ifeq ($(UNAME), Linux)
 default: linux
 endif
 
-linux: void dunst xorg fonts dwm slstatus tmux fish git docker services emacs nix
+linux: void xorg fonts dwm slstatus dunst fish tmux git docker services nix emacs
 
 dunst:
 	ln -sin ${SOURCE}/dunst ~/.config/dunst
@@ -19,7 +19,7 @@ xorg:
 	ln -sin ${SOURCE}/xorg/Xresources ~/.Xresources
 	ln -sin ${SOURCE}/xorg/fonts.conf ~/.fonts.conf
 	ln -sin ${SOURCE}/xorg/xinitrc ~/.xinitrc
-	
+
 fonts:
 	-sudo ln -sin /usr/share/fontconfig/conf.avail/10-hinting-slight.conf /etc/fonts/conf.d/
 	-sudo ln -sin /usr/share/fontconfig/conf.avail/10-sub-pixel-rgb.conf /etc/fonts/conf.d/
@@ -70,6 +70,11 @@ void:
 	cat packages | xargs echo "xbps-install -Sy" | sudo bash
 
 nix:
-	nix-channel --add https://nixos.org/channels/nixpkgs-unstable
+	nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs-unstable
 	nix-channel --update
 	nix-env -u
+	nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+	nix-channel --update
+	ln -sin ${SOURCE}/nix/home.nix ~/.config/nixpkgs/home.nix
+	nix-shell '<home-manager>' -A install
+	home-manager switch
