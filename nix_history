@@ -1,3 +1,9 @@
+# ideas
+
+https://github.com/nix-community/home-manager
+
+### resultado
+
 docker run --detach-keys='ctrl-e,e' --rm -it debian bash
 apt update -y
 apt install -y vim xz-utils git curl
