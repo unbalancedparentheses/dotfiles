@@ -43,3 +43,9 @@ Better fonts in Firefox (about:config):
 ```
 gfx.font_rendering.fontconfig.max_generic_substitutions = 127
 ```
+
+```
+home-manager
+vim .config/nixpkgs/home.nix
+home-manager switch
+```
