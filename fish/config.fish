@@ -7,6 +7,7 @@ end
 set -x PATH $PATH ~/.cargo/bin/ ~/bin/discord/
 set -x LC_ALL en_US.utf8
 set -x LANG en_US.utf8
+set -x LOCALE_ARCHIVE /usr/lib/locale/locale-archive
 
 set -x PYENV_ROOT $HOME/.pyenv
 set -x PATH $PYENV_ROOT/bin $PATH
