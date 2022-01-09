@@ -1,0 +1,55 @@
+* configuration
+https://github.com/emacs-tw/awesome-emacs
+
+* Interface Enhancement
+
+* keybindings
+
+* navigation
+
+* visual
+
+* editing
+
+* project management/
+ivy
+company
+swiper
+selectrum
+
+
+(global-tab-line-mode)
+
+ivy go to char
+goto-last-change
+
+rainbow-delimiters
+prettify-symbol-mode
+highlight-parentheses
+
+(straight-use-package 'ctrlf)
+
+* Integration
+  exec-path-from-shell - Get environment variables such as $PATH from the shell for Mac user.
+
+* Version Control
+  magit
+git-timemachine
+git-gutter
+* org mode
+
+* edit
+expand-region
+undotree
+flycheck
+projectile
+multiple cursors
+magit
+whitespace
+prescient (sort results in ivy and company)
+
+* Jump to Definition
+dumb jump
+
+* UX/UI
+- doom modeline
