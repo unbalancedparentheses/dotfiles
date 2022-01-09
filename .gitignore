@@ -2,3 +2,5 @@ weechat/logs
 weechat/*.log
 slstatus/
 tmp-dwm/
+openbsd/*.img
+openbsd/*.iso
