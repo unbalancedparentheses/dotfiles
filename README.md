@@ -3,9 +3,7 @@
 
 ## deploy
 
-```
-git clone git@github.com:unbalancedparentheses/dotfiles.git ~/dotfiles
-```
+In Linux first we need to setup WiFi:
 
 ```
 wpa_supplicant -B -i wlp0s20f3 -c /etc/wpa_supplicant/wpa_supplicant.conf
@@ -28,9 +26,10 @@ OK
 > quit
 ```
 
-install all packages:
+Now let's install everything
 ```
-cat packages | xargs echo "xbps-install -Sy" | bash
+git clone git@github.com:unbalancedparentheses/dotfiles.git ~/dotfiles
+make
 ```
 
 Fix sound:
@@ -42,10 +41,4 @@ update-grub
 Better fonts in Firefox (about:config):
 ```
 gfx.font_rendering.fontconfig.max_generic_substitutions = 127
-```
-
-```
-home-manager
-vim .config/nixpkgs/home.nix
-home-manager switch
 ```
