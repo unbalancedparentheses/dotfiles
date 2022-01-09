@@ -70,7 +70,7 @@ void:
 	cat packages | xargs echo "xbps-install -Sy" | sudo bash
 
 nix:
-	nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs-unstable
+	nix-channel --add https://nixos.org/channels/nixpkgs-unstable
 	nix-channel --update
 	nix-env -u
 	nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
@@ -78,3 +78,12 @@ nix:
 	ln -sin ${SOURCE}/nix/home.nix ~/.config/nixpkgs/home.nix
 	nix-shell '<home-manager>' -A install
 	home-manager switch
+
+restricted:
+	sudo xbps-install -Sy xtools
+	git clone git://github.com/void-linux/void-packages.git
+	cd void-packages/
+	echo XBPS_ALLOW_RESTRICTED=yes >> etc/conf
+	./xbps-src binary-bootstrap
+	./xbps-src pkg slack-desktop
+	xi slack-desktop
