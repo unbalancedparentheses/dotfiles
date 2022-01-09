@@ -90,4 +90,3 @@ restricted:
 	./xbps-src binary-bootstrap
 	./xbps-src pkg slack-desktop
 	xi slack-desktop
-
