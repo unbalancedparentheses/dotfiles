@@ -1,2 +1,4 @@
 weechat/logs
 weechat/*.log
+slstatus/
+tmp-dwm/
