@@ -1,14 +1,19 @@
 { config, pkgs, ... }:
 
 {
+  nixpkgs.config.allowUnfree = true;
+
   home.stateVersion = "21.11";
   programs.home-manager.enable = true;
 
   home.username = "unbalanced";
   home.homeDirectory = "/home/unbalanced";
 
-  home.allowUnfree = true;
   home.packages = with pkgs; [
+    #nix
+    niv
+
+    #cli
     exa
     mosh
     ranger
