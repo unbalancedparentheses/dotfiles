@@ -1,0 +1,123 @@
+{
+  "entries": {
+    "cask": {
+      "firefox": {
+        "version": "96.0.2",
+        "options": {
+          "full_name": "firefox"
+        }
+      },
+      "telegram-desktop": {
+        "version": "3.4.8",
+        "options": {
+          "full_name": "telegram-desktop"
+        }
+      },
+      "discord": {
+        "version": "0.0.264",
+        "options": {
+          "full_name": "discord"
+        }
+      },
+      "spotify": {
+        "version": "1.1.77.643,3c4c6fc6,18",
+        "options": {
+          "full_name": "spotify"
+        }
+      },
+      "iterm2": {
+        "version": "3.4.15",
+        "options": {
+          "full_name": "iterm2"
+        }
+      },
+      "slack": {
+        "version": "4.23.0",
+        "options": {
+          "full_name": "slack"
+        }
+      },
+      "authy": {
+        "version": "1.9.0",
+        "options": {
+          "full_name": "authy"
+        }
+      },
+      "1password": {
+        "version": "7.9.2",
+        "options": {
+          "full_name": "1password"
+        }
+      },
+      "microsoft-office": {
+        "version": "16.57.22011101",
+        "options": {
+          "full_name": "microsoft-office"
+        }
+      },
+      "caffeine": {
+        "version": "1.1.3",
+        "options": {
+          "full_name": "caffeine"
+        }
+      },
+      "github": {
+        "version": "2.9.6-9196a1ae",
+        "options": {
+          "full_name": "github"
+        }
+      },
+      "flux": {
+        "version": "41.5",
+        "options": {
+          "full_name": "flux"
+        }
+      },
+      "obs": {
+        "version": "27.1.3",
+        "options": {
+          "full_name": "obs"
+        }
+      },
+      "zoom": {
+        "version": "5.9.3.4239",
+        "options": {
+          "full_name": "zoom"
+        }
+      },
+      "visual-studio-code": {
+        "version": "1.63.2",
+        "options": {
+          "full_name": "visual-studio-code"
+        }
+      },
+      "whatsapp": {
+        "version": "2.2149.4",
+        "options": {
+          "full_name": "whatsapp"
+        }
+      },
+      "signal": {
+        "version": "5.29.1",
+        "options": {
+          "full_name": "signal"
+        }
+      }
+    },
+    "mas": {
+      "TweetDeck by Twitter": null
+    }
+  },
+  "system": {
+    "macos": {
+      "monterey": {
+        "HOMEBREW_VERSION": "3.3.12",
+        "HOMEBREW_PREFIX": "/opt/homebrew",
+        "Homebrew/homebrew-core": "02732fc78fea7ac1e96480521bf9efcae41786d0",
+        "CLT": "13.2.0.0.1.1638488800",
+        "Xcode": "13.1",
+        "macOS": "12.1"
+      }
+    }
+  }
+}
