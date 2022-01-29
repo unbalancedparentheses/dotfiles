@@ -32,6 +32,15 @@ git clone git@github.com:unbalancedparentheses/dotfiles.git ~/dotfiles
 make
 ```
 
+Install Nix for macOS
+```
+sh <(curl -L https://nixos.org/nix/install) --darwin-use-unencrypted-nix-store-volume --daemon
+```
+and in Linux
+```
+sh <(curl -L https://nixos.org/nix/install) --daemon
+```
+
 Fix sound:
 ```
 echo 'GRUB_CMDLINE_LINUX="snd_hda_intel.dmic_detect=0"' >> /etc/default/grub
