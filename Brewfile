@@ -17,4 +17,6 @@ cask "visual-studio-code"
 cask "whatsapp"
 cask "signal"
 cask "notion"
+brew "colima"
+brew "docker"
 mas "TweetDeck by Twitter", id: 485812721
