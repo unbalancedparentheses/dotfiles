@@ -1,4 +1,5 @@
 cask 'firefox'
+cask 'brave-browser'
 cask 'telegram-desktop'
 cask 'discord'
 cask 'spotify'
@@ -15,4 +16,5 @@ cask 'zoom'
 cask "visual-studio-code"
 cask "whatsapp"
 cask "signal"
+cask "notion"
 mas "TweetDeck by Twitter", id: 485812721

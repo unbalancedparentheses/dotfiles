@@ -3,22 +3,20 @@
 {
   nixpkgs.config.allowUnfree = true;
 
-  home.stateVersion = "21.11";
   programs.home-manager.enable = true;
-
-  home.username = "unbalanced";
-  home.homeDirectory = "/home/unbalanced";
 
   home.packages = with pkgs; [
     #nix
-    niv
+    #niv
 
     #cli
+    fish
     exa
     mosh
     ranger
     ripgrep
     rsync
+    tig
 
     # networking
     curl
