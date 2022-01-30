@@ -12,13 +12,19 @@ endif
 
 linux: void nix fish tmux git docker services xorg dwm emacs dunst slstatus fonts
 
-backup_void_packages:
-	xbps-query -m | sed 's|\(.*\)-.*|\1|' > void_packages
+osx: homebrew
 
-void:
-	cat void_packages | xargs echo "xbps-install -Sy" | sudo bash
+homebrew:
+	curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | sudo -u $$USER bash
+	brew bundle
 
-nix:
+nix_osx:
+	sh <(curl -L https://nixos.org/nix/install) --darwin-use-unencrypted-nix-store-volume --daemon
+
+nix_linux:
+	sh <(curl -L https://nixos.org/nix/install) --daemon
+
+nix_home_manager:
 	nix-channel --add https://nixos.org/channels/nixpkgs-unstable
 	nix-channel --update
 	nix-env -u
@@ -28,6 +34,21 @@ nix:
 	nix-shell '<home-manager>' -A install
 	ln -sin  ${SOURCE}/nix/home.nix ~/.config/nixpkgs/home.nix
 	home-manager switch
+
+backup_void_packages:
+	xbps-query -m | sed 's|\(.*\)-.*|\1|' > void_packages
+
+void:
+	cat void_packages | xargs echo "xbps-install -Sy" | sudo bash
+	-sudo ln -sin /etc/sv/ufw/ /var/service/
+	-sudo ln -sin /etc/sv/nix-daemon/ /var/service/
+	-sudo ln -sin /etc/sv/ntpd/ /var/service/
+	-sudo ln -sin /etc/sv/slim /var/service/
+	-sudo ln -sin /etc/sv/docker/ /var/service/
+	-sudo ln -sin /etc/sv/NetworkManager /var/service/
+	-sudo ln -sin /etc/sv/dbus /var/service
+	-sudo rm -f /var/service/dhcpcd
+
 
 fish:
 	-ln -sin ${SOURCE}/fish/* ~/.config/fish/
@@ -40,16 +61,6 @@ git:
 
 docker:
 	sudo usermod -aG docker ${USER}
-
-services:
-	-sudo ln -sin /etc/sv/ufw/ /var/service/
-	-sudo ln -sin /etc/sv/nix-daemon/ /var/service/
-	-sudo ln -sin /etc/sv/ntpd/ /var/service/
-	-sudo ln -sin /etc/sv/slim /var/service/
-	-sudo ln -sin /etc/sv/docker/ /var/service/
-	-sudo ln -sin /etc/sv/NetworkManager /var/service/
-	-sudo ln -sin /etc/sv/dbus /var/service
-	-sudo rm -f /var/service/dhcpcd
 
 xorg:
 	ln -sin ${SOURCE}/xorg/Xresources ~/.Xresources
