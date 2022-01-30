@@ -1,5 +1,5 @@
 .PHONY: dunst fish git tmux xorg nix
-SURCE=${CURDIR}
+SOURCE=${CURDIR}
 UNAME := $(shell uname -s)
 
 ifeq ($(UNAME), Darwin)
@@ -25,8 +25,8 @@ nix:
 	nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
 	nix-channel --update
 	mkdir -p ~/.config/nixpkgs/
-	ln -sin ${SOURCE}/nix/home.nix ~/.config/nixpkgs/home.nix
 	nix-shell '<home-manager>' -A install
+	ln -sin  ${SOURCE}/nix/home.nix ~/.config/nixpkgs/home.nix
 	home-manager switch
 
 fish:
