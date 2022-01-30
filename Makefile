@@ -12,7 +12,7 @@ endif
 
 linux: void nix fish tmux git docker services xorg dwm emacs dunst slstatus fonts
 
-osx: homebrew
+osx: homebrew nix_osx home_manager
 
 homebrew:
 	curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | sudo -u $$USER bash
