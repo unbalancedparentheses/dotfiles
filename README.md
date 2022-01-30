@@ -42,3 +42,16 @@ Better fonts in Firefox (about:config):
 ```
 gfx.font_rendering.fontconfig.max_generic_substitutions = 127
 ```
+
+## Nix
+
+Install Nix for macOS
+```
+sh <(curl -L https://nixos.org/nix/install) --darwin-use-unencrypted-nix-store-volume --daemon
+```
+and in Linux
+```
+sh <(curl -L https://nixos.org/nix/install) --daemon
+```
+
+Burke Libbey's [Nixology](https://www.youtube.com/playlist?list=PLRGI9KQ3_HP_OFRG6R-p4iFgMSK1t5BHs) youtube playlist and [nix.dev](https://nix.dev/) are the best way to learn how to use Nix.
