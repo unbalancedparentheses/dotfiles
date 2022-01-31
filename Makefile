@@ -12,17 +12,20 @@ endif
 
 linux: void nix fish tmux git docker services xorg dwm emacs dunst slstatus fonts
 
-osx: homebrew nix_osx home_manager
+osx: homebrew nix_osx nix_home_manager
 
 homebrew:
 	curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | sudo -u $$USER bash
 	brew bundle
 
 nix_osx:
-	sh <(curl -L https://nixos.org/nix/install) --darwin-use-unencrypted-nix-store-volume --daemon
+	curl -L https://nixos.org/nix/install | bash -s -- --darwin-use-unencrypted-nix-store-volume --daemon
+	export NIX_PATH=${NIX_PATH:+$NIX_PATH:}$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels
+	nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
+	./result/bin/darwin-installer
 
 nix_linux:
-	sh <(curl -L https://nixos.org/nix/install) --daemon
+	curl -L https://nixos.org/nix/install | bash -s -- --daemon
 
 nix_home_manager:
 	nix-channel --add https://nixos.org/channels/nixpkgs-unstable
