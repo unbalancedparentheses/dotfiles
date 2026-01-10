@@ -1,6 +1,4 @@
-.PHONY: help install switch update upgrade clean linux-dotfiles \
-        openbsd-install openbsd-run openbsd-ssh openbsd-clean \
-        void-install void-run void-gui void-headless void-ssh void-clean
+.PHONY: help install switch update upgrade clean linux-dotfiles
 
 .DEFAULT_GOAL := help
 
