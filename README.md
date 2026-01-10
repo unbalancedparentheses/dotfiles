@@ -68,11 +68,10 @@ gitEmail = "your@email.com";
 flake.nix       Main Nix configuration
 Makefile        Build commands
 setup.sh        macOS bootstrap
-openbsd-vm/     OpenBSD VM scripts
-void-vm/        Void Linux VM scripts
-xorg/           X.org configs
-dunst/          Notification daemon
-parcellite/     Clipboard manager
+linux/          Linux configs (xorg, dunst, parcellite, dwm-patches)
+vms/            VM scripts (openbsd, void)
+wip/            Work in progress
+wallpapers/     Desktop wallpapers
 ```
 
 ## References
