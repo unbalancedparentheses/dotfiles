@@ -67,17 +67,17 @@ clean:
 
 linux-dotfiles:
 	mkdir -p ~/.config
-	ln -sfn $(CURDIR)/xorg/Xresources ~/.Xresources
-	ln -sfn $(CURDIR)/xorg/fonts.conf ~/.fonts.conf
-	ln -sfn $(CURDIR)/xorg/xinitrc ~/.xinitrc
-	ln -sfn $(CURDIR)/dunst ~/.config/dunst
-	ln -sfn $(CURDIR)/parcellite ~/.config/parcellite
+	ln -sfn $(CURDIR)/linux/xorg/Xresources ~/.Xresources
+	ln -sfn $(CURDIR)/linux/xorg/fonts.conf ~/.fonts.conf
+	ln -sfn $(CURDIR)/linux/xorg/xinitrc ~/.xinitrc
+	ln -sfn $(CURDIR)/linux/dunst ~/.config/dunst
+	ln -sfn $(CURDIR)/linux/parcellite ~/.config/parcellite
 	@echo "Linux dotfiles installed"
 
 openbsd-%:
 	@[ "$(OS)" = "macos" ] || { echo "macOS only"; exit 1; }
-	./openbsd-vm/setup.sh $*
+	./vms/openbsd/setup.sh $*
 
 void-%:
 	@[ "$(OS)" = "macos" ] || { echo "macOS only"; exit 1; }
-	./void-vm/setup.sh $*
+	./vms/void/setup.sh $*
