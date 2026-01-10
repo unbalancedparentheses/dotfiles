@@ -9,9 +9,8 @@ cd "$SCRIPT_DIR"
 
 # Configuration
 ARCH="aarch64"
+ISO_URL="https://repo-default.voidlinux.org/live/current/void-live-${ARCH}-20241230-base.iso"
 ISO_FILE="void-live-${ARCH}.iso"
-ROOTFS_URL="https://repo-default.voidlinux.org/live/current/void-${ARCH}-ROOTFS-20241230.tar.xz"
-ROOTFS_FILE="void-${ARCH}-rootfs.tar.xz"
 DISK_IMAGE="void.qcow2"
 DISK_SIZE="40G"
 MEMORY="4G"
@@ -212,28 +211,6 @@ run_vm() {
         -serial mon:stdio
 }
 
-# Run headless (for server use)
-run_headless() {
-    log "Starting Void Linux VM (headless)..."
-    log "SSH: ssh -p ${SSH_PORT} user@localhost"
-    log "Exit: Ctrl+A then X"
-    echo ""
-
-    qemu-system-aarch64 \
-        -machine virt,accel=hvf,highmem=on \
-        -cpu host \
-        -m "$MEMORY" \
-        -smp "$CPUS" \
-        -drive if=pflash,format=raw,file="$UEFI_CODE_SRC",readonly=on \
-        -drive if=pflash,format=raw,file="$UEFI_VARS" \
-        -drive file="$DISK_IMAGE",if=virtio,format=qcow2 \
-        -device virtio-net-pci,netdev=net0 \
-        -netdev user,id=net0,hostfwd=tcp::${SSH_PORT}-:22 \
-        -device virtio-balloon \
-        -nographic \
-        -serial mon:stdio
-}
-
 case "${1:-}" in
     install)
         check_deps
@@ -258,7 +235,7 @@ case "${1:-}" in
         check_deps
         setup_uefi
         [ -f "$DISK_IMAGE" ] || error "No disk image. Run: $0 install"
-        run_headless
+        run_vm
         ;;
     ssh)
         ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@localhost
