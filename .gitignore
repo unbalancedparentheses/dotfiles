@@ -4,3 +4,7 @@ slstatus/
 tmp-dwm/
 *.img
 *.iso
+*.qcow2
+edk2-aarch64-vars.fd
+result
+build.log
