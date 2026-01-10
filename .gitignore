@@ -1,10 +1,9 @@
-weechat/logs
-weechat/*.log
 slstatus/
 tmp-dwm/
 *.img
 *.iso
 *.qcow2
 edk2-aarch64-vars.fd
+.http_server.pid
 result
 build.log

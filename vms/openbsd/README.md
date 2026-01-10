@@ -124,7 +124,7 @@ When you run `./setup.sh install`:
 Edit `setup.sh` to change:
 
 ```bash
-OPENBSD_VERSION="7.6"    # OpenBSD version
+OPENBSD_VERSION="7.8"    # OpenBSD version
 DISK_SIZE="20G"          # Virtual disk size
 MEMORY="2G"              # RAM
 CPUS="2"                 # CPU cores
