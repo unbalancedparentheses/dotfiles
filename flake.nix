@@ -58,9 +58,11 @@
       expect     # For automated VM installation
     ];
 
-    # Linux-only packages
-    linuxPackages = pkgs: with pkgs; [
-      # Add Linux-specific packages here
+    # Linux-only fonts (nix packages)
+    linuxFonts = pkgs: with pkgs; [
+      nerd-fonts.jetbrains-mono
+      nerd-fonts.fira-code
+      nerd-fonts.hack
     ];
 
     # =========================================================================
@@ -390,10 +392,7 @@
       home.homeDirectory = "/home/${username}";
 
       # Install packages via Home Manager on Linux
-      home.packages = (sharedPackages pkgs) ++ (linuxPackages pkgs) ++ [
-        # Fonts
-        (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "Hack" ]; })
-      ];
+      home.packages = (sharedPackages pkgs) ++ (linuxFonts pkgs);
 
       # Enable fontconfig for user fonts
       fonts.fontconfig.enable = true;
@@ -419,14 +418,9 @@
     };
 
     # =========================================================================
-    # Linux Home Manager configurations (standalone)
+    # Linux Home Manager configuration (standalone)
+    # Usage: home-manager switch --flake .#linux
     # =========================================================================
-    homeConfigurations."${username}" = home-manager.lib.homeManagerConfiguration {
-      pkgs = nixpkgs.legacyPackages.${linuxSystem};
-      modules = [ linuxHomeConfig ];
-    };
-
-    # Alias for easier usage: home-manager switch --flake .#linux
     homeConfigurations."linux" = home-manager.lib.homeManagerConfiguration {
       pkgs = nixpkgs.legacyPackages.${linuxSystem};
       modules = [ linuxHomeConfig ];
