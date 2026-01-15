@@ -13,6 +13,23 @@ else
     NIX := nix --extra-experimental-features 'nix-command flakes'
 endif
 
+define update_username
+	@if [ "$(UNAME)" = "Darwin" ]; then \
+		sed -i '' 's/username = "[^"]*";/username = "$(USER)";/' flake.nix; \
+	else \
+		sed -i 's/username = "[^"]*";/username = "$(USER)";/' flake.nix; \
+	fi
+endef
+
+define backup_etc_files
+	@for f in /etc/zshenv /etc/zshrc /etc/bashrc /etc/bash.bashrc; do \
+		if [ -f "$$f" ] && [ ! -L "$$f" ]; then \
+			echo "Moving $$f to $$f.before-nix-darwin"; \
+			sudo mv "$$f" "$$f.before-nix-darwin"; \
+		fi; \
+	done
+endef
+
 help:
 	@echo "Dotfiles ($(OS))"
 	@echo ""
@@ -31,28 +48,22 @@ help:
 	@echo "  void-{install,run,gui,ssh,clean}    port 2223"
 
 switch:
-	@if [ "$(UNAME)" = "Darwin" ]; then \
-		sed -i '' 's/username = "[^"]*";/username = "$(USER)";/' flake.nix; \
-	else \
-		sed -i 's/username = "[^"]*";/username = "$(USER)";/' flake.nix; \
-	fi
-	@if [ "$(OS)" = "macos" ]; then \
-		sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"; \
-	else \
-		home-manager switch --flake .#linux -b backup; \
-	fi
+	$(update_username)
+ifeq ($(OS),macos)
+	$(backup_etc_files)
+	sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"
+else
+	home-manager switch --flake .#linux -b backup
+endif
 
 install:
-	@if [ "$(UNAME)" = "Darwin" ]; then \
-		sed -i '' 's/username = "[^"]*";/username = "$(USER)";/' flake.nix; \
-	else \
-		sed -i 's/username = "[^"]*";/username = "$(USER)";/' flake.nix; \
-	fi
-	@if [ "$(OS)" = "macos" ]; then \
-		sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"; \
-	else \
-		nix run home-manager -- switch --flake .#linux -b backup; \
-	fi
+	$(update_username)
+ifeq ($(OS),macos)
+	$(backup_etc_files)
+	sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"
+else
+	nix run home-manager -- switch --flake .#linux -b backup
+endif
 
 update:
 	$(NIX) flake update

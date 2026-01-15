@@ -54,11 +54,48 @@ else
     exit 1
 fi
 
-# Step 5: Build and activate nix-darwin
-echo "=== Step 5: Installing nix-darwin ==="
+# Step 5: Backup conflicting system files
+echo "=== Step 5: Backing up conflicting system files ==="
+BACKUP_DIR="/etc/nix-darwin-backup-$(date +%Y%m%d-%H%M%S)"
+CONFLICTING_FILES=(
+    "/etc/zshenv"
+    "/etc/zshrc"
+    "/etc/bashrc"
+    "/etc/bash.bashrc"
+)
+
+backup_needed=false
+for file in "${CONFLICTING_FILES[@]}"; do
+    if [ -f "$file" ] && [ ! -L "$file" ]; then
+        backup_needed=true
+        break
+    fi
+done
+
+if [ "$backup_needed" = true ]; then
+    echo "Found system files that may conflict with nix-darwin."
+    echo "Backing up to: $BACKUP_DIR"
+    sudo mkdir -p "$BACKUP_DIR"
+
+    for file in "${CONFLICTING_FILES[@]}"; do
+        if [ -f "$file" ] && [ ! -L "$file" ]; then
+            filename=$(basename "$file")
+            echo "  Moving $file -> $BACKUP_DIR/$filename"
+            sudo mv "$file" "$BACKUP_DIR/$filename"
+        fi
+    done
+    echo "Backup complete."
+else
+    echo "No conflicting files found (or already symlinks)."
+fi
+
+# Step 6: Build and activate nix-darwin
+echo "=== Step 6: Installing nix-darwin ==="
 cd "$SCRIPT_DIR"
 sudo -H /nix/var/nix/profiles/default/bin/nix run nix-darwin -- switch --flake ".#default"
 
 echo ""
 echo "=== Setup Complete ==="
 echo "Run 'make' to see available commands"
+echo ""
+echo "Note: If system files were backed up, they are in /etc/nix-darwin-backup-*"
