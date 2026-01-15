@@ -14,7 +14,7 @@
     # =========================================================================
     # User configuration - edit these values
     # =========================================================================
-    username = "unbalancedparen";
+    username = "federicocarrone";
     gitName = "Federico Carrone";
     gitEmail = "mail@fcarrone.com";
 
@@ -170,12 +170,17 @@
       # Git configuration
       programs.git = {
         enable = true;
+        signing = {
+          key = "~/.ssh/id_ed25519.pub";
+          signByDefault = true;
+        };
         settings = {
           user.name = gitName;
           user.email = gitEmail;
           init.defaultBranch = "main";
           push.autoSetupRemote = true;
           pull.rebase = true;
+          gpg.format = "ssh";
         };
       };
 
