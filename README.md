@@ -24,6 +24,7 @@ make switch     # Rebuild configuration
 make update     # Update flake inputs
 make upgrade    # Update + switch
 make clean      # Garbage collect
+make check      # Verify installation
 ```
 
 **Linux dotfiles** (non-NixOS):
@@ -37,6 +38,8 @@ make nixos-{install,run,ssh,clean}     # port 2224
 make openbsd-{install,run,ssh,clean}   # port 2222
 make void-{install,run,gui,ssh,clean}  # port 2223
 ```
+
+> **Note:** VM credentials (root:nixos, etc.) are for local testing only. Do not use in production.
 
 ## What's Included
 
