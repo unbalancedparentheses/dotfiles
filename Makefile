@@ -7,10 +7,10 @@ USER  := $(shell whoami)
 
 ifeq ($(UNAME),Darwin)
     OS  := macos
-    NIX := /nix/var/nix/profiles/default/bin/nix
+    NIX := /nix/var/nix/profiles/default/bin/nix --extra-experimental-features 'nix-command flakes'
 else
     OS  := linux
-    NIX := nix
+    NIX := nix --extra-experimental-features 'nix-command flakes'
 endif
 
 help:
