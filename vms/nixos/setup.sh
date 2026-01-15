@@ -36,6 +36,7 @@ check_deps() {
     log "Checking dependencies..."
     command -v qemu-system-aarch64 >/dev/null || error "qemu not found. Run: make switch"
     command -v qemu-img >/dev/null || error "qemu-img not found"
+    command -v expect >/dev/null || error "expect not found. Run: make switch"
 }
 
 download_iso() {
@@ -117,11 +118,22 @@ generate_config() {
     settings.PermitRootLogin = "yes";
   };
 
+  # X11 + i3
+  services.xserver = {
+    enable = true;
+    windowManager.i3.enable = true;
+    displayManager.startx.enable = true;  # Manual startx, no login manager
+  };
+
   # Allow password auth for initial setup
   users.users.root.initialPassword = "nixos";
 
   environment.systemPackages = with pkgs; [
     vim git htop curl wget
+    alacritty      # terminal
+    dmenu          # launcher
+    i3status       # status bar
+    feh            # wallpaper
   ];
 
   system.stateVersion = "24.11";
@@ -130,34 +142,135 @@ EOF
 }
 
 run_installer() {
-    log "Starting NixOS installer..."
+    log "Starting automated NixOS installation..."
     log ""
-    log "Installation steps:"
-    log "  1. sudo -i"
-    log "  2. parted /dev/vda -- mklabel gpt"
-    log "  3. parted /dev/vda -- mkpart ESP fat32 1MiB 512MiB"
-    log "  4. parted /dev/vda -- set 1 esp on"
-    log "  5. parted /dev/vda -- mkpart primary 512MiB 100%"
-    log "  6. mkfs.fat -F 32 -n boot /dev/vda1"
-    log "  7. mkfs.ext4 -L nixos /dev/vda2"
-    log "  8. mount /dev/disk/by-label/nixos /mnt"
-    log "  9. mkdir -p /mnt/boot"
-    log "  10. mount /dev/disk/by-label/boot /mnt/boot"
-    log "  11. nixos-generate-config --root /mnt"
-    log "  12. Edit /mnt/etc/nixos/configuration.nix (see below)"
-    log "  13. nixos-install"
-    log "  14. reboot"
+    log "This will:"
+    log "  1. Boot NixOS ISO"
+    log "  2. Partition disk automatically"
+    log "  3. Install NixOS with i3 + alacritty"
+    log "  4. Shutdown when complete"
     log ""
-    log "Minimal configuration.nix:"
-    log "----------------------------------------"
-    generate_config
-    log "----------------------------------------"
-    log ""
-    log "SSH: ssh -p ${SSH_PORT} root@localhost (after install)"
-    log "Exit VM: Ctrl+A then X"
+    log "Installation takes ~10-15 minutes."
     log ""
 
-    qemu-system-aarch64 \
+    # Create expect script for full automation via console
+    EXPECT_SCRIPT="/tmp/nixos-autoinstall-$$.exp"
+    cat > "$EXPECT_SCRIPT" << 'EXPECTEOF'
+#!/usr/bin/expect -f
+set timeout 600
+
+log_user 1
+
+# Spawn QEMU
+spawn {*}[lrange $argv 0 end]
+
+# Wait for login prompt
+expect {
+    "nixos login:" {
+        sleep 2
+        send "root\r"
+    }
+    timeout { puts "Timeout waiting for login"; exit 1 }
+}
+
+# Wait for shell prompt
+expect {
+    "root@nixos" { sleep 1 }
+    "#" { sleep 1 }
+    timeout { puts "Timeout waiting for shell"; exit 1 }
+}
+
+# Run installation commands
+send "echo '=== Partitioning disk ==='\r"
+expect "#"
+send "parted /dev/vda -- mklabel gpt\r"
+expect "#"
+send "parted /dev/vda -- mkpart ESP fat32 1MiB 512MiB\r"
+expect "#"
+send "parted /dev/vda -- set 1 esp on\r"
+expect "#"
+send "parted /dev/vda -- mkpart primary 512MiB 100%\r"
+expect "#"
+
+send "echo '=== Formatting ==='\r"
+expect "#"
+send "mkfs.fat -F 32 -n boot /dev/vda1\r"
+expect "#"
+send "mkfs.ext4 -L nixos /dev/vda2\r"
+expect "#"
+
+send "echo '=== Mounting ==='\r"
+expect "#"
+send "mount /dev/disk/by-label/nixos /mnt\r"
+expect "#"
+send "mkdir -p /mnt/boot\r"
+expect "#"
+send "mount /dev/disk/by-label/boot /mnt/boot\r"
+expect "#"
+
+send "echo '=== Generating config ==='\r"
+expect "#"
+send "nixos-generate-config --root /mnt\r"
+expect "#"
+
+send "echo '=== Writing configuration.nix ==='\r"
+expect "#"
+
+send "cat > /mnt/etc/nixos/configuration.nix << 'NIXCFG'\r"
+send "{ config, pkgs, ... }:\r"
+send "{\r"
+send "  imports = \\[ ./hardware-configuration.nix \\];\r"
+send "  boot.loader.systemd-boot.enable = true;\r"
+send "  boot.loader.efi.canTouchEfiVariables = true;\r"
+send "  networking.hostName = \"nixos-vm\";\r"
+send "  networking.networkmanager.enable = true;\r"
+send "  time.timeZone = \"UTC\";\r"
+send "  users.users.user = {\r"
+send "    isNormalUser = true;\r"
+send "    extraGroups = \\[ \"wheel\" \"networkmanager\" \\];\r"
+send "    initialPassword = \"nixos\";\r"
+send "  };\r"
+send "  services.openssh = {\r"
+send "    enable = true;\r"
+send "    settings.PermitRootLogin = \"yes\";\r"
+send "  };\r"
+send "  services.xserver = {\r"
+send "    enable = true;\r"
+send "    windowManager.i3.enable = true;\r"
+send "    displayManager.startx.enable = true;\r"
+send "  };\r"
+send "  users.users.root.initialPassword = \"nixos\";\r"
+send "  environment.systemPackages = with pkgs; \\[\r"
+send "    vim git htop curl wget\r"
+send "    alacritty dmenu i3status feh\r"
+send "  \\];\r"
+send "  system.stateVersion = \"24.11\";\r"
+send "}\r"
+send "NIXCFG\r"
+expect "#"
+
+send "echo '=== Installing NixOS (this takes a while) ==='\r"
+expect "#"
+set timeout 1800
+send "nixos-install --no-root-passwd\r"
+expect {
+    "installation finished" { puts "\n\nInstallation successful!" }
+    "#" { }
+    timeout { puts "Installation timed out"; exit 1 }
+}
+
+send "echo '=== Done! Shutting down ==='\r"
+expect "#"
+send "poweroff\r"
+
+expect eof
+EXPECTEOF
+
+    chmod +x "$EXPECT_SCRIPT"
+
+    # Run expect with QEMU
+    expect "$EXPECT_SCRIPT" \
+        qemu-system-aarch64 \
         -machine virt,accel=hvf,highmem=on \
         -cpu host \
         -m "$MEMORY" \
@@ -171,7 +284,13 @@ run_installer() {
         -netdev user,id=net0,hostfwd=tcp::${SSH_PORT}-:22 \
         -device virtio-balloon \
         -nographic \
-        -serial mon:stdio
+        -serial mon:stdio || true
+
+    rm -f "$EXPECT_SCRIPT"
+
+    log ""
+    log "Installation complete!"
+    log "Run: make nixos-gui"
 }
 
 run_vm() {
@@ -195,6 +314,30 @@ run_vm() {
         -serial mon:stdio
 }
 
+run_vm_gui() {
+    log "Starting NixOS VM (GUI)..."
+    log "SSH: ssh -p ${SSH_PORT} root@localhost"
+    log "Run 'startx' after login to launch i3"
+    echo ""
+
+    qemu-system-aarch64 \
+        -machine virt,accel=hvf,highmem=on \
+        -cpu host \
+        -m "$MEMORY" \
+        -smp "$CPUS" \
+        -drive if=pflash,format=raw,file="$UEFI_CODE_SRC",readonly=on \
+        -drive if=pflash,format=raw,file="$UEFI_VARS" \
+        -drive file="$DISK_IMAGE",if=virtio,format=qcow2 \
+        -device virtio-net-pci,netdev=net0 \
+        -netdev user,id=net0,hostfwd=tcp::${SSH_PORT}-:22 \
+        -device virtio-gpu-pci \
+        -display cocoa \
+        -device qemu-xhci \
+        -device usb-kbd \
+        -device usb-tablet \
+        -device virtio-balloon
+}
+
 case "${1:-}" in
     install)
         check_deps
@@ -208,6 +351,12 @@ case "${1:-}" in
         setup_uefi
         [ -f "$DISK_IMAGE" ] || error "No disk image. Run: $0 install"
         run_vm
+        ;;
+    gui)
+        check_deps
+        setup_uefi
+        [ -f "$DISK_IMAGE" ] || error "No disk image. Run: $0 install"
+        run_vm_gui
         ;;
     ssh)
         ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@localhost
@@ -232,12 +381,14 @@ case "${1:-}" in
         echo ""
         echo "Commands:"
         echo "  install   Download ISO and start installer"
-        echo "  run       Start the VM (after installation)"
+        echo "  run       Start the VM (CLI mode)"
+        echo "  gui       Start the VM with GUI (X11/i3)"
         echo "  ssh       SSH into the running VM (port ${SSH_PORT})"
         echo "  config    Print sample configuration.nix"
         echo "  clean     Remove disk image (keep ISO)"
         echo "  cleanall  Remove all files including ISO"
         echo ""
+        echo "After install, run 'startx' to launch i3"
         echo "Default credentials: root:nixos  user:nixos"
         ;;
 esac
