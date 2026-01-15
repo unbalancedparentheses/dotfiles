@@ -4,8 +4,9 @@ xrdb -merge ~/.Xresources
 # disable the bell
 xset -b
 
-# set a background
-feh --bg-max --randomize ~/dotfiles/wallpapers/*
+# set a background (update path if repo is cloned elsewhere)
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+feh --bg-max --randomize "$DOTFILES/wallpapers"/*
 
 # Use
 eval $(ssh-agent)

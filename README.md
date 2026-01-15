@@ -33,6 +33,7 @@ make linux-dotfiles   # Symlink xorg, dunst, parcellite
 
 **VMs** (macOS only):
 ```bash
+make nixos-{install,run,ssh,clean}
 make openbsd-{install,run,ssh,clean}
 make void-{install,run,gui,headless,ssh,clean}
 ```
@@ -69,7 +70,7 @@ flake.nix       Main Nix configuration
 Makefile        Build commands
 setup.sh        macOS bootstrap
 linux/          Linux configs (xorg, dunst, parcellite, dwm-patches)
-vms/            VM scripts (openbsd, void)
+vms/            VM scripts (nixos, openbsd, void)
 wip/            Work in progress
 wallpapers/     Desktop wallpapers
 ```
