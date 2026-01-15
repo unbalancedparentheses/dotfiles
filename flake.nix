@@ -14,7 +14,7 @@
     # =========================================================================
     # User configuration - edit these values
     # =========================================================================
-    username = "federicocarrone";
+    username = "unbalancedparen";
     gitName = "Federico Carrone";
     gitEmail = "mail@fcarrone.com";
 

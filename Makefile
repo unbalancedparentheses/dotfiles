@@ -26,6 +26,7 @@ help:
 	@echo "  linux-dotfiles  Symlink xorg, dunst, parcellite configs"
 	@echo ""
 	@echo "VMs (macOS):"
+	@echo "  nixos-{install,run,ssh,clean}"
 	@echo "  openbsd-{install,run,ssh,clean}"
 	@echo "  void-{install,run,gui,headless,ssh,clean}"
 
@@ -73,6 +74,10 @@ linux-dotfiles:
 	ln -sfn $(CURDIR)/linux/dunst ~/.config/dunst
 	ln -sfn $(CURDIR)/linux/parcellite ~/.config/parcellite
 	@echo "Linux dotfiles installed"
+
+nixos-%:
+	@[ "$(OS)" = "macos" ] || { echo "macOS only"; exit 1; }
+	./vms/nixos/setup.sh $*
 
 openbsd-%:
 	@[ "$(OS)" = "macos" ] || { echo "macOS only"; exit 1; }
