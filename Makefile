@@ -25,10 +25,10 @@ help:
 	@echo "Linux:"
 	@echo "  linux-dotfiles  Symlink xorg, dunst, parcellite configs"
 	@echo ""
-	@echo "VMs (macOS):"
-	@echo "  nixos-{install,run,ssh,clean}"
-	@echo "  openbsd-{install,run,ssh,clean}"
-	@echo "  void-{install,run,gui,headless,ssh,clean}"
+	@echo "VMs (macOS only):"
+	@echo "  nixos-{install,run,ssh,clean}     port 2224"
+	@echo "  openbsd-{install,run,ssh,clean}   port 2222"
+	@echo "  void-{install,run,gui,ssh,clean}  port 2223"
 
 switch:
 	@if [ "$(UNAME)" = "Darwin" ]; then \

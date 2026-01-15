@@ -37,10 +37,10 @@ error() { echo -e "${RED}[x]${NC} $1"; exit 1; }
 # Check dependencies
 check_deps() {
     log "Checking dependencies..."
-    command -v qemu-system-aarch64 >/dev/null || error "qemu not found. Run: make switch (from parent directory)"
+    command -v qemu-system-aarch64 >/dev/null || error "qemu not found. Run: make switch"
     command -v qemu-img >/dev/null || error "qemu-img not found"
     command -v python3 >/dev/null || error "python3 not found"
-    command -v expect >/dev/null || error "expect not found. Run: make switch (from parent directory)"
+    command -v expect >/dev/null || error "expect not found. Run: make switch"
 }
 
 # Download OpenBSD ISO
@@ -79,7 +79,7 @@ setup_uefi() {
     fi
 
     if [ ! -f "$UEFI_CODE_SRC" ]; then
-        error "UEFI firmware not found. Ensure qemu is installed: make switch"
+        error "UEFI firmware not found. Run: make switch"
     fi
     log "Using UEFI firmware: $UEFI_CODE_SRC"
 
@@ -309,8 +309,8 @@ case "${1:-}" in
         echo "Commands:"
         echo "  install   Fully automated installation (unattended)"
         echo "  run       Start the VM (after installation)"
-        echo "  ssh       SSH into the running VM"
-        echo "  clean     Remove disk image and UEFI vars (keep ISO)"
+        echo "  ssh       SSH into the running VM (port ${SSH_PORT})"
+        echo "  clean     Remove disk image (keep ISO)"
         echo "  cleanall  Remove all files including ISO"
         echo ""
         echo "Default credentials: root:openbsd  user:openbsd"

@@ -9,7 +9,7 @@ cd "$SCRIPT_DIR"
 
 # Configuration
 ARCH="aarch64"
-ISO_URL="https://repo-default.voidlinux.org/live/current/void-live-${ARCH}-20241230-base.iso"
+ISO_BASE_URL="https://repo-default.voidlinux.org/live/current"
 ISO_FILE="void-live-${ARCH}.iso"
 DISK_IMAGE="void.qcow2"
 DISK_SIZE="40G"
@@ -33,7 +33,7 @@ error() { echo -e "${RED}[x]${NC} $1"; exit 1; }
 
 check_deps() {
     log "Checking dependencies..."
-    command -v qemu-system-aarch64 >/dev/null || error "qemu not found. Run: make switch (from parent directory)"
+    command -v qemu-system-aarch64 >/dev/null || error "qemu not found. Run: make switch"
     command -v qemu-img >/dev/null || error "qemu-img not found"
 }
 
@@ -48,13 +48,14 @@ download_iso() {
             return
         fi
     fi
-    log "Downloading Void Linux ${ARCH} ISO..."
-    log "URL: $ISO_URL"
-    curl -L -o "$ISO_FILE" "$ISO_URL" || {
-        warn "Download failed. Trying to list available ISOs..."
-        curl -s "https://repo-default.voidlinux.org/live/current/" | grep -o 'void-live-aarch64[^"]*\.iso' | head -5
-        error "Please update ISO_URL in script with a valid filename"
-    }
+    log "Finding latest Void Linux ${ARCH} ISO..."
+    ISO_NAME=$(curl -s "${ISO_BASE_URL}/" | grep -o "void-live-${ARCH}-[0-9]*-base\.iso" | head -1)
+    if [ -z "$ISO_NAME" ]; then
+        error "Could not find ISO. Check ${ISO_BASE_URL}/"
+    fi
+    ISO_URL="${ISO_BASE_URL}/${ISO_NAME}"
+    log "Downloading: $ISO_NAME"
+    curl -L -o "$ISO_FILE" "$ISO_URL"
 }
 
 setup_uefi() {
@@ -231,12 +232,6 @@ case "${1:-}" in
         [ -f "$DISK_IMAGE" ] || error "No disk image. Run: $0 install"
         run_vm_gui
         ;;
-    headless)
-        check_deps
-        setup_uefi
-        [ -f "$DISK_IMAGE" ] || error "No disk image. Run: $0 install"
-        run_vm
-        ;;
     ssh)
         ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@localhost
         ;;
@@ -256,16 +251,13 @@ case "${1:-}" in
         echo "Usage: $0 <command>"
         echo ""
         echo "Commands:"
-        echo "  install     Download ISO, install Void, then auto-install Sway"
-        echo "  run         Start the VM (CLI mode)"
-        echo "  gui         Start the VM with GUI window (Sway)"
-        echo "  headless    Start the VM without display (SSH only)"
-        echo "  ssh         SSH into the running VM"
-        echo "  clean       Remove disk image (keep ISO)"
-        echo "  cleanall    Remove all files including ISO"
+        echo "  install   Download ISO and start installer"
+        echo "  run       Start the VM (CLI mode)"
+        echo "  gui       Start the VM with GUI window"
+        echo "  ssh       SSH into the running VM (port ${SSH_PORT})"
+        echo "  clean     Remove disk image (keep ISO)"
+        echo "  cleanall  Remove all files including ISO"
         echo ""
-        echo "Workflow:"
-        echo "  1. make void-install  # Run void-installer, Sway auto-installs after"
-        echo "  2. make void-gui      # Start with GUI"
+        echo "Default credentials: root (no password) or anon/voidlinux"
         ;;
 esac
