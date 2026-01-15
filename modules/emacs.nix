@@ -112,17 +112,77 @@
       (global-display-line-numbers-mode t)
       (column-number-mode t)
       (setq display-line-numbers-type 'relative)
-      (setq scroll-margin 8)
-      (setq scroll-conservatively 101)
       (global-hl-line-mode t)
-      (setq make-backup-files nil)
-      (setq auto-save-default nil)
       (setq create-lockfiles nil)
-      (fset 'yes-or-no-p 'y-or-n-p)
+      (setq use-short-answers t)
       (setq-default fill-column 100)
       (global-auto-revert-mode t)
-      (setq use-short-answers t)
+      (setq load-prefer-newer t)
+
+      ;; Usability
+      (setq confirm-kill-emacs 'y-or-n-p)
+      (setq require-final-newline t)
+      (setq sentence-end-double-space nil)
+      (setq kill-whole-line t)
+      (winner-mode 1)
+      (global-so-long-mode 1)
+
+      ;; Uniquify buffer names
+      (setq uniquify-buffer-name-style 'forward)
+      (setq uniquify-separator "/")
+      (setq uniquify-after-kill-buffer-p t)
+
+      ;; Scrolling
+      (setq scroll-margin 8)
+      (setq scroll-conservatively 101)
+      (setq mouse-wheel-progressive-speed nil)
+      (setq mouse-wheel-scroll-amount '(3 ((shift) . 1)))
       (pixel-scroll-precision-mode 1)
+
+      ;; Undo
+      (setq undo-limit 80000000)
+      (setq undo-strong-limit 120000000)
+      (setq undo-outer-limit 360000000)
+
+      ;; Auto-save to central directory (safer than disabling)
+      (setq auto-save-default t)
+      (setq make-backup-files t)
+      (setq backup-by-copying t)
+      (setq delete-old-versions t)
+      (setq kept-new-versions 6)
+      (setq kept-old-versions 2)
+      (setq version-control t)
+      (let ((backup-dir "~/.emacs.d/backups/")
+            (auto-save-dir "~/.emacs.d/auto-saves/"))
+        (unless (file-exists-p backup-dir) (make-directory backup-dir t))
+        (unless (file-exists-p auto-save-dir) (make-directory auto-save-dir t))
+        (setq backup-directory-alist `(("." . ,backup-dir)))
+        (setq auto-save-file-name-transforms `((".*" ,auto-save-dir t))))
+
+      ;; Dired
+      (setq dired-listing-switches "-alh --group-directories-first")
+      (setq dired-dwim-target t)
+      (setq dired-kill-when-opening-new-dired-buffer t)
+      (add-hook 'dired-mode-hook #'nerd-icons-dired-mode)
+
+      ;; Ediff side-by-side
+      (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+      (setq ediff-split-window-function 'split-window-horizontally)
+
+      ;; Xref with completing-read (integrates with vertico)
+      (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
+      (setq xref-show-xrefs-function #'xref-show-definitions-completing-read)
+
+      ;; Better zap-to-char
+      (global-set-key (kbd "M-z") 'zap-up-to-char)
+
+      ;; Minibuffer
+      (setq enable-recursive-minibuffers t)
+      (minibuffer-depth-indicate-mode 1)
+
+      ;; Compilation
+      (setq compilation-scroll-output t)
+      (setq compilation-ask-about-save nil)
 
       ;; Font
       (set-face-attribute 'default nil :font "JetBrainsMono Nerd Font" :height 140)
