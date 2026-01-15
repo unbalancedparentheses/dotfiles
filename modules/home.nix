@@ -2,54 +2,13 @@
 { config, pkgs, lib, gitName, gitEmail, ... }:
 
 {
-  imports = [ ./emacs.nix ];
+  imports = [ ./emacs.nix ./neovim.nix ];
 
   home.stateVersion = "24.05";
 
   manual.manpages.enable = false;
   manual.html.enable = false;
   manual.json.enable = false;
-
-  # Neovim
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-    viAlias = true;
-    vimAlias = true;
-    extraLuaConfig = ''
-      vim.opt.number = true
-      vim.opt.relativenumber = true
-      vim.opt.expandtab = true
-      vim.opt.shiftwidth = 2
-      vim.opt.tabstop = 2
-      vim.opt.smartindent = true
-      vim.opt.wrap = false
-      vim.opt.cursorline = true
-      vim.opt.termguicolors = true
-      vim.opt.signcolumn = "yes"
-      vim.opt.scrolloff = 8
-      vim.opt.updatetime = 50
-      vim.opt.colorcolumn = "100"
-      vim.opt.ignorecase = true
-      vim.opt.smartcase = true
-      vim.opt.hlsearch = false
-      vim.opt.incsearch = true
-      vim.opt.clipboard = "unnamedplus"
-      vim.g.mapleader = " "
-
-      vim.keymap.set("n", "<leader>w", ":w<CR>", { desc = "Save" })
-      vim.keymap.set("n", "<leader>q", ":q<CR>", { desc = "Quit" })
-      vim.keymap.set("n", "<leader>e", ":Ex<CR>", { desc = "Explorer" })
-      vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half page down" })
-      vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Half page up" })
-      vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move line down" })
-      vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move line up" })
-      vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
-      vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Move to bottom window" })
-      vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Move to top window" })
-      vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
-    '';
-  };
 
   # Ghostty terminal
   xdg.configFile."ghostty/config".text = ''
