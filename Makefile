@@ -1,4 +1,4 @@
-.PHONY: help install switch update upgrade clean linux-dotfiles
+.PHONY: help install switch update upgrade clean check linux-dotfiles
 
 .DEFAULT_GOAL := help
 
@@ -38,6 +38,7 @@ help:
 	@echo "  update    Update flake inputs"
 	@echo "  upgrade   Update and switch"
 	@echo "  clean     Garbage collect"
+	@echo "  check     Verify installation"
 	@echo ""
 	@echo "Linux:"
 	@echo "  linux-dotfiles  Symlink xorg, dunst, parcellite configs"
@@ -77,8 +78,36 @@ clean:
 		$(NIX) store gc; \
 	fi
 
+check:
+	@echo "Checking installation..."
+	@command -v nix >/dev/null && echo "✓ nix" || echo "✗ nix"
+	@command -v fish >/dev/null && echo "✓ fish" || echo "✗ fish"
+	@command -v nvim >/dev/null && echo "✓ nvim" || echo "✗ nvim"
+	@command -v git >/dev/null && echo "✓ git" || echo "✗ git"
+	@command -v tmux >/dev/null && echo "✓ tmux" || echo "✗ tmux"
+	@command -v starship >/dev/null && echo "✓ starship" || echo "✗ starship"
+	@command -v eza >/dev/null && echo "✓ eza" || echo "✗ eza"
+	@command -v bat >/dev/null && echo "✓ bat" || echo "✗ bat"
+	@command -v fzf >/dev/null && echo "✓ fzf" || echo "✗ fzf"
+	@command -v rg >/dev/null && echo "✓ ripgrep" || echo "✗ ripgrep"
+	@command -v fd >/dev/null && echo "✓ fd" || echo "✗ fd"
+	@command -v lazygit >/dev/null && echo "✓ lazygit" || echo "✗ lazygit"
+	@command -v zoxide >/dev/null && echo "✓ zoxide" || echo "✗ zoxide"
+	@[ -f ~/.config/ghostty/config ] && echo "✓ ghostty config" || echo "✗ ghostty config"
+	@[ -f ~/.config/zed/settings.json ] && echo "✓ zed config" || echo "✗ zed config"
+
+define backup_dotfile
+	@if [ -f "$(1)" ] && [ ! -L "$(1)" ]; then \
+		echo "Backing up $(1) to $(1).backup"; \
+		mv "$(1)" "$(1).backup"; \
+	fi
+endef
+
 linux-dotfiles:
 	mkdir -p ~/.config
+	$(call backup_dotfile,~/.Xresources)
+	$(call backup_dotfile,~/.fonts.conf)
+	$(call backup_dotfile,~/.xinitrc)
 	ln -sfn $(CURDIR)/linux/xorg/Xresources ~/.Xresources
 	ln -sfn $(CURDIR)/linux/xorg/fonts.conf ~/.fonts.conf
 	ln -sfn $(CURDIR)/linux/xorg/xinitrc ~/.xinitrc
