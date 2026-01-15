@@ -33,9 +33,9 @@ make linux-dotfiles   # Symlink xorg, dunst, parcellite
 
 **VMs** (macOS only):
 ```bash
-make nixos-{install,run,ssh,clean}
-make openbsd-{install,run,ssh,clean}
-make void-{install,run,gui,headless,ssh,clean}
+make nixos-{install,run,ssh,clean}     # port 2224
+make openbsd-{install,run,ssh,clean}   # port 2222
+make void-{install,run,gui,ssh,clean}  # port 2223
 ```
 
 ## What's Included
