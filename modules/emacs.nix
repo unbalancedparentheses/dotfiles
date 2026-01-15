@@ -1,54 +1,105 @@
-# Emacs configuration
+# Emacs configuration with LSP, Treesitter, and modern packages
 { config, pkgs, lib, ... }:
 
 {
   programs.emacs = {
     enable = true;
+    package = pkgs.emacs29;
+
     extraPackages = epkgs: with epkgs; [
-      # Completion
-      ivy
-      counsel
-      swiper
-      company
-      prescient
-      ivy-prescient
-      company-prescient
+      # Evil (Vim keybindings)
+      evil
+      evil-collection
+      evil-surround
+      evil-commentary
+
+      # Completion (modern stack)
+      vertico
+      consult
+      marginalia
+      orderless
+      corfu
+      cape
+      kind-icon
 
       # Navigation
       projectile
-      counsel-projectile
-      dumb-jump
+      consult-projectile
       avy
+      ace-window
+      treemacs
+      treemacs-evil
+      treemacs-projectile
+      treemacs-magit
 
       # Git
       magit
       git-timemachine
-      git-gutter
+      diff-hl
+
+      # LSP
+      eglot
+      consult-eglot
+
+      # Languages
+      rust-mode
+      go-mode
+      nix-mode
+      typescript-mode
+      lua-mode
+      yaml-mode
+      json-mode
+      markdown-mode
+      web-mode
+      dockerfile-mode
+
+      # Treesitter
+      treesit-grammars.with-all-grammars
 
       # Editing
       expand-region
       multiple-cursors
       undo-tree
       which-key
+      general
 
       # Visual
       rainbow-delimiters
-      highlight-parentheses
       doom-modeline
       doom-themes
-      all-the-icons
+      nerd-icons
+      nerd-icons-completion
+      nerd-icons-corfu
+      nerd-icons-dired
 
-      # Syntax/Linting
-      flycheck
-
-      # macOS
-      exec-path-from-shell
+      # Utilities
+      helpful
+      vterm
+      envrc
+      gcmh
 
       # Org
       org-bullets
+      org-roam
+
+      # Syntax/Linting
+      flycheck
+      flycheck-eglot
+
+      # macOS
+      exec-path-from-shell
     ];
 
     extraConfig = ''
+      ;; Performance - early init
+      (setq gc-cons-threshold 100000000)
+      (setq read-process-output-max (* 1024 1024))
+
+      ;; Native compilation
+      (when (featurep 'native-compile)
+        (setq native-comp-async-report-warnings-errors nil)
+        (setq native-comp-deferred-compilation t))
+
       ;; Basic settings
       (setq inhibit-startup-message t)
       (setq initial-scratch-message nil)
@@ -70,6 +121,8 @@
       (fset 'yes-or-no-p 'y-or-n-p)
       (setq-default fill-column 100)
       (global-auto-revert-mode t)
+      (setq use-short-answers t)
+      (pixel-scroll-precision-mode 1)
 
       ;; Font
       (set-face-attribute 'default nil :font "JetBrainsMono Nerd Font" :height 140)
@@ -78,89 +131,313 @@
       (require 'doom-themes)
       (load-theme 'doom-one t)
       (doom-themes-org-config)
+      (doom-themes-treemacs-config)
+
+      ;; Nerd icons
+      (require 'nerd-icons)
 
       ;; Doom modeline
       (require 'doom-modeline)
+      (setq doom-modeline-icon t)
       (doom-modeline-mode 1)
+
+      ;; GCMH - Garbage Collection Magic Hack
+      (require 'gcmh)
+      (gcmh-mode 1)
 
       ;; macOS path
       (when (memq window-system '(mac ns x))
         (exec-path-from-shell-initialize))
 
-      ;; Ivy/Counsel/Swiper
-      (ivy-mode 1)
-      (setq ivy-use-virtual-buffers t)
-      (setq ivy-count-format "(%d/%d) ")
-      (global-set-key (kbd "C-s") 'swiper)
-      (global-set-key (kbd "M-x") 'counsel-M-x)
-      (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-      (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
+      ;; Evil mode
+      (setq evil-want-integration t)
+      (setq evil-want-keybinding nil)
+      (setq evil-want-C-u-scroll t)
+      (setq evil-want-Y-yank-to-eol t)
+      (require 'evil)
+      (evil-mode 1)
+      (evil-collection-init)
+      (global-evil-surround-mode 1)
+      (evil-commentary-mode 1)
 
-      ;; Prescient (better sorting)
-      (ivy-prescient-mode 1)
-      (company-prescient-mode 1)
-      (prescient-persist-mode 1)
+      ;; Vertico (vertical completion)
+      (require 'vertico)
+      (vertico-mode 1)
+      (setq vertico-cycle t)
+      (setq vertico-count 15)
 
-      ;; Company
-      (global-company-mode t)
-      (setq company-idle-delay 0.1)
-      (setq company-minimum-prefix-length 1)
+      ;; Marginalia (annotations)
+      (require 'marginalia)
+      (marginalia-mode 1)
+
+      ;; Orderless (fuzzy matching)
+      (require 'orderless)
+      (setq completion-styles '(orderless basic))
+      (setq completion-category-overrides '((file (styles partial-completion))))
+
+      ;; Consult (search/navigation)
+      (require 'consult)
+      (global-set-key (kbd "C-s") 'consult-line)
+      (global-set-key (kbd "C-x b") 'consult-buffer)
+      (global-set-key (kbd "M-g g") 'consult-goto-line)
+      (global-set-key (kbd "M-g M-g") 'consult-goto-line)
+      (global-set-key (kbd "M-s r") 'consult-ripgrep)
+      (global-set-key (kbd "M-s f") 'consult-find)
+
+      ;; Corfu (completion at point)
+      (require 'corfu)
+      (global-corfu-mode 1)
+      (setq corfu-auto t)
+      (setq corfu-auto-delay 0.1)
+      (setq corfu-auto-prefix 1)
+      (setq corfu-cycle t)
+      (setq corfu-preselect 'prompt)
+
+      ;; Cape (completion backends)
+      (require 'cape)
+      (add-to-list 'completion-at-point-functions #'cape-file)
+      (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+
+      ;; Nerd icons for corfu
+      (require 'nerd-icons-corfu)
+      (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)
+
+      ;; Nerd icons for completion
+      (require 'nerd-icons-completion)
+      (nerd-icons-completion-mode 1)
+      (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup)
 
       ;; Projectile
+      (require 'projectile)
       (projectile-mode +1)
-      (setq projectile-completion-system 'ivy)
+      (setq projectile-completion-system 'default)
       (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-      (counsel-projectile-mode 1)
+
+      ;; Consult-projectile
+      (require 'consult-projectile)
 
       ;; Which-key
+      (require 'which-key)
       (which-key-mode)
-      (setq which-key-idle-delay 0.5)
+      (setq which-key-idle-delay 0.3)
+
+      ;; General (keybinding)
+      (require 'general)
+      (general-create-definer my-leader-def
+        :keymaps '(normal visual emacs)
+        :prefix "SPC"
+        :global-prefix "C-SPC")
+
+      (my-leader-def
+        ;; Files
+        "f"  '(:ignore t :which-key "files")
+        "ff" '(find-file :which-key "find file")
+        "fr" '(consult-recent-file :which-key "recent files")
+        "fp" '(consult-projectile :which-key "project files")
+        "fs" '(save-buffer :which-key "save")
+
+        ;; Buffers
+        "b"  '(:ignore t :which-key "buffers")
+        "bb" '(consult-buffer :which-key "switch buffer")
+        "bd" '(kill-current-buffer :which-key "kill buffer")
+        "bi" '(ibuffer :which-key "ibuffer")
+
+        ;; Search
+        "s"  '(:ignore t :which-key "search")
+        "ss" '(consult-line :which-key "search line")
+        "sp" '(consult-ripgrep :which-key "ripgrep project")
+        "si" '(consult-imenu :which-key "imenu")
+
+        ;; Project
+        "p"  '(:ignore t :which-key "project")
+        "pp" '(projectile-switch-project :which-key "switch project")
+        "pf" '(consult-projectile :which-key "find file")
+        "ps" '(consult-ripgrep :which-key "search")
+        "pb" '(consult-project-buffer :which-key "buffers")
+
+        ;; Git
+        "g"  '(:ignore t :which-key "git")
+        "gg" '(magit-status :which-key "status")
+        "gb" '(magit-blame :which-key "blame")
+        "gl" '(magit-log-current :which-key "log")
+        "gt" '(git-timemachine :which-key "timemachine")
+
+        ;; Code/LSP
+        "c"  '(:ignore t :which-key "code")
+        "ca" '(eglot-code-actions :which-key "actions")
+        "cr" '(eglot-rename :which-key "rename")
+        "cf" '(eglot-format :which-key "format")
+        "cd" '(xref-find-definitions :which-key "definition")
+        "cR" '(xref-find-references :which-key "references")
+
+        ;; Window
+        "w"  '(:ignore t :which-key "window")
+        "ww" '(ace-window :which-key "switch")
+        "wd" '(delete-window :which-key "delete")
+        "ws" '(split-window-below :which-key "split horizontal")
+        "wv" '(split-window-right :which-key "split vertical")
+        "wm" '(delete-other-windows :which-key "maximize")
+
+        ;; Toggle
+        "t"  '(:ignore t :which-key "toggle")
+        "tt" '(treemacs :which-key "treemacs")
+        "tv" '(vterm :which-key "terminal")
+        "tn" '(display-line-numbers-mode :which-key "line numbers")
+
+        ;; Quit
+        "q"  '(:ignore t :which-key "quit")
+        "qq" '(save-buffers-kill-terminal :which-key "quit")
+        "qr" '(restart-emacs :which-key "restart"))
 
       ;; Magit
       (global-set-key (kbd "C-x g") 'magit-status)
 
-      ;; Git gutter
-      (global-git-gutter-mode +1)
+      ;; Diff-hl (git gutter)
+      (require 'diff-hl)
+      (global-diff-hl-mode 1)
+      (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
+      (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+
+      ;; Ace-window
+      (require 'ace-window)
+      (global-set-key (kbd "M-o") 'ace-window)
+      (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
 
       ;; Expand region
       (global-set-key (kbd "C-=") 'er/expand-region)
 
       ;; Multiple cursors
-      (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
       (global-set-key (kbd "C->") 'mc/mark-next-like-this)
       (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
       (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
       ;; Undo tree
+      (require 'undo-tree)
       (global-undo-tree-mode)
       (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
+      (evil-set-undo-system 'undo-tree)
 
       ;; Avy (jump to char)
       (global-set-key (kbd "C-;") 'avy-goto-char-timer)
+      (global-set-key (kbd "M-g w") 'avy-goto-word-1)
 
-      ;; Dumb jump
-      (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+      ;; Treemacs
+      (require 'treemacs)
+      (require 'treemacs-evil)
+      (require 'treemacs-projectile)
+      (require 'treemacs-magit)
+      (setq treemacs-width 35)
+      (global-set-key (kbd "C-x t t") 'treemacs)
 
       ;; Rainbow delimiters
       (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
-      ;; Highlight parentheses
-      (add-hook 'prog-mode-hook #'highlight-parentheses-mode)
+      ;; Helpful
+      (require 'helpful)
+      (global-set-key (kbd "C-h f") #'helpful-callable)
+      (global-set-key (kbd "C-h v") #'helpful-variable)
+      (global-set-key (kbd "C-h k") #'helpful-key)
+      (global-set-key (kbd "C-h x") #'helpful-command)
 
-      ;; Flycheck
-      (global-flycheck-mode)
+      ;; Vterm
+      (require 'vterm)
+      (setq vterm-max-scrollback 10000)
+      (global-set-key (kbd "C-c t") 'vterm)
+
+      ;; Envrc (direnv integration)
+      (require 'envrc)
+      (envrc-global-mode 1)
+
+      ;; Eglot (LSP)
+      (require 'eglot)
+      (add-hook 'rust-mode-hook 'eglot-ensure)
+      (add-hook 'go-mode-hook 'eglot-ensure)
+      (add-hook 'nix-mode-hook 'eglot-ensure)
+      (add-hook 'typescript-mode-hook 'eglot-ensure)
+      (add-hook 'python-mode-hook 'eglot-ensure)
+      (add-hook 'lua-mode-hook 'eglot-ensure)
+      (add-hook 'web-mode-hook 'eglot-ensure)
+
+      (setq eglot-autoshutdown t)
+      (setq eglot-confirm-server-initiated-edits nil)
+
+      ;; Eglot + Corfu integration
+      (setq eglot-stay-out-of '(company))
+
+      ;; Flycheck + Eglot
+      (require 'flycheck)
+      (require 'flycheck-eglot)
+      (global-flycheck-eglot-mode 1)
+
+      ;; Treesitter
+      (setq treesit-language-source-alist
+            '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+              (rust "https://github.com/tree-sitter/tree-sitter-rust")
+              (go "https://github.com/tree-sitter/tree-sitter-go")
+              (python "https://github.com/tree-sitter/tree-sitter-python")
+              (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+              (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
+              (json "https://github.com/tree-sitter/tree-sitter-json")
+              (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+              (toml "https://github.com/tree-sitter/tree-sitter-toml")
+              (nix "https://github.com/nix-community/tree-sitter-nix")))
+
+      ;; Map to treesitter modes when available
+      (setq major-mode-remap-alist
+            '((bash-mode . bash-ts-mode)
+              (json-mode . json-ts-mode)
+              (yaml-mode . yaml-ts-mode)))
 
       ;; Org mode
       (require 'org-bullets)
       (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
       (setq org-hide-leading-stars t)
       (setq org-startup-indented t)
+      (setq org-return-follows-link t)
+      (setq org-startup-with-inline-images t)
+
+      ;; Org-roam
+      (require 'org-roam)
+      (setq org-roam-directory "~/org-roam")
+      (setq org-roam-completion-everywhere t)
+      (org-roam-db-autosync-mode 1)
+      (global-set-key (kbd "C-c n f") 'org-roam-node-find)
+      (global-set-key (kbd "C-c n i") 'org-roam-node-insert)
+      (global-set-key (kbd "C-c n l") 'org-roam-buffer-toggle)
 
       ;; Electric pair
       (electric-pair-mode 1)
 
       ;; Delete trailing whitespace on save
       (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+      ;; Save minibuffer history
+      (savehist-mode 1)
+
+      ;; Remember cursor position
+      (save-place-mode 1)
+
+      ;; Recent files
+      (recentf-mode 1)
+      (setq recentf-max-saved-items 100)
     '';
   };
+
+  # LSP servers and tools
+  home.packages = with pkgs; [
+    # LSP servers
+    rust-analyzer
+    gopls
+    nil # Nix
+    pyright
+    typescript-language-server
+    lua-language-server
+    nodePackages.vscode-langservers-extracted
+    yaml-language-server
+
+    # Tools
+    ripgrep
+    fd
+    direnv
+  ];
 }
