@@ -41,7 +41,7 @@ check_deps() {
 download_iso() {
     if [ -f "$ISO_FILE" ]; then
         ISO_SIZE=$(stat -f%z "$ISO_FILE" 2>/dev/null || stat -c%s "$ISO_FILE" 2>/dev/null)
-        if [ "$ISO_SIZE" -lt 500000000 ]; then
+        if [ "$ISO_SIZE" -lt 800000000 ]; then
             warn "ISO file appears incomplete. Re-downloading..."
             rm -f "$ISO_FILE"
         else
