@@ -16,14 +16,19 @@
     on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
     on-focus-changed = ['move-mouse window-lazy-center']
 
+    # Notify SketchyBar on workspace change
+    exec-on-workspace-change = ['/bin/bash', '-c',
+      '/opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+    ]
+
     # Gaps and padding
     [gaps]
-    inner.horizontal = 8
-    inner.vertical = 8
-    outer.left = 8
-    outer.bottom = 8
-    outer.top = 40  # Space for SketchyBar
-    outer.right = 8
+    inner.horizontal = 0
+    inner.vertical = 0
+    outer.left = 0
+    outer.bottom = 0
+    outer.top = 0
+    outer.right = 0
 
     # Main keybindings (alt as modifier)
     [mode.main.binding]
@@ -48,6 +53,12 @@
     alt-comma = 'layout accordion horizontal vertical'
     alt-f = 'fullscreen'
     alt-shift-space = 'layout floating tiling'
+
+    # Close window
+    alt-q = 'close'
+
+    # Open terminal
+    alt-enter = 'exec-and-forget open -na Ghostty'
 
     # Workspaces (alt + number)
     alt-1 = 'workspace 1'
@@ -90,7 +101,9 @@
   '';
 
   # SketchyBar - Status bar
-  xdg.configFile."sketchybar/sketchybarrc".text = ''
+  xdg.configFile."sketchybar/sketchybarrc" = {
+    executable = true;
+    text = ''
     #!/bin/bash
 
     # Colors (Catppuccin Mocha)
@@ -122,19 +135,24 @@
       padding_left=5 \
       padding_right=5
 
-    # Left side - Spaces/workspaces
-    SPACE_ICONS=("1" "2" "3" "4" "5" "6" "7" "8" "9")
-    for i in "''${!SPACE_ICONS[@]}"; do
-      sid=$((i+1))
-      sketchybar --add space space.$sid left \
-        --set space.$sid space=$sid \
-        icon="''${SPACE_ICONS[i]}" \
+    # Left side - AeroSpace workspaces
+    sketchybar --add event aerospace_workspace_change
+
+    for sid in 1 2 3 4 5 6 7 8 9; do
+      sketchybar --add item space.$sid left \
+        --set space.$sid \
+        icon="$sid" \
+        icon.highlight_color=$ACCENT_COLOR \
         background.color=0x00000000 \
         background.drawing=off \
-        icon.highlight_color=$ACCENT_COLOR \
-        script="$CONFIG_DIR/plugins/space.sh" \
-        --subscribe space.$sid space_change
+        click_script="aerospace workspace $sid" \
+        script="$CONFIG_DIR/plugins/space.sh $sid" \
+        --subscribe space.$sid aerospace_workspace_change
     done
+
+    # Highlight current workspace on startup
+    CURRENT=$(aerospace list-workspaces --focused 2>/dev/null || echo "1")
+    sketchybar --set space.$CURRENT background.drawing=on icon.highlight=on
 
     # Left side - Front app
     sketchybar --add item front_app left \
@@ -167,13 +185,16 @@
     # Initialize
     sketchybar --update
   '';
+  };
 
   # SketchyBar plugins
   xdg.configFile."sketchybar/plugins/space.sh" = {
     executable = true;
     text = ''
       #!/bin/bash
-      if [ "$SELECTED" = "true" ]; then
+      # $1 = workspace number this item represents
+      # $FOCUSED_WORKSPACE = currently focused workspace from aerospace
+      if [ "$1" = "$FOCUSED_WORKSPACE" ]; then
         sketchybar --set $NAME background.drawing=on icon.highlight=on
       else
         sketchybar --set $NAME background.drawing=off icon.highlight=off
@@ -243,18 +264,21 @@
   };
 
   # JankyBorders - Window borders
-  xdg.configFile."borders/bordersrc".text = ''
-    #!/bin/bash
+  xdg.configFile."borders/bordersrc" = {
+    executable = true;
+    text = ''
+      #!/bin/bash
 
-    options=(
-      style=round
-      width=4.0
-      hidpi=on
-      active_color=0xff89b4fa
-      inactive_color=0xff313244
-    )
+      options=(
+        style=round
+        width=4.0
+        hidpi=on
+        active_color=0xff89b4fa
+        inactive_color=0xff313244
+      )
 
-    borders "''${options[@]}"
-  '';
+      borders "''${options[@]}"
+    '';
+  };
   };
 }
