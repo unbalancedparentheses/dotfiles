@@ -82,11 +82,11 @@ in
       require("catppuccin").setup({ flavour = "mocha" })
       vim.cmd.colorscheme "catppuccin"
 
-      -- Treesitter
-      require("nvim-treesitter.configs").setup({
-        highlight = { enable = true },
-        indent = { enable = true },
-      })
+      -- Treesitter (grammars installed via Nix)
+      vim.treesitter.language.register("bash", "sh")
+      vim.opt.foldmethod = "expr"
+      vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+      vim.opt.foldenable = false
 
       -- LSP
       local lspconfig = require("lspconfig")
