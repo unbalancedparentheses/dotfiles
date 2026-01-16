@@ -66,6 +66,14 @@
 
   system.activationScripts.postActivation.text = ''
     mkdir -p ~/Pictures/Screenshots
+
+    # Start window management services
+    if command -v sketchybar &> /dev/null; then
+      brew services start sketchybar 2>/dev/null || true
+    fi
+    if command -v borders &> /dev/null; then
+      brew services start borders 2>/dev/null || true
+    fi
   '';
 
   # Homebrew
