@@ -82,4 +82,22 @@
     enable = true;
     nix-direnv.enable = true;
   };
+
+  programs.atuin = {
+    enable = true;
+    enableFishIntegration = true;
+    flags = [ "--disable-up-arrow" ];  # Keep up arrow for normal history
+    settings = {
+      auto_sync = false;        # Enable if you want cloud sync
+      sync_frequency = "5m";
+      search_mode = "fuzzy";
+      filter_mode = "global";
+      style = "compact";
+    };
+  };
+
+  programs.mise = {
+    enable = true;
+    enableFishIntegration = true;
+  };
 }
