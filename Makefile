@@ -1,4 +1,4 @@
-.PHONY: help update clean check suckless
+.PHONY: help update clean check
 
 .DEFAULT_GOAL := update
 
@@ -33,9 +33,6 @@ help:
 	@echo "  clean     Garbage collect"
 	@echo "  check     Verify installation"
 	@echo ""
-	@echo "Linux (suckless):"
-	@echo "  suckless  Clone and setup dwm, st, slstatus"
-	@echo ""
 	@echo "VMs (macOS only):"
 	@echo "  nixos-{install,run,gui,ssh,clean}   port 2224"
 	@echo "  openbsd-{install,run,ssh,clean}     port 2222"
@@ -58,8 +55,23 @@ else
 	@echo "Installing development tools via mise..."
 	@~/.nix-profile/bin/mise install -y 2>/dev/null || mise install -y 2>/dev/null || echo "Run 'mise install' in a new terminal"
 	@echo ""
-	@echo "Run 'make suckless' to build dwm, st, slstatus"
+	@echo "Building suckless software..."
+	@$(MAKE) -s _suckless
 endif
+
+_suckless:
+	@# st
+	@if [ ! -d /tmp/st ]; then git clone --quiet https://git.suckless.org/st /tmp/st; fi
+	@cp $(CURDIR)/linux/st/config.h /tmp/st/
+	@cd /tmp/st && sudo make clean install >/dev/null 2>&1 && echo "  ✓ st" || echo "  ✗ st (run: cd /tmp/st && sudo make clean install)"
+	@# dwm
+	@if [ ! -d /tmp/dwm ]; then git clone --quiet https://git.suckless.org/dwm /tmp/dwm; fi
+	@cp $(CURDIR)/linux/dwm/config.h /tmp/dwm/
+	@cd /tmp/dwm && sudo make clean install >/dev/null 2>&1 && echo "  ✓ dwm" || echo "  ✗ dwm (run: cd /tmp/dwm && sudo make clean install)"
+	@# slstatus
+	@if [ ! -d /tmp/slstatus ]; then git clone --quiet https://git.suckless.org/slstatus /tmp/slstatus; fi
+	@cp $(CURDIR)/linux/slstatus/config.h /tmp/slstatus/
+	@cd /tmp/slstatus && sudo make clean install >/dev/null 2>&1 && echo "  ✓ slstatus" || echo "  ✗ slstatus (run: cd /tmp/slstatus && sudo make clean install)"
 
 clean:
 	@if [ "$(OS)" = "macos" ]; then \
@@ -114,26 +126,6 @@ else
 	@command -v picom >/dev/null && echo "  ✓ picom" || echo "  ✗ picom"
 	@command -v dunst >/dev/null && echo "  ✓ dunst" || echo "  ✗ dunst"
 endif
-
-suckless:
-	@echo "Building suckless software (st, dwm, slstatus)..."
-	@echo ""
-	@# st
-	@if [ ! -d /tmp/st ]; then git clone https://git.suckless.org/st /tmp/st; fi
-	@cp $(CURDIR)/linux/st/config.h /tmp/st/
-	@echo "st: Apply patches from linux/st/patches.txt, then run: cd /tmp/st && sudo make clean install"
-	@echo ""
-	@# dwm
-	@if [ ! -d /tmp/dwm ]; then git clone https://git.suckless.org/dwm /tmp/dwm; fi
-	@cp $(CURDIR)/linux/dwm/config.h /tmp/dwm/
-	@echo "dwm: Apply patches from linux/dwm-patches/, then run: cd /tmp/dwm && sudo make clean install"
-	@echo ""
-	@# slstatus
-	@if [ ! -d /tmp/slstatus ]; then git clone https://git.suckless.org/slstatus /tmp/slstatus; fi
-	@cp $(CURDIR)/linux/slstatus/config.h /tmp/slstatus/
-	@echo "slstatus: cd /tmp/slstatus && sudo make clean install"
-	@echo ""
-	@echo "All configs copied. Apply patches and build each tool."
 
 nixos-%:
 	@[ "$(OS)" = "macos" ] || { echo "macOS only"; exit 1; }
