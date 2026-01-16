@@ -28,6 +28,7 @@
     tig        # Git TUI
     glow       # Markdown renderer
     rustup     # Rust toolchain manager
+    # atuin and mise configured via programs.* in shell.nix
   ];
 
   # macOS only
