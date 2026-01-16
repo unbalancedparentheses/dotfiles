@@ -10,6 +10,7 @@
     ./git.nix
     ./tmux.nix
     ./terminal.nix
+    ./wm.nix
   ];
 
   home.stateVersion = "24.05";
