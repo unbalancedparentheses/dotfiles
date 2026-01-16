@@ -1,6 +1,9 @@
 # macOS (nix-darwin) specific configuration
 { config, pkgs, lib, username, ... }:
 
+let
+  brewPrefix = if pkgs.stdenv.hostPlatform.isAarch64 then "/opt/homebrew" else "/usr/local";
+in
 {
   # Disable nix-darwin's Nix management (using Determinate Nix installer)
   nix.enable = false;
@@ -80,18 +83,18 @@
   # LaunchAgents for window management services
   launchd.user.agents.sketchybar = {
     serviceConfig = {
-      ProgramArguments = [ "/opt/homebrew/bin/sketchybar" ];
+      ProgramArguments = [ "${brewPrefix}/bin/sketchybar" ];
       KeepAlive = true;
       RunAtLoad = true;
       EnvironmentVariables = {
-        PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
+        PATH = "${brewPrefix}/bin:/usr/local/bin:/usr/bin:/bin";
       };
     };
   };
 
   launchd.user.agents.borders = {
     serviceConfig = {
-      ProgramArguments = [ "/opt/homebrew/bin/borders" ];
+      ProgramArguments = [ "${brewPrefix}/bin/borders" ];
       KeepAlive = true;
       RunAtLoad = true;
     };

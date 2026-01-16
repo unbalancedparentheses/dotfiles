@@ -2,6 +2,9 @@
 # macOS tiling WM setup inspired by i3/bspwm
 { config, pkgs, lib, ... }:
 
+let
+  brewPrefix = if pkgs.stdenv.hostPlatform.isAarch64 then "/opt/homebrew" else "/usr/local";
+in
 {
   # Only apply on macOS
   config = lib.mkIf pkgs.stdenv.isDarwin {
@@ -18,7 +21,7 @@
 
     # Notify SketchyBar on workspace change
     exec-on-workspace-change = ['/bin/bash', '-c',
-      '/opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+      '${brewPrefix}/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
     ]
 
     # Gaps and padding
@@ -107,12 +110,12 @@
     text = ''
     #!/bin/bash
 
-    # Colors (Catppuccin Mocha)
-    BAR_COLOR=0xff1e1e2e
-    ITEM_BG_COLOR=0xff313244
-    ACCENT_COLOR=0xff89b4fa
-    TEXT_COLOR=0xffcdd6f4
-    SUBTEXT_COLOR=0xffa6adc8
+    # Colors (Nord)
+    BAR_COLOR=0xff2e3440
+    ITEM_BG_COLOR=0xff3b4252
+    ACCENT_COLOR=0xff88c0d0
+    TEXT_COLOR=0xffd8dee9
+    SUBTEXT_COLOR=0xff4c566a
 
     # Bar appearance
     sketchybar --bar \
@@ -337,7 +340,7 @@
         style=round
         width=6.0
         hidpi=on
-        active_color=0xffcba6f7
+        active_color=0xff88c0d0
         inactive_color=0x00000000
       )
 
