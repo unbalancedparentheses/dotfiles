@@ -3,6 +3,8 @@
 { config, pkgs, lib, ... }:
 
 {
+  # Only apply on macOS
+  config = lib.mkIf pkgs.stdenv.isDarwin {
   # AeroSpace - Tiling window manager
   # Keybindings: alt + hjkl (focus), alt + shift + hjkl (move)
   # Workspaces: alt + 1-9, alt + shift + 1-9 (move to workspace)
@@ -254,4 +256,5 @@
 
     borders "''${options[@]}"
   '';
+  };
 }
