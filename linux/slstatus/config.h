@@ -79,5 +79,5 @@ static const struct arg args[] = {
 	/* { run_command,  "󰕾 %s%% | ",      "amixer get Master | grep -o '[0-9]*%' | head -1 | tr -d '%'" }, */
 
 	/* Date and time */
-	{ datetime,        " %a %d %b  %H:%M", "%a %d %b %H:%M" },
+	{ datetime,        " %a %d %b  %H:%M", NULL },
 };
