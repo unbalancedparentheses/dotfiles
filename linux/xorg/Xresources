@@ -1,10 +1,109 @@
-Xcursor.theme: Vanilla-DMZ
-Xcursor.size: 128
+! Xresources - X11 configuration
+! Reload with: xrdb -merge ~/.Xresources
 
-Xft.dpi: 192
-Xft.autohint: 1
-Xft.lcdfilter:  lcddefault
-Xft.hintstyle:  hintfull
-Xft.hinting: true
+! =============================================================================
+! DPI Settings
+! =============================================================================
+! Standard: 96, HiDPI: 144 (1.5x) or 192 (2x)
+! Uncomment the appropriate line for your display
+Xft.dpi: 96
+! Xft.dpi: 144
+! Xft.dpi: 192
+
+! =============================================================================
+! Font Rendering
+! =============================================================================
+Xft.autohint: 0
+Xft.lcdfilter: lcddefault
+Xft.hintstyle: hintslight
+Xft.hinting: 1
 Xft.antialias: 1
-Xft.rgba: none
+Xft.rgba: rgb
+
+! =============================================================================
+! Cursor
+! =============================================================================
+Xcursor.theme: Adwaita
+Xcursor.size: 24
+
+! =============================================================================
+! Nord Color Scheme
+! =============================================================================
+! Polar Night
+#define nord0  #2e3440
+#define nord1  #3b4252
+#define nord2  #434c5e
+#define nord3  #4c566a
+! Snow Storm
+#define nord4  #d8dee9
+#define nord5  #e5e9f0
+#define nord6  #eceff4
+! Frost
+#define nord7  #8fbcbb
+#define nord8  #88c0d0
+#define nord9  #81a1c1
+#define nord10 #5e81ac
+! Aurora
+#define nord11 #bf616a
+#define nord12 #d08770
+#define nord13 #ebcb8b
+#define nord14 #a3be8c
+#define nord15 #b48ead
+
+! =============================================================================
+! XTerm / UXTerm
+! =============================================================================
+XTerm*faceName: JetBrainsMono Nerd Font
+XTerm*faceSize: 11
+XTerm*termName: xterm-256color
+XTerm*selectToClipboard: true
+XTerm*saveLines: 10000
+
+! Colors (Nord)
+XTerm*background: nord0
+XTerm*foreground: nord4
+XTerm*cursorColor: nord4
+XTerm*color0:  nord1
+XTerm*color1:  nord11
+XTerm*color2:  nord14
+XTerm*color3:  nord13
+XTerm*color4:  nord9
+XTerm*color5:  nord15
+XTerm*color6:  nord8
+XTerm*color7:  nord5
+XTerm*color8:  nord3
+XTerm*color9:  nord11
+XTerm*color10: nord14
+XTerm*color11: nord13
+XTerm*color12: nord9
+XTerm*color13: nord15
+XTerm*color14: nord7
+XTerm*color15: nord6
+
+! =============================================================================
+! URxvt (if used)
+! =============================================================================
+URxvt*font: xft:JetBrainsMono Nerd Font:size=11
+URxvt*scrollBar: false
+URxvt*saveLines: 10000
+URxvt*termName: rxvt-unicode-256color
+
+URxvt*background: nord0
+URxvt*foreground: nord4
+URxvt*cursorColor: nord4
+URxvt*color0:  nord1
+URxvt*color1:  nord11
+URxvt*color2:  nord14
+URxvt*color3:  nord13
+URxvt*color4:  nord9
+URxvt*color5:  nord15
+URxvt*color6:  nord8
+URxvt*color7:  nord5
+URxvt*color8:  nord3
+URxvt*color9:  nord11
+URxvt*color10: nord14
+URxvt*color11: nord13
+URxvt*color12: nord9
+URxvt*color13: nord15
+URxvt*color14: nord7
+URxvt*color15: nord6

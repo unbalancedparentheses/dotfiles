@@ -115,16 +115,35 @@ define backup_dotfile
 endef
 
 linux-dotfiles:
-	mkdir -p ~/.config
+	@echo "Installing Linux dotfiles..."
+	mkdir -p ~/.config ~/.local/share/rofi/themes
+	# Xorg
 	$(call backup_dotfile,~/.Xresources)
 	$(call backup_dotfile,~/.fonts.conf)
 	$(call backup_dotfile,~/.xinitrc)
 	ln -sfn $(CURDIR)/linux/xorg/Xresources ~/.Xresources
 	ln -sfn $(CURDIR)/linux/xorg/fonts.conf ~/.fonts.conf
 	ln -sfn $(CURDIR)/linux/xorg/xinitrc ~/.xinitrc
+	# Notifications
 	ln -sfn $(CURDIR)/linux/dunst ~/.config/dunst
+	# Clipboard
 	ln -sfn $(CURDIR)/linux/parcellite ~/.config/parcellite
-	@echo "Linux dotfiles installed"
+	# Compositor
+	ln -sfn $(CURDIR)/linux/picom ~/.config/picom
+	# App launcher
+	ln -sfn $(CURDIR)/linux/rofi ~/.config/rofi
+	ln -sfn $(CURDIR)/linux/rofi/nord.rasi ~/.local/share/rofi/themes/nord.rasi
+	# GTK theming
+	ln -sfn $(CURDIR)/linux/gtk-3.0 ~/.config/gtk-3.0
+	$(call backup_dotfile,~/.gtkrc-2.0)
+	ln -sfn $(CURDIR)/linux/gtkrc-2.0 ~/.gtkrc-2.0
+	@echo ""
+	@echo "Linux dotfiles installed!"
+	@echo ""
+	@echo "Manual steps:"
+	@echo "  1. Copy linux/slstatus/config.h to slstatus source and rebuild"
+	@echo "  2. Install Nordic GTK theme: https://github.com/EliverLara/Nordic"
+	@echo "  3. Install Papirus icons: papirus-icon-theme"
 
 nixos-%:
 	@[ "$(OS)" = "macos" ] || { echo "macOS only"; exit 1; }

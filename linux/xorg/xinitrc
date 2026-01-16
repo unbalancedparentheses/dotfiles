@@ -1,60 +1,86 @@
-# merge x config
+#!/bin/sh
+# dwm session startup
+
+# Merge Xresources
 xrdb -merge ~/.Xresources
 
-# disable the bell
+# Disable the bell
 xset -b
 
-# set a background - looks for wallpapers in common locations
-if [ -d "$HOME/.config/wallpapers" ]; then
-    feh --bg-max --randomize "$HOME/.config/wallpapers"/*
-elif [ -d "$HOME/dotfiles/wallpapers" ]; then
-    feh --bg-max --randomize "$HOME/dotfiles/wallpapers"/*
-elif [ -d "$HOME/Pictures/Wallpapers" ]; then
-    feh --bg-max --randomize "$HOME/Pictures/Wallpapers"/*
+# Keyboard repeat rate (delay, rate)
+xset r rate 200 50
+
+# Find dotfiles directory
+DOTFILES="$HOME/Desktop/projects/dotfiles"
+[ ! -d "$DOTFILES" ] && DOTFILES="$HOME/dotfiles"
+[ ! -d "$DOTFILES" ] && DOTFILES="$HOME/.dotfiles"
+
+# Set wallpaper
+if command -v feh >/dev/null 2>&1; then
+    for dir in "$DOTFILES/wallpapers" "$HOME/.config/wallpapers" "$HOME/Pictures/Wallpapers"; do
+        if [ -d "$dir" ]; then
+            feh --bg-fill --randomize "$dir"/* &
+            break
+        fi
+    done
 fi
 
-# Use
+# Compositor (transparency, shadows, blur)
+if command -v picom >/dev/null 2>&1; then
+    picom -b &
+fi
+
+# SSH agent
 eval $(ssh-agent)
-export SSH_ASKPASS=gnome-ssh-askpass
-ssh-add < /dev/null
+ssh-add < /dev/null 2>/dev/null
 
-# lock computer via slock
-xautolock -time 5 -locker slock&
+# Screen locker (5 min timeout)
+if command -v slock >/dev/null 2>&1; then
+    xautolock -time 5 -locker slock &
+fi
 
-# automount
-udiskie&
+# Automount USB drives
+if command -v udiskie >/dev/null 2>&1; then
+    udiskie &
+fi
 
-# flux like for linux with Buenos Aires latitude and longitude
-redshift -l -34.603684:-58.381559&
+# Night light - uses LOCATION env var or defaults to Buenos Aires
+# Set LOCATION=lat:lon in your shell config to override
+REDSHIFT_LOC="${LOCATION:--34.60:-58.38}"
+if command -v redshift >/dev/null 2>&1; then
+    redshift -l "$REDSHIFT_LOC" &
+fi
 
-# notifications
-dunst&
+# Notifications
+if command -v dunst >/dev/null 2>&1; then
+    dunst &
+fi
 
-# network
-nm-applet&
+# Network manager applet
+if command -v nm-applet >/dev/null 2>&1; then
+    nm-applet &
+fi
 
-# autocutsel sync betwen primary and clibpoard 
-autocutsel -fork -selection CLIPBOARD
-autocutsel -fork -selection PRIMARY
+# Clipboard sync (primary <-> clipboard)
+if command -v autocutsel >/dev/null 2>&1; then
+    autocutsel -fork -selection CLIPBOARD
+    autocutsel -fork -selection PRIMARY
+fi
 
-# pulseaudio
-pasystray&
+# Audio systray
+if command -v pasystray >/dev/null 2>&1; then
+    pasystray &
+fi
 
-firefox&
-slack&
-spotify&
-telegram-desktop&
+# Battery indicator
+if command -v cbatticon >/dev/null 2>&1; then
+    cbatticon &
+fi
 
-# update status in dwm
-# while true; do
-# BAT=$(acpi | awk '{ print $4 }' | sed s/","//g)
-# CLK=$( date +'%H:%M')
-# xsetroot -name "$BAT | $CLK"
-# sleep 120
-# done &
+# Status bar
+if command -v slstatus >/dev/null 2>&1; then
+    slstatus &
+fi
 
-cbatticon&
-slstatus&
-
-# start dwm
+# Start dwm
 exec dwm
