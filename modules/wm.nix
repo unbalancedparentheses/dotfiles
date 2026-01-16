@@ -23,12 +23,12 @@
 
     # Gaps and padding
     [gaps]
-    inner.horizontal = 0
-    inner.vertical = 0
-    outer.left = 0
-    outer.bottom = 0
-    outer.top = 0
-    outer.right = 0
+    inner.horizontal = 6
+    inner.vertical = 6
+    outer.left = 6
+    outer.bottom = 6
+    outer.top = 6
+    outer.right = 6
 
     # Main keybindings (alt as modifier)
     [mode.main.binding]
@@ -177,11 +177,32 @@
       script="$CONFIG_DIR/plugins/battery.sh" \
       --subscribe battery system_woke power_source_change
 
+    # Right side - CPU
+    sketchybar --add item cpu right \
+      --set cpu \
+      update_freq=3 \
+      icon= \
+      script="$CONFIG_DIR/plugins/cpu.sh"
+
+    # Right side - Network
+    sketchybar --add item network right \
+      --set network \
+      update_freq=3 \
+      icon=󰖩 \
+      script="$CONFIG_DIR/plugins/network.sh"
+
     # Right side - Volume
     sketchybar --add item volume right \
       --set volume \
       script="$CONFIG_DIR/plugins/volume.sh" \
       --subscribe volume volume_change
+
+    # Center - Spotify
+    sketchybar --add item spotify center \
+      --set spotify \
+      update_freq=5 \
+      icon= \
+      script="$CONFIG_DIR/plugins/spotify.sh"
 
     # Initialize
     sketchybar --update
@@ -264,7 +285,49 @@
     '';
   };
 
-  # JankyBorders - Window borders
+  xdg.configFile."sketchybar/plugins/cpu.sh" = {
+    executable = true;
+    text = ''
+      #!/bin/bash
+      CPU=$(top -l 1 | grep -E "^CPU" | grep -Eo '[0-9]+\.[0-9]+%' | head -1 | cut -d% -f1)
+      sketchybar --set $NAME label="''${CPU}%"
+    '';
+  };
+
+  xdg.configFile."sketchybar/plugins/network.sh" = {
+    executable = true;
+    text = ''
+      #!/bin/bash
+      SSID=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | grep -o "SSID: .*" | sed 's/SSID: //')
+      if [ "$SSID" = "" ]; then
+        sketchybar --set $NAME icon=󰖪 label="N/A"
+      else
+        sketchybar --set $NAME icon=󰖩 label="$SSID"
+      fi
+    '';
+  };
+
+  xdg.configFile."sketchybar/plugins/spotify.sh" = {
+    executable = true;
+    text = ''
+      #!/bin/bash
+      PLAYING=$(osascript -e 'tell application "System Events" to (name of processes) contains "Spotify"')
+      if [ "$PLAYING" = "true" ]; then
+        STATE=$(osascript -e 'tell application "Spotify" to player state as string')
+        if [ "$STATE" = "playing" ]; then
+          TRACK=$(osascript -e 'tell application "Spotify" to name of current track as string')
+          ARTIST=$(osascript -e 'tell application "Spotify" to artist of current track as string')
+          sketchybar --set $NAME icon= label="$ARTIST - $TRACK"
+        else
+          sketchybar --set $NAME icon= label="Paused"
+        fi
+      else
+        sketchybar --set $NAME label=""
+      fi
+    '';
+  };
+
+  # JankyBorders - Window borders with glow effect
   xdg.configFile."borders/bordersrc" = {
     executable = true;
     text = ''
@@ -272,10 +335,10 @@
 
       options=(
         style=round
-        width=4.0
+        width=6.0
         hidpi=on
-        active_color=0xff89b4fa
-        inactive_color=0xff313244
+        active_color=0xffcba6f7
+        inactive_color=0x00000000
       )
 
       borders "''${options[@]}"
