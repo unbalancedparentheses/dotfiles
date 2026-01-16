@@ -101,12 +101,12 @@
     enableFishIntegration = true;
     globalConfig = {
       tools = {
-        rust = "stable";
+        rust = "latest";
         go = "latest";
-        python = "3.12";
-        node = "20";
-        erlang = "27";
-        elixir = "1.18";
+        python = "latest";
+        node = "latest";
+        erlang = "latest";
+        elixir = "latest";
         zig = "latest";
         gleam = "latest";
       };
