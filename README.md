@@ -1,8 +1,8 @@
 # Dotfiles
 
-Cross-platform config for **macOS** (nix-darwin) and **Linux** (Home Manager).
+Cross-platform Nix configuration for **macOS** (nix-darwin) and **Linux** (Home Manager).
 
-## Setup
+## Quick Start
 
 **macOS:**
 ```bash
@@ -27,59 +27,136 @@ make clean      # Garbage collect
 make check      # Verify installation
 ```
 
-**Linux dotfiles** (non-NixOS):
+## macOS Window Management
+
+This setup creates a tiling window manager experience on macOS using:
+
+- **AeroSpace** - Tiling window manager (i3/bspwm-like)
+- **SketchyBar** - Custom status bar (replaces menu bar)
+- **JankyBorders** - Active window border highlighting
+
+### AeroSpace Keybindings
+
+| Keys | Action |
+|------|--------|
+| `alt + h/j/k/l` | Focus window (left/down/up/right) |
+| `alt + shift + h/j/k/l` | Move window |
+| `alt + 1-9` | Switch workspace |
+| `alt + shift + 1-9` | Move window to workspace |
+| `alt + enter` | Open Ghostty terminal |
+| `alt + q` | Close window |
+| `alt + f` | Toggle fullscreen |
+| `alt + shift + space` | Toggle floating |
+| `alt + /` | Cycle layouts (tiles) |
+| `alt + ,` | Cycle layouts (accordion) |
+| `alt + -/=` | Resize window |
+| `alt + tab` | Previous workspace |
+| `alt + shift + ;` | Service mode (r=reset, esc=reload) |
+
+### First Run
+
+After installation, start AeroSpace manually:
 ```bash
-make linux-dotfiles   # Symlink xorg, dunst, parcellite
+open -a AeroSpace
 ```
 
-**VMs** (macOS only):
-```bash
-make nixos-{install,run,ssh,clean}     # port 2224
-make openbsd-{install,run,ssh,clean}   # port 2222
-make void-{install,run,gui,ssh,clean}  # port 2223
-```
-
-> **Note:** VM credentials (root:nixos, etc.) are for local testing only. Do not use in production.
+It will auto-start on subsequent logins.
 
 ## What's Included
 
-| Category | Packages |
-|----------|----------|
-| Editor | neovim |
-| Shell | fish, starship, zoxide |
-| Git | git, lazygit, delta, gh, tig |
-| CLI | eza, bat, ripgrep, fd, fzf, jq, tldr |
-| System | htop, btop, dust, tree, wget, tmux |
+### CLI Tools (all platforms)
 
-**macOS extras:** Brave, Firefox, Telegram, Slack, 1Password, Ghostty, Zed, Claude, Spotify, UTM
+| Category | Tools |
+|----------|-------|
+| Editor | neovim |
+| Shell | fish, starship, zoxide, direnv |
+| Git | git, lazygit, delta, gh, tig |
+| Search | ripgrep, fd, fzf |
+| View | eza, bat, glow, tree |
+| System | htop, btop, dust, tmux |
+| Other | jq, tldr, wget, rustup |
+
+### macOS Apps (via Homebrew)
+
+| Category | Apps |
+|----------|------|
+| Window Manager | AeroSpace, SketchyBar, Borders |
+| Browsers | Brave, Firefox |
+| Communication | Telegram, Slack, Zoom, WhatsApp, Signal |
+| Productivity | 1Password, Caffeine, Obsidian |
+| Development | Ghostty, Zed, GitHub Desktop, Claude |
+| Media | Spotify |
+| Utilities | UTM |
+
+### Fonts
+
+JetBrains Mono, Fira Code, Hack (all Nerd Font variants)
+
+## Shell Abbreviations
+
+```
+g=git  ga=git add  gc=git commit  gp=git push  gs=git status  gd=git diff
+lg=lazygit  v=nvim  t=tmux  ta=tmux attach
+ls=eza  ll=eza -l  la=eza -la  lt=eza --tree  cat=bat  cd=z
+```
 
 ## Configuration
 
-Edit `flake.nix`:
+Edit `flake.nix` to customize:
+
 ```nix
 username = "your-username";
 gitName = "Your Name";
 gitEmail = "your@email.com";
 ```
 
-## Fish Abbreviations
-
-`g`=git, `ga`=git add, `gc`=git commit, `gp`=git push, `gs`=git status, `lg`=lazygit, `v`=nvim, `t`=tmux, `ls`=eza, `cat`=bat, `cd`=zoxide
-
 ## Structure
 
 ```
-flake.nix       Main Nix configuration
-Makefile        Build commands
-setup.sh        macOS bootstrap
-linux/          Linux configs (xorg, dunst, parcellite, dwm-patches)
-vms/            VM scripts (nixos, openbsd, void)
-wip/            Work in progress
-wallpapers/     Desktop wallpapers
+flake.nix           Main configuration
+Makefile            Build commands
+setup.sh            macOS bootstrap script
+modules/
+  darwin.nix        macOS system settings, Homebrew, launchd services
+  home.nix          Home Manager entry point
+  packages.nix      CLI packages
+  shell.nix         Fish shell, zoxide, bat, fzf, eza, direnv
+  starship.nix      Prompt configuration
+  git.nix           Git and lazygit config
+  neovim.nix        Neovim configuration
+  tmux.nix          Tmux configuration
+  terminal.nix      Ghostty and Zed settings
+  wm.nix            AeroSpace, SketchyBar, JankyBorders configs
+linux/              Linux-specific configs (xorg, dunst, parcellite)
+vms/                VM scripts (NixOS, OpenBSD, Void)
+wallpapers/         Desktop wallpapers
 ```
+
+## Theme
+
+Nord color scheme throughout (SketchyBar, window borders, terminal).
+
+## Linux
+
+**Non-NixOS systems** - symlink additional configs:
+```bash
+make linux-dotfiles   # xorg, dunst, parcellite
+```
+
+## VMs (macOS only)
+
+```bash
+make nixos-{install,run,gui,ssh,clean}    # port 2224
+make openbsd-{install,run,ssh,clean}      # port 2222
+make void-{install,run,gui,ssh,clean}     # port 2223
+```
+
+VM credentials are for local testing only.
 
 ## References
 
 - [nix-darwin](https://github.com/LnL7/nix-darwin)
 - [Home Manager](https://github.com/nix-community/home-manager)
-- [Nixology](https://www.youtube.com/playlist?list=PLRGI9KQ3_HP_OFRG6R-p4iFgMSK1t5BHs)
+- [AeroSpace](https://github.com/nikitabobko/AeroSpace)
+- [SketchyBar](https://github.com/FelixKratz/SketchyBar)
+- [JankyBorders](https://github.com/FelixKratz/JankyBorders)
