@@ -49,6 +49,9 @@ switch:
 ifeq ($(OS),macos)
 	$(backup_etc_files)
 	sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"
+	@command -v aerospace >/dev/null && aerospace reload-config || true
+	@command -v sketchybar >/dev/null && sketchybar --reload || true
+	@command -v borders >/dev/null && borders & || true
 else
 	home-manager switch --flake .#linux -b backup
 endif
@@ -58,6 +61,9 @@ install:
 ifeq ($(OS),macos)
 	$(backup_etc_files)
 	sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"
+	@command -v aerospace >/dev/null && aerospace reload-config || true
+	@command -v sketchybar >/dev/null && sketchybar --reload || true
+	@command -v borders >/dev/null && borders & || true
 else
 	nix run home-manager -- switch --flake .#linux -b backup
 endif
