@@ -140,10 +140,14 @@ linux-dotfiles:
 	@echo ""
 	@echo "Linux dotfiles installed!"
 	@echo ""
-	@echo "Manual steps:"
-	@echo "  1. Copy linux/slstatus/config.h to slstatus source and rebuild"
-	@echo "  2. Install Nordic GTK theme: https://github.com/EliverLara/Nordic"
-	@echo "  3. Install Papirus icons: papirus-icon-theme"
+	@echo "Manual steps (suckless):"
+	@echo "  1. Copy linux/st/config.h to st source, apply patches, rebuild"
+	@echo "  2. Copy linux/slstatus/config.h to slstatus source, rebuild"
+	@echo "  3. Apply linux/dwm-patches/*.diff to dwm source, rebuild"
+	@echo ""
+	@echo "Theming:"
+	@echo "  4. Install Nordic GTK theme: https://github.com/EliverLara/Nordic"
+	@echo "  5. Install Papirus icons: papirus-icon-theme"
 
 nixos-%:
 	@[ "$(OS)" = "macos" ] || { echo "macOS only"; exit 1; }

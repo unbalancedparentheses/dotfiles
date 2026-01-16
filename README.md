@@ -128,14 +128,15 @@ modules/
   terminal.nix      Ghostty and Zed settings
   wm.nix            AeroSpace, SketchyBar, JankyBorders configs
 linux/
+  st/               Suckless terminal config.h (Nord, recommended patches)
+  slstatus/         Status bar config.h
+  dwm-patches/      Custom dwm patches
   xorg/             Xresources (Nord), xinitrc, fonts.conf
   dunst/            Notification daemon (Nord theme)
   picom/            Compositor (shadows, transparency, rounded corners)
   rofi/             App launcher (Nord theme)
-  slstatus/         Status bar config.h for dwm
   gtk-3.0/          GTK3 settings (Nordic theme)
   parcellite/       Clipboard manager
-  dwm-patches/      Custom dwm patches
 vms/                VM scripts (NixOS, OpenBSD, Void)
 wallpapers/         Desktop wallpapers
 ```
@@ -171,10 +172,14 @@ make linux-dotfiles
 
 ### Manual Steps
 
-1. Build dwm with patches from `linux/dwm-patches/`
-2. Copy `linux/slstatus/config.h` to slstatus source and rebuild
-3. Install [Nordic GTK theme](https://github.com/EliverLara/Nordic)
-4. Install Papirus icons: `papirus-icon-theme`
+**Suckless software** (copy config.h, apply patches, rebuild):
+1. `st` - terminal (see `linux/st/patches.txt` for recommended patches)
+2. `dwm` - apply patches from `linux/dwm-patches/`
+3. `slstatus` - status bar
+
+**Theming:**
+4. Install [Nordic GTK theme](https://github.com/EliverLara/Nordic)
+5. Install Papirus icons: `papirus-icon-theme`
 
 ### Environment Variables
 
@@ -205,10 +210,11 @@ VM credentials are for local testing only.
 - [JankyBorders](https://github.com/FelixKratz/JankyBorders)
 
 **Linux:**
-- [dwm](https://dwm.suckless.org/)
-- [slstatus](https://tools.suckless.org/slstatus/)
-- [picom](https://github.com/yshui/picom)
-- [rofi](https://github.com/davatorium/rofi)
-- [dunst](https://github.com/dunst-project/dunst)
+- [st](https://st.suckless.org/) - terminal
+- [dwm](https://dwm.suckless.org/) - window manager
+- [slstatus](https://tools.suckless.org/slstatus/) - status bar
+- [picom](https://github.com/yshui/picom) - compositor
+- [rofi](https://github.com/davatorium/rofi) - app launcher
+- [dunst](https://github.com/dunst-project/dunst) - notifications
 - [Nordic GTK Theme](https://github.com/EliverLara/Nordic)
 - [Nord Theme](https://www.nordtheme.com/)

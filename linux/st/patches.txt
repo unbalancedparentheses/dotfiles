@@ -1,0 +1,34 @@
+# Recommended st patches
+# Download from: https://st.suckless.org/patches/
+
+# Essential
+scrollback          - scroll through terminal history (Shift+PgUp/PgDn)
+scrollback-mouse    - scroll with mouse wheel
+alpha               - background transparency (set alpha = 0.95 in config.h)
+anysize             - removes inner border gaps
+
+# Visual
+boxdraw             - better rendering of line drawing characters
+bold-is-not-bright  - bold text uses bold font, not bright colors
+ligatures           - font ligature support (for Fira Code, JetBrains Mono)
+
+# Functional
+clipboard           - better clipboard handling
+newterm             - spawn new terminal in current directory (Ctrl+Shift+Enter)
+externalpipe        - pipe terminal contents to external command
+
+# Build order (patches may conflict, apply in this order):
+# 1. scrollback
+# 2. scrollback-mouse
+# 3. alpha
+# 4. anysize
+# 5. boxdraw
+# 6. bold-is-not-bright
+# 7. ligatures (optional)
+
+# Quick setup:
+#   git clone https://git.suckless.org/st
+#   cd st
+#   cp /path/to/dotfiles/linux/st/config.h .
+#   # apply patches with: patch -p1 < patch.diff
+#   sudo make clean install
