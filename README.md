@@ -127,16 +127,11 @@ modules/
   tmux.nix          Tmux configuration
   terminal.nix      Ghostty and Zed settings
   wm.nix            AeroSpace, SketchyBar, JankyBorders configs
-linux/
-  st/               Suckless terminal config.h (Nord, recommended patches)
+  linux.nix         Linux desktop: dunst, picom, rofi, GTK, Xresources, xsession
+linux/              Suckless software configs (require manual build)
+  st/               Terminal config.h + patches.txt
   slstatus/         Status bar config.h
-  dwm-patches/      Custom dwm patches
-  xorg/             Xresources (Nord), xinitrc, fonts.conf
-  dunst/            Notification daemon (Nord theme)
-  picom/            Compositor (shadows, transparency, rounded corners)
-  rofi/             App launcher (Nord theme)
-  gtk-3.0/          GTK3 settings (Nordic theme)
-  parcellite/       Clipboard manager
+  dwm-patches/      Window manager patches
 vms/                VM scripts (NixOS, OpenBSD, Void)
 wallpapers/         Desktop wallpapers
 ```
@@ -149,44 +144,32 @@ Nord color scheme throughout (SketchyBar, window borders, terminal).
 
 A suckless-style desktop with dwm, featuring Nord theme throughout.
 
-### Components
+### Managed by Nix (modules/linux.nix)
 
 | Component | Purpose |
 |-----------|---------|
-| **dwm** | Tiling window manager |
-| **slstatus** | Status bar |
 | **picom** | Compositor (shadows, transparency, rounded corners) |
-| **rofi** | App launcher (replaces dmenu) |
-| **dunst** | Notifications |
-| **feh** | Wallpaper |
-| **redshift** | Night light |
+| **rofi** | App launcher (Nord theme) |
+| **dunst** | Notifications (Nord theme) |
+| **redshift** | Night light (auto-starts) |
+| **GTK** | Nordic theme + Papirus icons |
+| **Xresources** | Nord colors, font rendering |
 
-### Installation
+### Suckless Software (manual build)
 
-On **Void Linux**, configs are auto-installed with `make switch`.
-
-For other distros:
+After `make install`, build the window manager stack:
 ```bash
-make linux-dotfiles
+make suckless   # Clones repos, copies config.h files
 ```
 
-### Manual Steps
-
-**Suckless software** (copy config.h, apply patches, rebuild):
-1. `st` - terminal (see `linux/st/patches.txt` for recommended patches)
-2. `dwm` - apply patches from `linux/dwm-patches/`
-3. `slstatus` - status bar
-
-**Theming:**
-4. Install [Nordic GTK theme](https://github.com/EliverLara/Nordic)
-5. Install Papirus icons: `papirus-icon-theme`
-
-### Environment Variables
-
-Set in your shell config to customize:
+Then apply patches and build each:
 ```bash
-export LOCATION="-34.60:-58.38"  # lat:lon for redshift
+cd /tmp/st && sudo make clean install
+cd /tmp/dwm && sudo make clean install  # apply linux/dwm-patches/ first
+cd /tmp/slstatus && sudo make clean install
 ```
+
+See `linux/st/patches.txt` for recommended st patches.
 
 ## VMs (macOS only)
 
