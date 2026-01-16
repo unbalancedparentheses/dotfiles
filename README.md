@@ -12,17 +12,13 @@ Cross-platform Nix configuration for **macOS** (nix-darwin) and **Linux** (Home 
 **Linux:**
 ```bash
 curl -L https://install.determinate.systems/nix | sh -s -- install
-make install
+make
 ```
 
 ## Commands
 
 ```bash
-make            # Show help
-make install    # First-time installation
-make switch     # Rebuild configuration
-make update     # Update flake inputs
-make upgrade    # Update + switch
+make            # Install/update everything
 make clean      # Garbage collect
 make check      # Verify installation
 ```
@@ -69,12 +65,17 @@ It will auto-start on subsequent logins.
 | Category | Tools |
 |----------|-------|
 | Editors | neovim, emacs |
-| Shell | fish, starship, zoxide, direnv |
+| Shell | fish, starship, zoxide, direnv, atuin |
 | Git | git, lazygit, delta, gh, tig |
 | Search | ripgrep, fd, fzf |
 | View | eza, bat, glow, tree |
 | System | htop, btop, dust, tmux |
-| Other | jq, tldr, wget, rustup |
+| Dev | just, watchexec, hyperfine, tokei, difftastic, sd |
+| Other | jq, tldr, wget, mise |
+
+### Languages (via mise)
+
+rust, go, python, node, erlang, elixir, zig, gleam
 
 ### macOS Apps (via Homebrew)
 
@@ -129,11 +130,11 @@ modules/
   terminal.nix      Ghostty and Zed settings
   wm.nix            AeroSpace, SketchyBar, JankyBorders configs
   linux.nix         Linux desktop: dunst, picom, rofi, GTK, Xresources, xsession
-linux/              Suckless software configs (require manual build)
+linux/              Suckless software configs (auto-built on Linux)
   dwm/              Window manager config.h
   st/               Terminal config.h + patches.txt
   slstatus/         Status bar config.h
-  dwm-patches/      Window manager patches
+  dwm-patches/      Window manager patches (optional)
 vms/                VM scripts (NixOS, OpenBSD, Void)
 wallpapers/         Desktop wallpapers
 ```
@@ -157,21 +158,11 @@ A suckless-style desktop with dwm, featuring Nord theme throughout.
 | **GTK** | Nordic theme + Papirus icons |
 | **Xresources** | Nord colors, font rendering |
 
-### Suckless Software (manual build)
+### Suckless Software (auto-built)
 
-After `make install`, build the window manager stack:
-```bash
-make suckless   # Clones repos, copies config.h files
-```
+`make` automatically clones, configures, and installs dwm, st, and slstatus.
 
-Then apply patches and build each:
-```bash
-cd /tmp/st && sudo make clean install
-cd /tmp/dwm && sudo make clean install  # apply linux/dwm-patches/ first
-cd /tmp/slstatus && sudo make clean install
-```
-
-See `linux/st/patches.txt` for recommended st patches.
+**Optional patches:** See `linux/st/patches.txt` and `linux/dwm-patches/` for enhancements.
 
 ## VMs (macOS only)
 
