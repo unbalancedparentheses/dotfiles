@@ -49,6 +49,9 @@
     NSGlobalDomain.NSAutomaticCapitalizationEnabled = false;
     NSGlobalDomain.NSAutomaticPeriodSubstitutionEnabled = false;
 
+    # Faster animations
+    NSGlobalDomain.NSWindowResizeTime = 0.001;
+
     # Menu bar
     controlcenter.BatteryShowPercentage = true;
 
@@ -69,6 +72,9 @@
 
   system.activationScripts.postActivation.text = ''
     mkdir -p ~/Pictures/Screenshots
+    # Disable window shadows for cleaner tiling look
+    defaults write com.apple.WindowManager HideDesktop -bool true
+    defaults write com.apple.WindowManager StandardHideDesktopIcons -bool true
   '';
 
   # LaunchAgents for window management services
