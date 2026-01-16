@@ -162,8 +162,9 @@ in
         (setq backup-directory-alist `(("." . ,backup-dir)))
         (setq auto-save-file-name-transforms `((".*" ,auto-save-dir t))))
 
-      ;; Dired
-      (setq dired-listing-switches "-alh --group-directories-first")
+      ;; Dired (use BSD-compatible flags on macOS)
+      (setq dired-listing-switches
+            (if (eq system-type 'darwin) "-alh" "-alh --group-directories-first"))
       (setq dired-dwim-target t)
       (setq dired-kill-when-opening-new-dired-buffer t)
       (add-hook 'dired-mode-hook #'nerd-icons-dired-mode)
@@ -436,7 +437,20 @@ in
       ;; Map to treesitter modes when available
       (setq major-mode-remap-alist
             '((bash-mode . bash-ts-mode)
+              (sh-mode . bash-ts-mode)
+              (c-mode . c-ts-mode)
+              (c++-mode . c++-ts-mode)
+              (css-mode . css-ts-mode)
+              (go-mode . go-ts-mode)
+              (java-mode . java-ts-mode)
+              (js-mode . js-ts-mode)
+              (javascript-mode . js-ts-mode)
               (json-mode . json-ts-mode)
+              (python-mode . python-ts-mode)
+              (ruby-mode . ruby-ts-mode)
+              (rust-mode . rust-ts-mode)
+              (toml-mode . toml-ts-mode)
+              (typescript-mode . typescript-ts-mode)
               (yaml-mode . yaml-ts-mode)))
 
       ;; Org mode
