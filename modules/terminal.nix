@@ -5,7 +5,7 @@
   # Ghostty terminal
   xdg.configFile."ghostty/config".text = ''
     font-family = JetBrainsMono Nerd Font
-    font-size = 14
+    font-size = 20
     cursor-style = block
     cursor-style-blink = false
     mouse-hide-while-typing = true
@@ -18,7 +18,7 @@
     command = ${pkgs.fish}/bin/fish
 
     # Transparency and blur
-    background-opacity = 0.9
+    background-opacity = 0.95
     background-blur-radius = 20
   '';
 

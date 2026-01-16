@@ -134,7 +134,6 @@ in
 
       # Productivity
       "1password"
-      "notion"
       "caffeine"
       "obsidian"
 
