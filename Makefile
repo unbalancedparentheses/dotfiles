@@ -51,7 +51,7 @@ ifeq ($(OS),macos)
 	sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"
 	@command -v aerospace >/dev/null && aerospace reload-config || true
 	@command -v sketchybar >/dev/null && sketchybar --reload || true
-	@if command -v borders >/dev/null; then borders &; fi
+	-@command -v borders >/dev/null && (borders &)
 else
 	home-manager switch --flake .#linux -b backup
 endif
@@ -63,7 +63,7 @@ ifeq ($(OS),macos)
 	sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"
 	@command -v aerospace >/dev/null && aerospace reload-config || true
 	@command -v sketchybar >/dev/null && sketchybar --reload || true
-	@if command -v borders >/dev/null; then borders &; fi
+	-@command -v borders >/dev/null && (borders &)
 else
 	nix run home-manager -- switch --flake .#linux -b backup
 endif
