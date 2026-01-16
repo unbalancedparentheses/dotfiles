@@ -3,14 +3,27 @@
 
 {
   servers = with pkgs; [
+    # Core
     lua-language-server
-    nil # Nix
-    rust-analyzer
-    gopls
-    pyright
-    typescript-language-server
-    nodePackages.vscode-langservers-extracted # HTML/CSS/JSON
+    nil                    # Nix
     yaml-language-server
+    nodePackages.vscode-langservers-extracted  # HTML/CSS/JSON
+
+    # Systems
+    rust-analyzer
+    zls                    # Zig
+
+    # Backend
+    gopls
+    erlang-ls
+    elixir-ls
+    # gleam has built-in LSP (gleam lsp)
+
+    # Scripting
+    pyright
+
+    # Frontend
+    typescript-language-server
   ];
 
   tools = with pkgs; [

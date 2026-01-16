@@ -4,21 +4,11 @@ Cross-platform Nix configuration for **macOS** (nix-darwin) and **Linux** (Home 
 
 ## Quick Start
 
-**macOS** (first time):
-```bash
-./setup.sh    # Installs Xcode CLI, Nix, Homebrew, then runs make
-```
-
-**Linux** (first time):
-```bash
-curl -L https://install.determinate.systems/nix | sh -s -- install
-make
-```
-
-**Update** (both platforms):
 ```bash
 make
 ```
+
+That's it. On first run, it installs prerequisites (Xcode CLI, Nix, Homebrew on macOS).
 
 ## macOS Window Management
 
@@ -113,7 +103,6 @@ gitEmail = "your@email.com";
 ```
 flake.nix           Main configuration
 Makefile            Build commands
-setup.sh            macOS bootstrap script
 modules/
   darwin.nix        macOS system settings, Homebrew, launchd services
   home.nix          Home Manager entry point
