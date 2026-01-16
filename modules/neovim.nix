@@ -20,8 +20,9 @@ in
 
       # LSP
       nvim-lspconfig
-      mason-nvim
-      mason-lspconfig-nvim
+
+      # Diagnostics
+      trouble-nvim
 
       # Completion
       nvim-cmp
@@ -184,6 +185,13 @@ in
 
       -- Which-key
       require("which-key").setup()
+
+      -- Trouble (diagnostics)
+      require("trouble").setup()
+      vim.keymap.set("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", { desc = "Diagnostics" })
+      vim.keymap.set("n", "<leader>xd", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", { desc = "Buffer diagnostics" })
+      vim.keymap.set("n", "<leader>xs", "<cmd>Trouble symbols toggle<cr>", { desc = "Symbols" })
+      vim.keymap.set("n", "<leader>xr", "<cmd>Trouble lsp_references toggle<cr>", { desc = "LSP references" })
 
       -- Indent blankline
       require("ibl").setup()
