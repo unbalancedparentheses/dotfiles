@@ -14,11 +14,19 @@
 
   # macOS system preferences
   system.defaults = {
-    # Dock
+    # Dock - completely hidden for tiling WM setup
     dock.autohide = true;
+    dock.autohide-delay = 1000.0;  # 1000s delay = effectively hidden
+    dock.autohide-time-modifier = 0.0;
     dock.mru-spaces = false;
     dock.minimize-to-application = true;
     dock.show-recents = false;
+    dock.launchanim = false;
+    dock.static-only = true;  # Only show running apps
+    dock.tilesize = 32;
+
+    # Menu bar - auto-hide (SketchyBar will replace it)
+    NSGlobalDomain._HIHideMenuBar = true;
 
     # Finder
     finder.AppleShowAllExtensions = true;
@@ -68,7 +76,19 @@
       cleanup = "uninstall";
     };
 
+    taps = [
+      "FelixKratz/formulae"
+      "nikitabobko/tap"
+    ];
+
+    brews = [
+      "sketchybar"
+      "borders"
+    ];
+
     casks = [
+      # Window Management
+      "nikitabobko/tap/aerospace"
       # Browsers
       "brave-browser"
       "firefox"
