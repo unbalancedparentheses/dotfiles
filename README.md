@@ -127,7 +127,15 @@ modules/
   tmux.nix          Tmux configuration
   terminal.nix      Ghostty and Zed settings
   wm.nix            AeroSpace, SketchyBar, JankyBorders configs
-linux/              Linux-specific configs (xorg, dunst, parcellite)
+linux/
+  xorg/             Xresources (Nord), xinitrc, fonts.conf
+  dunst/            Notification daemon (Nord theme)
+  picom/            Compositor (shadows, transparency, rounded corners)
+  rofi/             App launcher (Nord theme)
+  slstatus/         Status bar config.h for dwm
+  gtk-3.0/          GTK3 settings (Nordic theme)
+  parcellite/       Clipboard manager
+  dwm-patches/      Custom dwm patches
 vms/                VM scripts (NixOS, OpenBSD, Void)
 wallpapers/         Desktop wallpapers
 ```
@@ -136,15 +144,43 @@ wallpapers/         Desktop wallpapers
 
 Nord color scheme throughout (SketchyBar, window borders, terminal).
 
-## Linux
+## Linux (dwm setup)
 
-On **Void Linux**, `make switch` automatically symlinks X11 configs (xorg, dunst, parcellite).
+A suckless-style desktop with dwm, featuring Nord theme throughout.
 
-On **NixOS**, these are managed through the NixOS configuration.
+### Components
 
-For other distros, run manually:
+| Component | Purpose |
+|-----------|---------|
+| **dwm** | Tiling window manager |
+| **slstatus** | Status bar |
+| **picom** | Compositor (shadows, transparency, rounded corners) |
+| **rofi** | App launcher (replaces dmenu) |
+| **dunst** | Notifications |
+| **feh** | Wallpaper |
+| **redshift** | Night light |
+
+### Installation
+
+On **Void Linux**, configs are auto-installed with `make switch`.
+
+For other distros:
 ```bash
 make linux-dotfiles
+```
+
+### Manual Steps
+
+1. Build dwm with patches from `linux/dwm-patches/`
+2. Copy `linux/slstatus/config.h` to slstatus source and rebuild
+3. Install [Nordic GTK theme](https://github.com/EliverLara/Nordic)
+4. Install Papirus icons: `papirus-icon-theme`
+
+### Environment Variables
+
+Set in your shell config to customize:
+```bash
+export LOCATION="-34.60:-58.38"  # lat:lon for redshift
 ```
 
 ## VMs (macOS only)
@@ -159,8 +195,20 @@ VM credentials are for local testing only.
 
 ## References
 
+**Nix:**
 - [nix-darwin](https://github.com/LnL7/nix-darwin)
 - [Home Manager](https://github.com/nix-community/home-manager)
+
+**macOS:**
 - [AeroSpace](https://github.com/nikitabobko/AeroSpace)
 - [SketchyBar](https://github.com/FelixKratz/SketchyBar)
 - [JankyBorders](https://github.com/FelixKratz/JankyBorders)
+
+**Linux:**
+- [dwm](https://dwm.suckless.org/)
+- [slstatus](https://tools.suckless.org/slstatus/)
+- [picom](https://github.com/yshui/picom)
+- [rofi](https://github.com/davatorium/rofi)
+- [dunst](https://github.com/dunst-project/dunst)
+- [Nordic GTK Theme](https://github.com/EliverLara/Nordic)
+- [Nord Theme](https://www.nordtheme.com/)
