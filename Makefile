@@ -102,6 +102,13 @@ check:
 	@command -v fd >/dev/null && echo "  ✓ fd" || echo "  ✗ fd"
 	@command -v lazygit >/dev/null && echo "  ✓ lazygit" || echo "  ✗ lazygit"
 	@command -v zoxide >/dev/null && echo "  ✓ zoxide" || echo "  ✗ zoxide"
+	@command -v atuin >/dev/null && echo "  ✓ atuin" || echo "  ✗ atuin"
+	@command -v mise >/dev/null && echo "  ✓ mise" || echo "  ✗ mise"
+	@command -v just >/dev/null && echo "  ✓ just" || echo "  ✗ just"
+	@command -v difft >/dev/null && echo "  ✓ difftastic" || echo "  ✗ difftastic"
+	@command -v sd >/dev/null && echo "  ✓ sd" || echo "  ✗ sd"
+	@command -v hyperfine >/dev/null && echo "  ✓ hyperfine" || echo "  ✗ hyperfine"
+	@command -v tokei >/dev/null && echo "  ✓ tokei" || echo "  ✗ tokei"
 ifeq ($(OS),macos)
 	@echo ""
 	@echo "macOS configs:"
