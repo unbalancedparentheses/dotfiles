@@ -1,6 +1,9 @@
 # Emacs configuration with LSP, Treesitter, and modern packages
 { config, pkgs, lib, ... }:
 
+let
+  lsp = import ./lsp.nix { inherit pkgs; };
+in
 {
   programs.emacs = {
     enable = true;
@@ -429,19 +432,7 @@
       (require 'flycheck-eglot)
       (global-flycheck-eglot-mode 1)
 
-      ;; Treesitter
-      (setq treesit-language-source-alist
-            '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-              (rust "https://github.com/tree-sitter/tree-sitter-rust")
-              (go "https://github.com/tree-sitter/tree-sitter-go")
-              (python "https://github.com/tree-sitter/tree-sitter-python")
-              (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-              (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
-              (json "https://github.com/tree-sitter/tree-sitter-json")
-              (yaml "https://github.com/ikatyang/tree-sitter-yaml")
-              (toml "https://github.com/tree-sitter/tree-sitter-toml")
-              (nix "https://github.com/nix-community/tree-sitter-nix")))
-
+      ;; Treesitter - grammars installed via Nix (treesit-grammars.with-all-grammars)
       ;; Map to treesitter modes when available
       (setq major-mode-remap-alist
             '((bash-mode . bash-ts-mode)
@@ -456,11 +447,12 @@
       (setq org-return-follows-link t)
       (setq org-startup-with-inline-images t)
 
-      ;; Org-roam
+      ;; Org-roam (only if directory exists)
       (require 'org-roam)
       (setq org-roam-directory "~/org-roam")
       (setq org-roam-completion-everywhere t)
-      (org-roam-db-autosync-mode 1)
+      (when (file-directory-p org-roam-directory)
+        (org-roam-db-autosync-mode 1))
       (global-set-key (kbd "C-c n f") 'org-roam-node-find)
       (global-set-key (kbd "C-c n i") 'org-roam-node-insert)
       (global-set-key (kbd "C-c n l") 'org-roam-buffer-toggle)
@@ -483,21 +475,6 @@
     '';
   };
 
-  # LSP servers and tools
-  home.packages = with pkgs; [
-    # LSP servers
-    rust-analyzer
-    gopls
-    nil # Nix
-    pyright
-    typescript-language-server
-    lua-language-server
-    nodePackages.vscode-langservers-extracted
-    yaml-language-server
-
-    # Tools
-    ripgrep
-    fd
-    direnv
-  ];
+  # LSP servers and tools (shared with Neovim)
+  home.packages = lsp.servers ++ lsp.tools;
 }
