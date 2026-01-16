@@ -92,7 +92,7 @@ in
       -- LSP (vim.lsp.config API for Neovim 0.11+)
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-      local servers = { "lua_ls", "nil_ls", "rust_analyzer", "gopls", "pyright", "ts_ls", "html", "cssls", "jsonls" }
+      local servers = { "lua_ls", "nil_ls", "rust_analyzer", "zls", "gopls", "erlangls", "elixirls", "pyright", "ts_ls", "html", "cssls", "jsonls" }
       for _, server in ipairs(servers) do
         vim.lsp.config(server, { capabilities = capabilities })
       end

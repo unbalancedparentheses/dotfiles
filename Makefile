@@ -1,4 +1,4 @@
-.PHONY: help update clean check
+.PHONY: help update clean check _prereqs _suckless
 
 .DEFAULT_GOAL := update
 
@@ -13,19 +13,6 @@ else
     NIX := nix --extra-experimental-features 'nix-command flakes'
 endif
 
-define update_username
-	@sed -i.bak 's/username = "[^"]*";/username = "$(USER)";/' flake.nix && rm -f flake.nix.bak
-endef
-
-define backup_etc_files
-	@for f in /etc/zshenv /etc/zshrc /etc/bashrc /etc/bash.bashrc; do \
-		if [ -f "$$f" ] && [ ! -L "$$f" ]; then \
-			echo "Moving $$f to $$f.before-nix-darwin"; \
-			sudo mv "$$f" "$$f.before-nix-darwin"; \
-		fi; \
-	done
-endef
-
 help:
 	@echo "Dotfiles ($(OS))"
 	@echo ""
@@ -38,11 +25,33 @@ help:
 	@echo "  openbsd-{install,run,ssh,clean}     port 2222"
 	@echo "  void-{install,run,gui,ssh,clean}    port 2223"
 
-update:
-	$(update_username)
+_prereqs:
+ifeq ($(OS),macos)
+	@# Xcode CLI tools
+	@xcode-select -p &>/dev/null || { echo "Installing Xcode CLI tools..."; xcode-select --install; echo "Re-run 'make' after installation completes."; exit 1; }
+	@# Nix
+	@command -v nix >/dev/null || { echo "Installing Nix..."; curl -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm; echo "Restart terminal and re-run 'make'."; exit 1; }
+	@# Homebrew
+	@command -v brew >/dev/null || { echo "Installing Homebrew..."; /bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; eval "$$(/opt/homebrew/bin/brew shellenv)"; }
+else
+	@# Nix
+	@command -v nix >/dev/null || { echo "Install Nix first: curl -L https://install.determinate.systems/nix | sh"; exit 1; }
+endif
+
+update: _prereqs
+	@# Update username
+	@sed -i.bak 's/username = "[^"]*";/username = "$(USER)";/' flake.nix && rm -f flake.nix.bak
+	@# Update flake
 	$(NIX) flake update
 ifeq ($(OS),macos)
-	$(backup_etc_files)
+	@# Backup /etc files
+	@for f in /etc/zshenv /etc/zshrc /etc/bashrc /etc/bash.bashrc; do \
+		if [ -f "$$f" ] && [ ! -L "$$f" ]; then \
+			echo "Moving $$f to $$f.before-nix-darwin"; \
+			sudo mv "$$f" "$$f.before-nix-darwin"; \
+		fi; \
+	done
+	@# Build nix-darwin
 	sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"
 	@pgrep -q AeroSpace && aerospace reload-config || echo "Note: Run 'open -a AeroSpace' to start the window manager"
 	@pgrep -q sketchybar && sketchybar --reload || true
@@ -50,6 +59,7 @@ ifeq ($(OS),macos)
 	@echo "Installing development tools via mise..."
 	@/run/current-system/sw/bin/mise install -y 2>/dev/null || mise install -y 2>/dev/null || echo "Run 'mise install' in a new terminal"
 else
+	@# Build home-manager
 	@command -v home-manager >/dev/null && home-manager switch --flake .#linux -b backup || nix run home-manager -- switch --flake .#linux -b backup
 	@echo ""
 	@echo "Installing development tools via mise..."
