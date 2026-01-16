@@ -11,10 +11,15 @@
     mouse-hide-while-typing = true
     window-padding-x = 10
     window-padding-y = 10
-    window-decoration = true
+    window-decoration = false
     copy-on-select = clipboard
     confirm-close-surface = false
     shell-integration = fish
+    command = fish
+
+    # Transparency and blur
+    background-opacity = 0.9
+    background-blur-radius = 20
   '';
 
   # Zed editor
