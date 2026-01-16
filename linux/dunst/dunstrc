@@ -18,9 +18,10 @@
     transparency = 0
     horizontal_padding = 8
     padding = 8
-    separator_height = 1
+    separator_height = 2
     separator_color = frame
     line_height = 0
+    corner_radius = 5
 
     idle_threshold = 120
     show_age_threshold = 60
@@ -32,21 +33,28 @@
     follow = none
     browser = /usr/bin/firefox -new-tab
 
+    # Font
+    font = JetBrainsMono Nerd Font 10
+
+# Nord theme
 [frame]
-    width = 1
-    color = "#6092BE"
+    width = 2
+    color = "#4c566a"
 
 [urgency_low]
-    background = "#6092BE"
-    foreground = "#FFFFFF"
+    background = "#2e3440"
+    foreground = "#d8dee9"
+    frame_color = "#4c566a"
     timeout = 10
 
 [urgency_normal]
-    background = "#6092BE"
-    foreground = "#FFFFFF"
+    background = "#3b4252"
+    foreground = "#eceff4"
+    frame_color = "#88c0d0"
     timeout = 10
 
 [urgency_critical]
-    background = "#801515"
-    foreground = "#D46A6A"
-    timeout = 10
+    background = "#3b4252"
+    foreground = "#eceff4"
+    frame_color = "#bf616a"
+    timeout = 0

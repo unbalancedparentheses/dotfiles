@@ -1,0 +1,118 @@
+/* Nord theme for Rofi */
+
+* {
+    /* Nord colors */
+    nord0:  #2e3440;
+    nord1:  #3b4252;
+    nord2:  #434c5e;
+    nord3:  #4c566a;
+    nord4:  #d8dee9;
+    nord5:  #e5e9f0;
+    nord6:  #eceff4;
+    nord7:  #8fbcbb;
+    nord8:  #88c0d0;
+    nord9:  #81a1c1;
+    nord10: #5e81ac;
+    nord11: #bf616a;
+    nord12: #d08770;
+    nord13: #ebcb8b;
+    nord14: #a3be8c;
+    nord15: #b48ead;
+
+    /* Theme colors */
+    background:                  @nord0;
+    background-alt:              @nord1;
+    foreground:                  @nord4;
+    selected:                    @nord8;
+    active:                      @nord14;
+    urgent:                      @nord11;
+
+    background-color:            transparent;
+    text-color:                  @foreground;
+
+    margin:                      0;
+    padding:                     0;
+    spacing:                     0;
+}
+
+window {
+    location:                    center;
+    width:                       600px;
+    border:                      2px;
+    border-color:                @nord3;
+    border-radius:               8px;
+    background-color:            @background;
+}
+
+mainbox {
+    padding:                     12px;
+}
+
+inputbar {
+    spacing:                     8px;
+    padding:                     8px;
+    background-color:            @background-alt;
+    border-radius:               6px;
+    children:                    [ prompt, entry ];
+}
+
+prompt {
+    text-color:                  @selected;
+}
+
+entry {
+    placeholder:                 "Search...";
+    placeholder-color:           @nord3;
+}
+
+message {
+    margin:                      12px 0 0;
+    border-radius:               6px;
+    background-color:            @background-alt;
+}
+
+textbox {
+    padding:                     8px;
+}
+
+listview {
+    margin:                      12px 0 0;
+    lines:                       8;
+    columns:                     1;
+    fixed-height:                false;
+}
+
+element {
+    padding:                     8px;
+    spacing:                     8px;
+    border-radius:               6px;
+}
+
+element normal normal {
+    text-color:                  @foreground;
+}
+
+element normal urgent {
+    text-color:                  @urgent;
+}
+
+element normal active {
+    text-color:                  @active;
+}
+
+element selected normal,
+element selected urgent,
+element selected active {
+    background-color:            @selected;
+    text-color:                  @background;
+}
+
+element-icon {
+    size:                        1em;
+    vertical-align:              0.5;
+}
+
+element-text {
+    text-color:                  inherit;
+    vertical-align:              0.5;
+}

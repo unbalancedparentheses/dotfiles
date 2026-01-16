@@ -17,6 +17,7 @@ build.log
 edk2-aarch64-vars.fd
 .http_server.pid
 
-# Build artifacts
-slstatus/
+# Build artifacts (cloned suckless sources)
+/slstatus/
+/dwm/
 tmp-dwm/
