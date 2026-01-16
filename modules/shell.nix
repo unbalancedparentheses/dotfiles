@@ -99,5 +99,18 @@
   programs.mise = {
     enable = true;
     enableFishIntegration = true;
+    globalConfig = {
+      tools = {
+        rust = "stable";
+        go = "latest";
+        python = "3.12";
+        node = "20";
+        # erlang = "26";
+        # elixir = "1.16";
+      };
+      settings = {
+        auto_install = true;
+      };
+    };
   };
 }
