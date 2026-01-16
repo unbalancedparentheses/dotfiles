@@ -14,11 +14,7 @@ else
 endif
 
 define update_username
-	@if [ "$(UNAME)" = "Darwin" ]; then \
-		sed -i '' 's/username = "[^"]*";/username = "$(USER)";/' flake.nix; \
-	else \
-		sed -i 's/username = "[^"]*";/username = "$(USER)";/' flake.nix; \
-	fi
+	@sed -i.bak 's/username = "[^"]*";/username = "$(USER)";/' flake.nix && rm -f flake.nix.bak
 endef
 
 define backup_etc_files

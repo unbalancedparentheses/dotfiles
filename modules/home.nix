@@ -2,7 +2,13 @@
 { config, pkgs, lib, gitName, gitEmail, ... }:
 
 {
-  imports = [ ./emacs.nix ./neovim.nix ];
+  imports = [
+    ./emacs.nix
+    ./neovim.nix
+    ./shell.nix
+    ./starship.nix
+    ./git.nix
+  ];
 
   home.stateVersion = "24.05";
 
@@ -47,125 +53,6 @@
     autosave = "on_focus_change";
     format_on_save = "on";
     inlay_hints = { enabled = true; };
-  };
-
-  # Starship prompt
-  programs.starship = {
-    enable = true;
-    enableFishIntegration = true;
-    settings = {
-      add_newline = true;
-      character = {
-        success_symbol = "[➜](bold green)";
-        error_symbol = "[➜](bold red)";
-      };
-      directory = {
-        truncation_length = 3;
-        truncate_to_repo = true;
-      };
-      git_branch.symbol = " ";
-      git_status = {
-        conflicted = "=";
-        ahead = "⇡\${count}";
-        behind = "⇣\${count}";
-        diverged = "⇕⇡\${ahead_count}⇣\${behind_count}";
-        untracked = "?\${count}";
-        stashed = "$\${count}";
-        modified = "!\${count}";
-        staged = "+\${count}";
-        renamed = "»\${count}";
-        deleted = "✘\${count}";
-      };
-      nix_shell = {
-        symbol = " ";
-        format = "via [$symbol$state]($style) ";
-      };
-    };
-  };
-
-  # Fish shell
-  programs.fish = {
-    enable = true;
-    interactiveShellInit = ''
-      set -g fish_greeting
-      fish_add_path ~/.cargo/bin
-      set -gx PYENV_ROOT $HOME/.pyenv
-      fish_add_path $PYENV_ROOT/bin
-      if command -v pyenv > /dev/null
-        pyenv init - | source
-      end
-      set -gx LC_ALL en_US.UTF-8
-      set -gx LANG en_US.UTF-8
-    '';
-    # Shell abbreviations (expand on space)
-    # File listing: ls, ll (long), la (all), lt (tree)
-    # Git shortcuts: g, ga, gc, gp, gpl, gs, gd, lg (lazygit)
-    # Editors/tools: v (nvim), t (tmux), ta (tmux attach)
-    shellAbbrs = {
-      ls = "eza --icons";
-      ll = "eza -l --icons";
-      la = "eza -la --icons";
-      lt = "eza --tree --icons";
-      cat = "bat";
-      cd = "z";
-      g = "git";
-      ga = "git add";
-      gc = "git commit";
-      gp = "git push";
-      gpl = "git pull";
-      gs = "git status";
-      gd = "git diff";
-      lg = "lazygit";
-      v = "nvim";
-      t = "tmux";
-      ta = "tmux attach";
-    };
-  };
-
-  programs.zoxide = {
-    enable = true;
-    enableFishIntegration = true;
-  };
-
-  programs.bat = {
-    enable = true;
-    config.theme = "TwoDark";
-  };
-
-  # Git
-  programs.git = {
-    enable = true;
-    signing = {
-      key = "~/.ssh/id_ed25519.pub";
-      signByDefault = true;
-    };
-    settings = {
-      user.name = gitName;
-      user.email = gitEmail;
-      init.defaultBranch = "main";
-      push.autoSetupRemote = true;
-      pull.rebase = true;
-      gpg.format = "ssh";
-    };
-  };
-
-  programs.delta = {
-    enable = true;
-    options = {
-      navigate = true;
-      side-by-side = true;
-    };
-  };
-
-  programs.fzf = {
-    enable = true;
-    enableFishIntegration = true;
-  };
-
-  programs.eza = {
-    enable = true;
-    enableFishIntegration = true;
-    icons = "auto";
   };
 
   # Tmux - Terminal multiplexer

@@ -1,6 +1,9 @@
 # Neovim configuration with LSP and Treesitter
 { config, pkgs, lib, ... }:
 
+let
+  lsp = import ./lsp.nix { inherit pkgs; };
+in
 {
   programs.neovim = {
     enable = true;
@@ -49,20 +52,7 @@
       indent-blankline-nvim
     ];
 
-    extraPackages = with pkgs; [
-      # LSP servers
-      lua-language-server
-      nil # Nix
-      rust-analyzer
-      gopls
-      pyright
-      typescript-language-server
-      nodePackages.vscode-langservers-extracted # HTML/CSS/JSON
-
-      # Tools
-      ripgrep
-      fd
-    ];
+    extraPackages = lsp.servers ++ lsp.tools;
 
     extraLuaConfig = ''
       -- Basic settings
