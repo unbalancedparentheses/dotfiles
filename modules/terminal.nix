@@ -20,6 +20,33 @@
     # Transparency and blur
     background-opacity = 0.95
     background-blur-radius = 20
+
+    # Nord color scheme
+    background = 2e3440
+    foreground = d8dee9
+    cursor-color = d8dee9
+    selection-background = 4c566a
+    selection-foreground = d8dee9
+
+    # Normal colors
+    palette = 0=#3b4252
+    palette = 1=#bf616a
+    palette = 2=#a3be8c
+    palette = 3=#ebcb8b
+    palette = 4=#81a1c1
+    palette = 5=#b48ead
+    palette = 6=#88c0d0
+    palette = 7=#e5e9f0
+
+    # Bright colors
+    palette = 8=#4c566a
+    palette = 9=#bf616a
+    palette = 10=#a3be8c
+    palette = 11=#ebcb8b
+    palette = 12=#81a1c1
+    palette = 13=#b48ead
+    palette = 14=#8fbcbb
+    palette = 15=#eceff4
   '';
 
   # Zed editor

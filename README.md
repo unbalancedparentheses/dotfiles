@@ -68,7 +68,7 @@ It will auto-start on subsequent logins.
 
 | Category | Tools |
 |----------|-------|
-| Editor | neovim |
+| Editors | neovim, emacs |
 | Shell | fish, starship, zoxide, direnv |
 | Git | git, lazygit, delta, gh, tig |
 | Search | ripgrep, fd, fzf |
@@ -124,11 +124,13 @@ modules/
   starship.nix      Prompt configuration
   git.nix           Git and lazygit config
   neovim.nix        Neovim configuration
+  emacs.nix         Emacs configuration (evil, eglot, vertico, corfu)
   tmux.nix          Tmux configuration
   terminal.nix      Ghostty and Zed settings
   wm.nix            AeroSpace, SketchyBar, JankyBorders configs
   linux.nix         Linux desktop: dunst, picom, rofi, GTK, Xresources, xsession
 linux/              Suckless software configs (require manual build)
+  dwm/              Window manager config.h
   st/               Terminal config.h + patches.txt
   slstatus/         Status bar config.h
   dwm-patches/      Window manager patches
