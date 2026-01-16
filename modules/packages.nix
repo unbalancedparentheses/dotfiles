@@ -29,6 +29,14 @@
     glow       # Markdown renderer
     rustup     # Rust toolchain manager
     # atuin and mise configured via programs.* in shell.nix
+
+    # Extra utilities
+    just       # Modern command runner (Makefile alternative)
+    watchexec  # Run commands on file changes
+    difftastic # Structural diff (syntax-aware)
+    sd         # Simpler sed
+    hyperfine  # Command benchmarking
+    tokei      # Code statistics
   ];
 
   # macOS only
