@@ -1,4 +1,4 @@
-.PHONY: help install switch update upgrade clean check suckless
+.PHONY: help install update upgrade clean check suckless
 
 .DEFAULT_GOAL := help
 
@@ -30,9 +30,8 @@ help:
 	@echo "Dotfiles ($(OS))"
 	@echo ""
 	@echo "  install   First-time installation"
-	@echo "  switch    Rebuild and switch configuration"
-	@echo "  update    Update flake inputs"
-	@echo "  upgrade   Update and switch"
+	@echo "  update    Rebuild config and install tools"
+	@echo "  upgrade   Update flake inputs + update"
 	@echo "  clean     Garbage collect"
 	@echo "  check     Verify installation"
 	@echo ""
@@ -44,7 +43,7 @@ help:
 	@echo "  openbsd-{install,run,ssh,clean}     port 2222"
 	@echo "  void-{install,run,gui,ssh,clean}    port 2223"
 
-switch:
+update:
 	$(update_username)
 ifeq ($(OS),macos)
 	$(backup_etc_files)
@@ -53,12 +52,12 @@ ifeq ($(OS),macos)
 	@pgrep -q sketchybar && sketchybar --reload || true
 	@echo ""
 	@echo "Installing development tools via mise..."
-	@~/.nix-profile/bin/mise install -y || true
+	@/run/current-system/sw/bin/mise install -y 2>/dev/null || mise install -y 2>/dev/null || echo "Run 'mise install' in a new terminal"
 else
 	home-manager switch --flake .#linux -b backup
 	@echo ""
 	@echo "Installing development tools via mise..."
-	@~/.nix-profile/bin/mise install -y || true
+	@~/.nix-profile/bin/mise install -y 2>/dev/null || mise install -y 2>/dev/null || echo "Run 'mise install' in a new terminal"
 	@echo ""
 	@echo "Run 'make suckless' to build dwm, st, slstatus"
 endif
@@ -76,10 +75,9 @@ else
 	@echo "Run 'make suckless' to build dwm, st, slstatus"
 endif
 
-update:
+upgrade:
 	$(NIX) flake update
-
-upgrade: update switch
+	$(MAKE) update
 
 clean:
 	@if [ "$(OS)" = "macos" ]; then \
