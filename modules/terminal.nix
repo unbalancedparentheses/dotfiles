@@ -6,7 +6,6 @@
   xdg.configFile."ghostty/config".text = ''
     font-family = JetBrainsMono Nerd Font
     font-size = 14
-    theme = catppuccin-mocha
     cursor-style = block
     cursor-style-blink = false
     mouse-hide-while-typing = true
