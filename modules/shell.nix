@@ -105,8 +105,8 @@
         go = "latest";
         python = "3.12";
         node = "20";
-        # erlang = "26";
-        # elixir = "1.16";
+        erlang = "27";
+        elixir = "1.18";
       };
       settings = {
         auto_install = true;
