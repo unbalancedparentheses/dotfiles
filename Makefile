@@ -1,4 +1,4 @@
-.PHONY: help install update clean check suckless
+.PHONY: help update clean check suckless
 
 .DEFAULT_GOAL := update
 
@@ -29,8 +29,7 @@ endef
 help:
 	@echo "Dotfiles ($(OS))"
 	@echo ""
-	@echo "  install   First-time installation"
-	@echo "  update    Update flake, rebuild config, install tools"
+	@echo "  make      Install/update everything"
 	@echo "  clean     Garbage collect"
 	@echo "  check     Verify installation"
 	@echo ""
@@ -54,23 +53,10 @@ ifeq ($(OS),macos)
 	@echo "Installing development tools via mise..."
 	@/run/current-system/sw/bin/mise install -y 2>/dev/null || mise install -y 2>/dev/null || echo "Run 'mise install' in a new terminal"
 else
-	home-manager switch --flake .#linux -b backup
+	@command -v home-manager >/dev/null && home-manager switch --flake .#linux -b backup || nix run home-manager -- switch --flake .#linux -b backup
 	@echo ""
 	@echo "Installing development tools via mise..."
 	@~/.nix-profile/bin/mise install -y 2>/dev/null || mise install -y 2>/dev/null || echo "Run 'mise install' in a new terminal"
-	@echo ""
-	@echo "Run 'make suckless' to build dwm, st, slstatus"
-endif
-
-install:
-	$(update_username)
-ifeq ($(OS),macos)
-	$(backup_etc_files)
-	sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"
-	@pgrep -q AeroSpace && aerospace reload-config || true
-	@pgrep -q sketchybar && sketchybar --reload || true
-else
-	nix run home-manager -- switch --flake .#linux -b backup
 	@echo ""
 	@echo "Run 'make suckless' to build dwm, st, slstatus"
 endif
