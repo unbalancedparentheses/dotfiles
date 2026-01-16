@@ -27,7 +27,7 @@
     tmux       # Terminal multiplexer
     tig        # Git TUI
     glow       # Markdown renderer
-    rustup     # Rust toolchain manager
+    # Rust managed by mise (see .mise.toml)
     # atuin and mise configured via programs.* in shell.nix
 
     # Extra utilities
