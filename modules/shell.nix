@@ -107,6 +107,8 @@
         node = "20";
         erlang = "27";
         elixir = "1.18";
+        zig = "latest";
+        gleam = "latest";
       };
       settings = {
         auto_install = true;
