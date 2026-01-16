@@ -15,7 +15,7 @@
 
     # Backend
     gopls
-    erlang-ls
+    erlang-language-platform  # Erlang (replaces archived erlang-ls)
     elixir-ls
     # gleam has built-in LSP (gleam lsp)
 
