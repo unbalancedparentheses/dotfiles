@@ -23,6 +23,7 @@
     options = {
       navigate = true;
       side-by-side = true;
+      syntax-theme = "Nord";
     };
   };
 }

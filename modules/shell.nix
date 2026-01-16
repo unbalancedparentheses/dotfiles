@@ -49,12 +49,27 @@
 
   programs.bat = {
     enable = true;
-    config.theme = "TwoDark";
+    config.theme = "Nord";
   };
 
   programs.fzf = {
     enable = true;
     enableFishIntegration = true;
+    colors = {
+      # Nord theme
+      fg = "#d8dee9";
+      bg = "#2e3440";
+      hl = "#88c0d0";
+      "fg+" = "#eceff4";
+      "bg+" = "#3b4252";
+      "hl+" = "#88c0d0";
+      info = "#88c0d0";
+      prompt = "#88c0d0";
+      pointer = "#bf616a";
+      marker = "#a3be8c";
+      spinner = "#b48ead";
+      header = "#88c0d0";
+    };
   };
 
   programs.eza = {
