@@ -15,7 +15,7 @@
     copy-on-select = clipboard
     confirm-close-surface = false
     shell-integration = fish
-    command = fish
+    command = ${pkgs.fish}/bin/fish
 
     # Transparency and blur
     background-opacity = 0.9
