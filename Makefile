@@ -1,6 +1,6 @@
 .PHONY: help install update clean check suckless
 
-.DEFAULT_GOAL := help
+.DEFAULT_GOAL := update
 
 UNAME := $(shell uname -s)
 USER  := $(shell whoami)
