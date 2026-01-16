@@ -58,7 +58,6 @@ in
       erlang
       elixir-mode
       zig-mode
-      gleam-mode
 
       # Treesitter
       treesit-grammars.with-all-grammars
@@ -428,7 +427,6 @@ in
       (add-hook 'erlang-mode-hook 'eglot-ensure)
       (add-hook 'elixir-mode-hook 'eglot-ensure)
       (add-hook 'zig-mode-hook 'eglot-ensure)
-      (add-hook 'gleam-mode-hook 'eglot-ensure)
 
       (setq eglot-autoshutdown t)
       (setq eglot-confirm-server-initiated-edits nil)
