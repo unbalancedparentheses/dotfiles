@@ -12,7 +12,7 @@
   outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager }:
   let
     # User configuration
-    username = "federico";
+    username = "unbalancedparen";
     gitName = "Federico Carrone";
     gitEmail = "mail@fcarrone.com";
 
