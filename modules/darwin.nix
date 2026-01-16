@@ -56,6 +56,9 @@
     CustomUserPreferences."com.apple.Siri".SiriPrefStashedStatusMenuVisible = false;
     CustomUserPreferences."com.apple.Siri".VoiceTriggerUserEnabled = false;
 
+    # Ghostty - disable macOS tabbing (conflicts with tiling WM)
+    CustomUserPreferences."com.mitchellh.ghostty".AppleWindowTabbingMode = "manual";
+
     # Screenshots
     screencapture.location = "~/Pictures/Screenshots";
     screencapture.type = "png";
