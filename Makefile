@@ -132,6 +132,7 @@ suckless:
 	@echo ""
 	@# dwm
 	@if [ ! -d /tmp/dwm ]; then git clone https://git.suckless.org/dwm /tmp/dwm; fi
+	@cp $(CURDIR)/linux/dwm/config.h /tmp/dwm/
 	@echo "dwm: Apply patches from linux/dwm-patches/, then run: cd /tmp/dwm && sudo make clean install"
 	@echo ""
 	@# slstatus
