@@ -89,13 +89,13 @@ else
     echo "No conflicting files found (or already symlinks)."
 fi
 
-# Step 6: Build and activate nix-darwin
-echo "=== Step 6: Installing nix-darwin ==="
+# Step 6: Build and activate everything
+echo "=== Step 6: Installing everything ==="
 cd "$SCRIPT_DIR"
-sudo -H /nix/var/nix/profiles/default/bin/nix run nix-darwin -- switch --flake ".#default"
+make
 
 echo ""
 echo "=== Setup Complete ==="
-echo "Run 'make' to see available commands"
+echo "Run 'make' anytime to update"
 echo ""
 echo "Note: If system files were backed up, they are in /etc/nix-darwin-backup-*"
