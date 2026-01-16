@@ -138,9 +138,13 @@ Nord color scheme throughout (SketchyBar, window borders, terminal).
 
 ## Linux
 
-**Non-NixOS systems** - symlink additional configs:
+On **Void Linux**, `make switch` automatically symlinks X11 configs (xorg, dunst, parcellite).
+
+On **NixOS**, these are managed through the NixOS configuration.
+
+For other distros, run manually:
 ```bash
-make linux-dotfiles   # xorg, dunst, parcellite
+make linux-dotfiles
 ```
 
 ## VMs (macOS only)
