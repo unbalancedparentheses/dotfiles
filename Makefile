@@ -117,9 +117,9 @@ ifeq ($(OS),macos)
 else
 	@echo ""
 	@echo "Linux (suckless):"
-	@command -v dwm >/dev/null && echo "  ✓ dwm" || echo "  ✗ dwm (run: make suckless)"
-	@command -v st >/dev/null && echo "  ✓ st" || echo "  ✗ st (run: make suckless)"
-	@command -v slstatus >/dev/null && echo "  ✓ slstatus" || echo "  ✗ slstatus (run: make suckless)"
+	@command -v dwm >/dev/null && echo "  ✓ dwm" || echo "  ✗ dwm"
+	@command -v st >/dev/null && echo "  ✓ st" || echo "  ✗ st"
+	@command -v slstatus >/dev/null && echo "  ✓ slstatus" || echo "  ✗ slstatus"
 	@echo ""
 	@echo "Linux (nix-managed):"
 	@command -v rofi >/dev/null && echo "  ✓ rofi" || echo "  ✗ rofi"
