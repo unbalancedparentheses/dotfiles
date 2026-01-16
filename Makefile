@@ -8,6 +8,8 @@ USER  := $(shell whoami)
 ifeq ($(UNAME),Darwin)
     OS  := macos
     NIX := /nix/var/nix/profiles/default/bin/nix --extra-experimental-features 'nix-command flakes'
+    IS_NIXOS := 0
+    IS_VOID  := 0
 else
     OS  := linux
     NIX := nix --extra-experimental-features 'nix-command flakes'
