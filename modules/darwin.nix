@@ -66,15 +66,27 @@
 
   system.activationScripts.postActivation.text = ''
     mkdir -p ~/Pictures/Screenshots
-
-    # Start window management services
-    if command -v sketchybar &> /dev/null; then
-      brew services start sketchybar 2>/dev/null || true
-    fi
-    if command -v borders &> /dev/null; then
-      brew services start borders 2>/dev/null || true
-    fi
   '';
+
+  # LaunchAgents for window management services
+  launchd.user.agents.sketchybar = {
+    serviceConfig = {
+      ProgramArguments = [ "/opt/homebrew/bin/sketchybar" ];
+      KeepAlive = true;
+      RunAtLoad = true;
+      EnvironmentVariables = {
+        PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
+      };
+    };
+  };
+
+  launchd.user.agents.borders = {
+    serviceConfig = {
+      ProgramArguments = [ "/opt/homebrew/bin/borders" ];
+      KeepAlive = true;
+      RunAtLoad = true;
+    };
+  };
 
   # Homebrew
   homebrew = {
