@@ -51,8 +51,14 @@ ifeq ($(OS),macos)
 	sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"
 	@pgrep -q AeroSpace && aerospace reload-config || echo "Note: Run 'open -a AeroSpace' to start the window manager"
 	@pgrep -q sketchybar && sketchybar --reload || true
+	@echo ""
+	@echo "Installing development tools via mise..."
+	@~/.nix-profile/bin/mise install -y || true
 else
 	home-manager switch --flake .#linux -b backup
+	@echo ""
+	@echo "Installing development tools via mise..."
+	@~/.nix-profile/bin/mise install -y || true
 	@echo ""
 	@echo "Run 'make suckless' to build dwm, st, slstatus"
 endif
