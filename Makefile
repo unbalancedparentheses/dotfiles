@@ -49,9 +49,8 @@ switch:
 ifeq ($(OS),macos)
 	$(backup_etc_files)
 	sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"
-	@command -v aerospace >/dev/null && aerospace reload-config || true
-	@command -v sketchybar >/dev/null && sketchybar --reload || true
-	-@command -v borders >/dev/null && (borders &)
+	@pgrep -q AeroSpace && aerospace reload-config || echo "Note: Run 'open -a AeroSpace' to start the window manager"
+	@pgrep -q sketchybar && sketchybar --reload || true
 else
 	home-manager switch --flake .#linux -b backup
 endif
@@ -61,9 +60,8 @@ install:
 ifeq ($(OS),macos)
 	$(backup_etc_files)
 	sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"
-	@command -v aerospace >/dev/null && aerospace reload-config || true
-	@command -v sketchybar >/dev/null && sketchybar --reload || true
-	-@command -v borders >/dev/null && (borders &)
+	@pgrep -q AeroSpace && aerospace reload-config || true
+	@pgrep -q sketchybar && sketchybar --reload || true
 else
 	nix run home-manager -- switch --flake .#linux -b backup
 endif
