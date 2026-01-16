@@ -1,9 +1,39 @@
 # Linux-specific Home Manager configuration
-# Configures: dunst, picom, rofi, GTK, Xresources
-{ config, pkgs, lib, ... }:
+# Configures: dunst, picom, rofi, GTK, Xresources, xsession
+{ config, pkgs, lib, location ? { latitude = "0"; longitude = "0"; }, theme ? {}, ... }:
 
+let
+  # Fallback theme values if not provided
+  t = theme // {
+    background = theme.background or "#2e3440";
+    backgroundAlt = theme.backgroundAlt or "#3b4252";
+    foreground = theme.foreground or "#d8dee9";
+    foregroundBright = theme.foregroundBright or "#eceff4";
+    accent = theme.accent or "#88c0d0";
+    border = theme.border or "#4c566a";
+    error = theme.error or "#bf616a";
+    success = theme.success or "#a3be8c";
+    warning = theme.warning or "#d08770";
+    font = theme.font or { family = "JetBrainsMono Nerd Font"; size = 11; sizeSmall = 10; };
+    colors = theme.colors or {};
+  };
+  c = t.colors // {
+    nord0 = t.colors.nord0 or "#2e3440";
+    nord1 = t.colors.nord1 or "#3b4252";
+    nord3 = t.colors.nord3 or "#4c566a";
+    nord4 = t.colors.nord4 or "#d8dee9";
+    nord5 = t.colors.nord5 or "#e5e9f0";
+    nord6 = t.colors.nord6 or "#eceff4";
+    nord7 = t.colors.nord7 or "#8fbcbb";
+    nord8 = t.colors.nord8 or "#88c0d0";
+    nord9 = t.colors.nord9 or "#81a1c1";
+    nord11 = t.colors.nord11 or "#bf616a";
+    nord13 = t.colors.nord13 or "#ebcb8b";
+    nord14 = t.colors.nord14 or "#a3be8c";
+    nord15 = t.colors.nord15 or "#b48ead";
+  };
+in
 {
-  # Only apply on Linux
   config = lib.mkIf pkgs.stdenv.isLinux {
 
     # =========================================================================
@@ -42,29 +72,28 @@
           monitor = 0;
           follow = "none";
           browser = "${pkgs.firefox}/bin/firefox -new-tab";
-          font = "JetBrainsMono Nerd Font 10";
+          font = "${t.font.family} ${toString t.font.sizeSmall}";
         };
-        # Nord theme
         frame = {
           width = 2;
-          color = "#4c566a";
+          color = t.border;
         };
         urgency_low = {
-          background = "#2e3440";
-          foreground = "#d8dee9";
-          frame_color = "#4c566a";
+          background = t.background;
+          foreground = t.foreground;
+          frame_color = t.border;
           timeout = 10;
         };
         urgency_normal = {
-          background = "#3b4252";
-          foreground = "#eceff4";
-          frame_color = "#88c0d0";
+          background = t.backgroundAlt;
+          foreground = t.foregroundBright;
+          frame_color = t.accent;
           timeout = 10;
         };
         urgency_critical = {
-          background = "#3b4252";
-          foreground = "#eceff4";
-          frame_color = "#bf616a";
+          background = t.backgroundAlt;
+          foreground = t.foregroundBright;
+          frame_color = t.error;
           timeout = 0;
         };
       };
@@ -77,8 +106,6 @@
       enable = true;
       backend = "glx";
       vSync = true;
-
-      # Shadows
       shadow = true;
       shadowOffsets = [ (-12) (-12) ];
       shadowOpacity = 0.3;
@@ -91,20 +118,14 @@
         "class_g = 'Polybar'"
         "_GTK_FRAME_EXTENTS@:c"
       ];
-
-      # Fading
       fade = true;
       fadeSteps = [ 0.03 0.03 ];
       fadeDelta = 5;
-
-      # Opacity
       inactiveOpacity = 1.0;
       activeOpacity = 1.0;
-
-      # Corners
       settings = {
         shadow-radius = 12;
-        shadow-color = "#2e3440";
+        shadow-color = t.background;
         corner-radius = 8;
         rounded-corners-exclude = [
           "window_type = 'dock'"
@@ -133,18 +154,18 @@
     # =========================================================================
     programs.rofi = {
       enable = true;
-      font = "JetBrainsMono Nerd Font 11";
-      terminal = "${pkgs.st}/bin/st";
+      font = "${t.font.family} ${toString t.font.size}";
+      terminal = "${pkgs.xterm}/bin/xterm";  # fallback; st is built manually
       theme = let
         inherit (config.lib.formats.rasi) mkLiteral;
       in {
         "*" = {
-          background = mkLiteral "#2e3440";
-          background-alt = mkLiteral "#3b4252";
-          foreground = mkLiteral "#d8dee9";
-          selected = mkLiteral "#88c0d0";
-          active = mkLiteral "#a3be8c";
-          urgent = mkLiteral "#bf616a";
+          background = mkLiteral t.background;
+          background-alt = mkLiteral t.backgroundAlt;
+          foreground = mkLiteral t.foreground;
+          selected = mkLiteral t.accent;
+          active = mkLiteral t.success;
+          urgent = mkLiteral t.error;
           background-color = mkLiteral "transparent";
           text-color = mkLiteral "@foreground";
           margin = 0;
@@ -155,13 +176,11 @@
           location = mkLiteral "center";
           width = 600;
           border = 2;
-          border-color = mkLiteral "#4c566a";
+          border-color = mkLiteral t.border;
           border-radius = 8;
           background-color = mkLiteral "@background";
         };
-        mainbox = {
-          padding = 12;
-        };
+        mainbox.padding = 12;
         inputbar = {
           spacing = 8;
           padding = 8;
@@ -169,12 +188,10 @@
           border-radius = 6;
           children = map mkLiteral [ "prompt" "entry" ];
         };
-        prompt = {
-          text-color = mkLiteral "@selected";
-        };
+        prompt.text-color = mkLiteral "@selected";
         entry = {
           placeholder = "Search...";
-          placeholder-color = mkLiteral "#4c566a";
+          placeholder-color = mkLiteral t.border;
         };
         listview = {
           margin = mkLiteral "12px 0 0";
@@ -215,8 +232,8 @@
     gtk = {
       enable = true;
       font = {
-        name = "JetBrainsMono Nerd Font";
-        size = 10;
+        name = t.font.family;
+        size = t.font.sizeSmall;
       };
       theme = {
         name = "Nordic";
@@ -234,9 +251,7 @@
         gtk-application-prefer-dark-theme = true;
         gtk-error-bell = false;
       };
-      gtk2.extraConfig = ''
-        gtk-error-bell = 0
-      '';
+      gtk2.extraConfig = "gtk-error-bell = 0";
     };
 
     # =========================================================================
@@ -251,36 +266,34 @@
       "Xft.hinting" = 1;
       "Xft.antialias" = 1;
       "Xft.rgba" = "rgb";
-
-      # Cursor
       "Xcursor.theme" = "Adwaita";
       "Xcursor.size" = 24;
 
-      # Nord colors for XTerm
-      "XTerm*faceName" = "JetBrainsMono Nerd Font";
-      "XTerm*faceSize" = 11;
+      # XTerm with Nord colors
+      "XTerm*faceName" = t.font.family;
+      "XTerm*faceSize" = t.font.size;
       "XTerm*termName" = "xterm-256color";
       "XTerm*selectToClipboard" = true;
       "XTerm*saveLines" = 10000;
-      "XTerm*background" = "#2e3440";
-      "XTerm*foreground" = "#d8dee9";
-      "XTerm*cursorColor" = "#d8dee9";
-      "XTerm*color0" = "#3b4252";
-      "XTerm*color1" = "#bf616a";
-      "XTerm*color2" = "#a3be8c";
-      "XTerm*color3" = "#ebcb8b";
-      "XTerm*color4" = "#81a1c1";
-      "XTerm*color5" = "#b48ead";
-      "XTerm*color6" = "#88c0d0";
-      "XTerm*color7" = "#e5e9f0";
-      "XTerm*color8" = "#4c566a";
-      "XTerm*color9" = "#bf616a";
-      "XTerm*color10" = "#a3be8c";
-      "XTerm*color11" = "#ebcb8b";
-      "XTerm*color12" = "#81a1c1";
-      "XTerm*color13" = "#b48ead";
-      "XTerm*color14" = "#8fbcbb";
-      "XTerm*color15" = "#eceff4";
+      "XTerm*background" = c.nord0;
+      "XTerm*foreground" = c.nord4;
+      "XTerm*cursorColor" = c.nord4;
+      "XTerm*color0" = c.nord1;
+      "XTerm*color1" = c.nord11;
+      "XTerm*color2" = c.nord14;
+      "XTerm*color3" = c.nord13;
+      "XTerm*color4" = c.nord9;
+      "XTerm*color5" = c.nord15;
+      "XTerm*color6" = c.nord8;
+      "XTerm*color7" = c.nord5;
+      "XTerm*color8" = c.nord3;
+      "XTerm*color9" = c.nord11;
+      "XTerm*color10" = c.nord14;
+      "XTerm*color11" = c.nord13;
+      "XTerm*color12" = c.nord9;
+      "XTerm*color13" = c.nord15;
+      "XTerm*color14" = c.nord7;
+      "XTerm*color15" = c.nord6;
     };
 
     # =========================================================================
@@ -288,19 +301,14 @@
     # =========================================================================
     services.redshift = {
       enable = true;
-      latitude = "-34.60";
-      longitude = "-58.38";
+      latitude = location.latitude;
+      longitude = location.longitude;
       temperature = {
         day = 6500;
         night = 3500;
       };
       tray = true;
     };
-
-    # =========================================================================
-    # Fontconfig
-    # =========================================================================
-    fonts.fontconfig.enable = true;
 
     # =========================================================================
     # X Session
@@ -350,35 +358,5 @@
       '';
       windowManager.command = "dwm";
     };
-
-    # =========================================================================
-    # Packages needed for the X session
-    # =========================================================================
-    home.packages = with pkgs; [
-      # Suckless (user builds with custom config)
-      # dwm slstatus st - build manually via: make suckless
-
-      # X utilities
-      xorg.xsetroot
-      xorg.xrdb
-      xorg.xset
-      xclip
-      xsel
-
-      # Desktop utilities
-      feh            # wallpaper
-      slock          # screen lock
-      xautolock      # auto lock
-      udiskie        # automount
-      autocutsel     # clipboard sync
-      cbatticon      # battery icon
-      pasystray      # audio systray
-      networkmanagerapplet
-
-      # Theming
-      nordic         # GTK theme
-      papirus-icon-theme
-      adwaita-icon-theme  # cursor theme
-    ];
   };
 }

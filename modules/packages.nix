@@ -36,6 +36,31 @@
     expect     # For automated VM installation
   ];
 
+  # Linux only (X11 desktop utilities)
+  linux = with pkgs; [
+    # X utilities
+    xorg.xsetroot
+    xorg.xrdb
+    xorg.xset
+    xclip
+    xsel
+
+    # Desktop utilities
+    feh            # wallpaper
+    slock          # screen lock
+    xautolock      # auto lock
+    udiskie        # automount
+    autocutsel     # clipboard sync
+    cbatticon      # battery icon
+    pasystray      # audio systray
+    networkmanagerapplet
+
+    # Theming
+    nordic         # GTK theme
+    papirus-icon-theme
+    adwaita-icon-theme
+  ];
+
   # Linux only (fonts via nix)
   linuxFonts = with pkgs; [
     nerd-fonts.jetbrains-mono
