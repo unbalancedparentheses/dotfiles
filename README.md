@@ -4,23 +4,20 @@ Cross-platform Nix configuration for **macOS** (nix-darwin) and **Linux** (Home 
 
 ## Quick Start
 
-**macOS:**
+**macOS** (first time):
 ```bash
-./setup.sh
+./setup.sh    # Installs Xcode CLI, Nix, Homebrew, then runs make
 ```
 
-**Linux:**
+**Linux** (first time):
 ```bash
 curl -L https://install.determinate.systems/nix | sh -s -- install
 make
 ```
 
-## Commands
-
+**Update** (both platforms):
 ```bash
-make            # Install/update everything
-make clean      # Garbage collect
-make check      # Verify installation
+make
 ```
 
 ## macOS Window Management
