@@ -11,6 +11,9 @@ ifeq ($(UNAME),Darwin)
 else
     OS  := linux
     NIX := nix --extra-experimental-features 'nix-command flakes'
+    # Detect Linux distro
+    IS_NIXOS := $(shell [ -f /etc/NIXOS ] && echo 1 || echo 0)
+    IS_VOID  := $(shell [ -f /etc/void-release ] && echo 1 || echo 0)
 endif
 
 define update_username
@@ -36,7 +39,7 @@ help:
 	@echo "  clean     Garbage collect"
 	@echo "  check     Verify installation"
 	@echo ""
-	@echo "Linux:"
+	@echo "Linux extras (auto-run on Void, manual otherwise):"
 	@echo "  linux-dotfiles  Symlink xorg, dunst, parcellite configs"
 	@echo ""
 	@echo "VMs (macOS only):"
@@ -53,6 +56,9 @@ ifeq ($(OS),macos)
 	@pgrep -q sketchybar && sketchybar --reload || true
 else
 	home-manager switch --flake .#linux -b backup
+ifeq ($(IS_VOID),1)
+	@$(MAKE) linux-dotfiles
+endif
 endif
 
 install:
@@ -64,6 +70,9 @@ ifeq ($(OS),macos)
 	@pgrep -q sketchybar && sketchybar --reload || true
 else
 	nix run home-manager -- switch --flake .#linux -b backup
+ifeq ($(IS_VOID),1)
+	@$(MAKE) linux-dotfiles
+endif
 endif
 
 update:
