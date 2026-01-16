@@ -99,10 +99,6 @@
     # if.app-id = 'com.brave.Browser'
     # run = 'move-node-to-workspace 1'
 
-    # Prevent AeroSpace from tiling Ghostty tabs as separate windows
-    [[on-window-detected]]
-    if.app-id = 'com.mitchellh.ghostty'
-    run = ['layout floating']
   '';
 
   # SketchyBar - Status bar
