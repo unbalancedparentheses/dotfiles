@@ -1,4 +1,4 @@
-.PHONY: help install update upgrade clean check suckless
+.PHONY: help install update clean check suckless
 
 .DEFAULT_GOAL := help
 
@@ -30,8 +30,7 @@ help:
 	@echo "Dotfiles ($(OS))"
 	@echo ""
 	@echo "  install   First-time installation"
-	@echo "  update    Rebuild config and install tools"
-	@echo "  upgrade   Update flake inputs + update"
+	@echo "  update    Update flake, rebuild config, install tools"
 	@echo "  clean     Garbage collect"
 	@echo "  check     Verify installation"
 	@echo ""
@@ -45,6 +44,7 @@ help:
 
 update:
 	$(update_username)
+	$(NIX) flake update
 ifeq ($(OS),macos)
 	$(backup_etc_files)
 	sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"
@@ -74,10 +74,6 @@ else
 	@echo ""
 	@echo "Run 'make suckless' to build dwm, st, slstatus"
 endif
-
-upgrade:
-	$(NIX) flake update
-	$(MAKE) update
 
 clean:
 	@if [ "$(OS)" = "macos" ]; then \
