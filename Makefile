@@ -1,4 +1,4 @@
-.PHONY: help install switch update upgrade clean check linux-dotfiles
+.PHONY: help install switch update upgrade clean check suckless
 
 .DEFAULT_GOAL := help
 
@@ -8,14 +8,9 @@ USER  := $(shell whoami)
 ifeq ($(UNAME),Darwin)
     OS  := macos
     NIX := /nix/var/nix/profiles/default/bin/nix --extra-experimental-features 'nix-command flakes'
-    IS_NIXOS := 0
-    IS_VOID  := 0
 else
     OS  := linux
     NIX := nix --extra-experimental-features 'nix-command flakes'
-    # Detect Linux distro
-    IS_NIXOS := $(shell [ -f /etc/NIXOS ] && echo 1 || echo 0)
-    IS_VOID  := $(shell [ -f /etc/void-release ] && echo 1 || echo 0)
 endif
 
 define update_username
@@ -41,8 +36,8 @@ help:
 	@echo "  clean     Garbage collect"
 	@echo "  check     Verify installation"
 	@echo ""
-	@echo "Linux extras (auto-run on Void, manual otherwise):"
-	@echo "  linux-dotfiles  Symlink xorg, dunst, parcellite configs"
+	@echo "Linux (suckless):"
+	@echo "  suckless  Clone and setup dwm, st, slstatus"
 	@echo ""
 	@echo "VMs (macOS only):"
 	@echo "  nixos-{install,run,gui,ssh,clean}   port 2224"
@@ -58,9 +53,8 @@ ifeq ($(OS),macos)
 	@pgrep -q sketchybar && sketchybar --reload || true
 else
 	home-manager switch --flake .#linux -b backup
-ifeq ($(IS_VOID),1)
-	@$(MAKE) linux-dotfiles
-endif
+	@echo ""
+	@echo "Run 'make suckless' to build dwm, st, slstatus"
 endif
 
 install:
@@ -72,9 +66,8 @@ ifeq ($(OS),macos)
 	@pgrep -q sketchybar && sketchybar --reload || true
 else
 	nix run home-manager -- switch --flake .#linux -b backup
-ifeq ($(IS_VOID),1)
-	@$(MAKE) linux-dotfiles
-endif
+	@echo ""
+	@echo "Run 'make suckless' to build dwm, st, slstatus"
 endif
 
 update:
@@ -107,47 +100,24 @@ check:
 	@[ -f ~/.config/ghostty/config ] && echo "✓ ghostty config" || echo "✗ ghostty config"
 	@[ -f ~/.config/zed/settings.json ] && echo "✓ zed config" || echo "✗ zed config"
 
-define backup_dotfile
-	@if [ -f "$(1)" ] && [ ! -L "$(1)" ]; then \
-		echo "Backing up $(1) to $(1).backup"; \
-		mv "$(1)" "$(1).backup"; \
-	fi
-endef
-
-linux-dotfiles:
-	@echo "Installing Linux dotfiles..."
-	mkdir -p ~/.config ~/.local/share/rofi/themes
-	# Xorg
-	$(call backup_dotfile,~/.Xresources)
-	$(call backup_dotfile,~/.fonts.conf)
-	$(call backup_dotfile,~/.xinitrc)
-	ln -sfn $(CURDIR)/linux/xorg/Xresources ~/.Xresources
-	ln -sfn $(CURDIR)/linux/xorg/fonts.conf ~/.fonts.conf
-	ln -sfn $(CURDIR)/linux/xorg/xinitrc ~/.xinitrc
-	# Notifications
-	ln -sfn $(CURDIR)/linux/dunst ~/.config/dunst
-	# Clipboard
-	ln -sfn $(CURDIR)/linux/parcellite ~/.config/parcellite
-	# Compositor
-	ln -sfn $(CURDIR)/linux/picom ~/.config/picom
-	# App launcher
-	ln -sfn $(CURDIR)/linux/rofi ~/.config/rofi
-	ln -sfn $(CURDIR)/linux/rofi/nord.rasi ~/.local/share/rofi/themes/nord.rasi
-	# GTK theming
-	ln -sfn $(CURDIR)/linux/gtk-3.0 ~/.config/gtk-3.0
-	$(call backup_dotfile,~/.gtkrc-2.0)
-	ln -sfn $(CURDIR)/linux/gtkrc-2.0 ~/.gtkrc-2.0
+suckless:
+	@echo "Building suckless software (st, dwm, slstatus)..."
 	@echo ""
-	@echo "Linux dotfiles installed!"
+	@# st
+	@if [ ! -d /tmp/st ]; then git clone https://git.suckless.org/st /tmp/st; fi
+	@cp $(CURDIR)/linux/st/config.h /tmp/st/
+	@echo "st: Apply patches from linux/st/patches.txt, then run: cd /tmp/st && sudo make clean install"
 	@echo ""
-	@echo "Manual steps (suckless):"
-	@echo "  1. Copy linux/st/config.h to st source, apply patches, rebuild"
-	@echo "  2. Copy linux/slstatus/config.h to slstatus source, rebuild"
-	@echo "  3. Apply linux/dwm-patches/*.diff to dwm source, rebuild"
+	@# dwm
+	@if [ ! -d /tmp/dwm ]; then git clone https://git.suckless.org/dwm /tmp/dwm; fi
+	@echo "dwm: Apply patches from linux/dwm-patches/, then run: cd /tmp/dwm && sudo make clean install"
 	@echo ""
-	@echo "Theming:"
-	@echo "  4. Install Nordic GTK theme: https://github.com/EliverLara/Nordic"
-	@echo "  5. Install Papirus icons: papirus-icon-theme"
+	@# slstatus
+	@if [ ! -d /tmp/slstatus ]; then git clone https://git.suckless.org/slstatus /tmp/slstatus; fi
+	@cp $(CURDIR)/linux/slstatus/config.h /tmp/slstatus/
+	@echo "slstatus: cd /tmp/slstatus && sudo make clean install"
+	@echo ""
+	@echo "All configs copied. Apply patches and build each tool."
 
 nixos-%:
 	@[ "$(OS)" = "macos" ] || { echo "macOS only"; exit 1; }
