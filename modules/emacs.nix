@@ -55,6 +55,10 @@ in
       markdown-mode
       web-mode
       dockerfile-mode
+      erlang
+      elixir-mode
+      zig-mode
+      gleam-mode
 
       # Treesitter
       treesit-grammars.with-all-grammars
@@ -421,6 +425,10 @@ in
       (add-hook 'python-mode-hook 'eglot-ensure)
       (add-hook 'lua-mode-hook 'eglot-ensure)
       (add-hook 'web-mode-hook 'eglot-ensure)
+      (add-hook 'erlang-mode-hook 'eglot-ensure)
+      (add-hook 'elixir-mode-hook 'eglot-ensure)
+      (add-hook 'zig-mode-hook 'eglot-ensure)
+      (add-hook 'gleam-mode-hook 'eglot-ensure)
 
       (setq eglot-autoshutdown t)
       (setq eglot-confirm-server-initiated-edits nil)
