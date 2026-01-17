@@ -30,7 +30,7 @@ in
     inner.vertical = 2
     outer.left = 6
     outer.bottom = 2
-    outer.top = 32
+    outer.top = 36
     outer.right = 6
 
     # Main keybindings (alt as modifier)
@@ -166,7 +166,7 @@ in
       height=28 \
       position=top \
       sticky=on \
-      y_offset=2 \
+      y_offset=6 \
       margin=6 \
       padding_left=6 \
       padding_right=6 \
