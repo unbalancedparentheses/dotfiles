@@ -24,13 +24,13 @@ in
       '${brewPrefix}/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE && ~/.config/sketchybar/plugins/spaces_update.sh'
     ]
 
-    # Gaps and padding (48px top for floating bar + gap)
+    # Gaps and padding
     [gaps]
     inner.horizontal = 8
     inner.vertical = 8
     outer.left = 8
     outer.bottom = 8
-    outer.top = 42
+    outer.top = 40
     outer.right = 8
 
     # Main keybindings (alt as modifier)
@@ -166,7 +166,7 @@ in
       height=32 \
       position=top \
       sticky=on \
-      y_offset=8 \
+      y_offset=4 \
       margin=8 \
       padding_left=8 \
       padding_right=8 \
@@ -496,8 +496,8 @@ in
     executable = true;
     text = ''
       #!/bin/bash
-      SSID=$(ipconfig getsummary en0 2>/dev/null | awk -F': ' '/SSID/ {print $2}')
-      if [ -z "$SSID" ]; then
+      SSID=$(networksetup -getairportnetwork en0 2>/dev/null | sed 's/Current Wi-Fi Network: //')
+      if [ -z "$SSID" ] || [ "$SSID" = "You are not associated with an AirPort network." ]; then
         sketchybar --set $NAME icon=󰖪 icon.color=0xff565f89 label=""
       else
         sketchybar --set $NAME icon=󰖩 icon.color=0xff9ece6a label="$SSID"
