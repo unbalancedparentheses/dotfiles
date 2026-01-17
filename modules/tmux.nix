@@ -39,16 +39,16 @@
 
       bind c new-window -c "#{pane_current_path}"
 
-      # Nord theme
+      # Tokyo Night theme
       set -g status-position top
-      set -g status-style 'bg=#2e3440 fg=#d8dee9'
-      set -g status-left '#[fg=#88c0d0,bold] #S '
-      set -g status-right '#[fg=#4c566a] %Y-%m-%d %H:%M '
+      set -g status-style 'bg=#1a1b26 fg=#c0caf5'
+      set -g status-left '#[fg=#7dcfff,bold] #S '
+      set -g status-right '#[fg=#565f89] %Y-%m-%d %H:%M '
       set -g status-left-length 50
-      set -g window-status-current-format '#[fg=#88c0d0,bold] #I:#W '
-      set -g window-status-format '#[fg=#4c566a] #I:#W '
-      set -g pane-border-style 'fg=#4c566a'
-      set -g pane-active-border-style 'fg=#88c0d0'
+      set -g window-status-current-format '#[fg=#7dcfff,bold] #I:#W '
+      set -g window-status-format '#[fg=#565f89] #I:#W '
+      set -g pane-border-style 'fg=#3b4261'
+      set -g pane-active-border-style 'fg=#7dcfff'
       set -ag terminal-overrides ",xterm-256color:RGB"
     '';
   };
