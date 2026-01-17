@@ -13,7 +13,7 @@ in
 
     plugins = with pkgs.vimPlugins; [
       # Theme
-      catppuccin-nvim
+      tokyonight-nvim
 
       # Treesitter
       nvim-treesitter.withAllGrammars
@@ -80,8 +80,8 @@ in
       vim.g.mapleader = " "
 
       -- Theme
-      require("catppuccin").setup({ flavour = "mocha" })
-      vim.cmd.colorscheme "catppuccin"
+      require("tokyonight").setup({ style = "night" })
+      vim.cmd.colorscheme "tokyonight"
 
       -- Treesitter (grammars installed via Nix)
       vim.treesitter.language.register("bash", "sh")
@@ -174,7 +174,7 @@ in
 
       -- Lualine
       require("lualine").setup({
-        options = { theme = "catppuccin" }
+        options = { theme = "tokyonight" }
       })
 
       -- Comment

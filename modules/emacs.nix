@@ -196,7 +196,7 @@ in
 
       ;; Theme
       (require 'doom-themes)
-      (load-theme 'doom-one t)
+      (load-theme 'doom-tokyo-night t)
       (doom-themes-org-config)
       (doom-themes-treemacs-config)
 
