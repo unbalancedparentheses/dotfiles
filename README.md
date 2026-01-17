@@ -127,7 +127,9 @@ wallpapers/         Desktop wallpapers
 
 ## Theme
 
-Nord color scheme throughout (SketchyBar, window borders, terminal).
+**macOS:** Tokyo Night color scheme throughout (SketchyBar, window borders, terminal, editors).
+
+**Linux:** Nord color scheme throughout.
 
 ## Linux (dwm setup)
 
@@ -170,6 +172,7 @@ VM credentials are for local testing only.
 - [AeroSpace](https://github.com/nikitabobko/AeroSpace)
 - [SketchyBar](https://github.com/FelixKratz/SketchyBar)
 - [JankyBorders](https://github.com/FelixKratz/JankyBorders)
+- [Tokyo Night](https://github.com/enkia/tokyo-night-vscode-theme)
 
 **Linux:**
 - [st](https://st.suckless.org/) - terminal

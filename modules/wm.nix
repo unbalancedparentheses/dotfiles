@@ -26,12 +26,12 @@ in
 
     # Gaps and padding
     [gaps]
-    inner.horizontal = 6
-    inner.vertical = 2
-    outer.left = 6
-    outer.bottom = 2
-    outer.top = 12
-    outer.right = 6
+    inner.horizontal = 8
+    inner.vertical = 4
+    outer.left = 8
+    outer.bottom = 4
+    outer.top = 16
+    outer.right = 8
 
     # Main keybindings (alt as modifier)
     [mode.main.binding]
@@ -209,28 +209,28 @@ in
 
     # Transparent bar with offset for floating islands
     sketchybar --bar \
-      height=28 \
+      height=32 \
       position=top \
       sticky=on \
-      y_offset=6 \
-      margin=6 \
-      padding_left=6 \
-      padding_right=6 \
+      y_offset=8 \
+      margin=8 \
+      padding_left=8 \
+      padding_right=8 \
       color=$BAR_COLOR \
       shadow=off
 
-    # Default item properties
+    # Default item properties - SF Pro for native macOS icons
     sketchybar --default \
-      icon.font="JetBrainsMono Nerd Font:Bold:14.0" \
+      icon.font="SF Pro:Semibold:15.0" \
       icon.color=$ICON_COLOR \
-      icon.padding_left=8 \
-      icon.padding_right=4 \
-      label.font="JetBrainsMono Nerd Font:Medium:13.0" \
+      icon.padding_left=12 \
+      icon.padding_right=6 \
+      label.font="SF Pro:Medium:13.0" \
       label.color=$LABEL_COLOR \
-      label.padding_left=4 \
-      label.padding_right=8 \
+      label.padding_left=6 \
+      label.padding_right=12 \
       background.color=$TRANSPARENT \
-      background.height=24 \
+      background.height=26 \
       popup.background.color=$POPUP_BG \
       popup.background.corner_radius=12 \
       popup.background.border_width=2 \
@@ -241,11 +241,11 @@ in
     # Apple logo (click to open System Settings)
     sketchybar --add item apple left \
       --set apple \
-      icon= \
-      icon.font="JetBrainsMono Nerd Font:Bold:16.0" \
+      icon=􀣺 \
+      icon.font="SF Pro:Bold:16.0" \
       icon.color=$ACCENT \
-      icon.padding_left=12 \
-      icon.padding_right=8 \
+      icon.padding_left=14 \
+      icon.padding_right=10 \
       label.drawing=off \
       background.drawing=off \
       click_script="open -a 'System Settings'"
@@ -257,14 +257,15 @@ in
       sketchybar --add item space.$sid left \
         --set space.$sid \
         icon="$sid" \
-        icon.padding_left=10 \
-        icon.padding_right=10 \
+        icon.font="SF Pro:Bold:12.0" \
+        icon.padding_left=12 \
+        icon.padding_right=12 \
         icon.color=$GREY \
         icon.highlight_color=$ACCENT \
         label.drawing=off \
         background.color=$TRANSPARENT \
-        background.corner_radius=6 \
-        background.height=22 \
+        background.corner_radius=8 \
+        background.height=24 \
         background.drawing=off \
         drawing=off \
         click_script="aerospace workspace $sid" \
@@ -276,9 +277,11 @@ in
     sketchybar --add item front_app left \
       --set front_app \
       icon.drawing=on \
-      icon.font="sketchybar-app-font:Regular:14.0" \
-      label.font="JetBrainsMono Nerd Font:Bold:13.0" \
-      label.padding_right=12 \
+      icon.font="sketchybar-app-font:Regular:15.0" \
+      icon.padding_left=8 \
+      label.font="SF Pro:Semibold:13.0" \
+      label.padding_left=8 \
+      label.padding_right=14 \
       script="$CONFIG_DIR/plugins/front_app.sh" \
       --subscribe front_app front_app_switched
 
@@ -286,8 +289,8 @@ in
     sketchybar --add bracket left_island apple '/space\..*/' front_app \
       --set left_island \
       background.color=$ISLAND_BG \
-      background.corner_radius=10 \
-      background.height=28 \
+      background.corner_radius=12 \
+      background.height=32 \
       background.border_width=1 \
       background.border_color=$ISLAND_BORDER
 
@@ -297,9 +300,10 @@ in
     sketchybar --add item clock right \
       --set clock \
       update_freq=30 \
-      icon= \
+      icon=􀐫 \
       icon.color=$PINK \
-      icon.padding_left=12 \
+      icon.padding_left=14 \
+      label.padding_right=14 \
       script="$CONFIG_DIR/plugins/clock.sh" \
       click_script="open -a Calendar"
 
@@ -322,7 +326,7 @@ in
     sketchybar --add item wifi right \
       --set wifi \
       update_freq=5 \
-      icon=󰖩 \
+      icon=􀙇 \
       icon.color=$GREEN \
       label.drawing=on \
       script="$CONFIG_DIR/plugins/wifi.sh" \
@@ -332,18 +336,17 @@ in
     sketchybar --add item cpu right \
       --set cpu \
       update_freq=5 \
-      icon= \
+      icon=􀫥 \
       icon.color=$CYAN \
-      label.padding_right=12 \
       script="$CONFIG_DIR/plugins/cpu.sh" \
       click_script="open -a 'Activity Monitor'"
 
     # Media (in right island, click to play/pause)
     sketchybar --add item media right \
       --set media \
-      icon= \
+      icon=􀑪 \
       icon.color=$GREEN \
-      icon.padding_left=12 \
+      icon.padding_left=14 \
       label.max_chars=30 \
       scroll_texts=on \
       update_freq=3 \
@@ -355,8 +358,8 @@ in
     sketchybar --add bracket right_island media cpu wifi volume battery clock \
       --set right_island \
       background.color=$ISLAND_BG \
-      background.corner_radius=10 \
-      background.height=28 \
+      background.corner_radius=12 \
+      background.height=32 \
       background.border_width=1 \
       background.border_color=$ISLAND_BORDER
 
@@ -381,7 +384,8 @@ in
             icon.highlight=on \
             icon.color=0xff7dcfff \
             background.drawing=on \
-            background.color=0x307dcfff \
+            background.color=0x257dcfff \
+            background.corner_radius=8 \
             background.border_width=1 \
             background.border_color=0x807dcfff
         else
@@ -451,7 +455,8 @@ in
               icon.highlight=on \
               icon.color=0xff7dcfff \
               background.drawing=on \
-              background.color=0x307dcfff \
+              background.color=0x257dcfff \
+              background.corner_radius=8 \
               background.border_width=1 \
               background.border_color=0x807dcfff
           else
@@ -496,22 +501,22 @@ in
       CHARGING=$(pmset -g batt | grep 'AC Power')
 
       if [ "$CHARGING" != "" ]; then
-        ICON="󰂄"
+        ICON="􀢋"
         COLOR=0xff9ece6a  # green
       elif [ "$PERCENTAGE" -gt 80 ]; then
-        ICON="󰁹"
+        ICON="􀛨"
         COLOR=0xff9ece6a  # green
       elif [ "$PERCENTAGE" -gt 60 ]; then
-        ICON="󰂀"
+        ICON="􀺸"
         COLOR=0xff7dcfff  # cyan
       elif [ "$PERCENTAGE" -gt 40 ]; then
-        ICON="󰁾"
+        ICON="􀺶"
         COLOR=0xffe0af68  # yellow
       elif [ "$PERCENTAGE" -gt 20 ]; then
-        ICON="󰁻"
+        ICON="􀛩"
         COLOR=0xffff9e64  # orange
       else
-        ICON="󰁺"
+        ICON="􀛪"
         COLOR=0xfff7768e  # red
       fi
 
@@ -526,16 +531,16 @@ in
       VOLUME=$(osascript -e "output volume of (get volume settings)")
 
       if [ "$VOLUME" -eq 0 ]; then
-        ICON="󰝟"
+        ICON="􀊣"
         COLOR=0xff565f89  # grey
       elif [ "$VOLUME" -lt 33 ]; then
-        ICON="󰕿"
+        ICON="􀊥"
         COLOR=0xffbb9af7  # magenta
       elif [ "$VOLUME" -lt 66 ]; then
-        ICON="󰖀"
+        ICON="􀊧"
         COLOR=0xffbb9af7
       else
-        ICON="󰕾"
+        ICON="􀊩"
         COLOR=0xffbb9af7
       fi
 
@@ -562,9 +567,9 @@ in
       SSID=$(networksetup -getairportnetwork "$WIFI_IF" 2>/dev/null | sed 's/Current Wi-Fi Network: //')
 
       if [ -z "$SSID" ] || [ "$SSID" = "You are not associated with an AirPort network." ]; then
-        sketchybar --set $NAME icon=󰖪 icon.color=0xff565f89 label=""
+        sketchybar --set $NAME icon=􀙈 icon.color=0xff565f89 label=""
       else
-        sketchybar --set $NAME icon=󰖩 icon.color=0xff9ece6a label="$SSID"
+        sketchybar --set $NAME icon=􀙇 icon.color=0xff9ece6a label="$SSID"
       fi
     '';
   };
@@ -582,11 +587,11 @@ in
         if [ "$STATE" = "playing" ]; then
           TRACK=$(osascript -e 'tell application "Spotify" to name of current track as string' 2>/dev/null)
           ARTIST=$(osascript -e 'tell application "Spotify" to artist of current track as string' 2>/dev/null)
-          sketchybar --set $NAME drawing=on icon= icon.color=0xff1db954 label="$ARTIST – $TRACK"
+          sketchybar --set $NAME drawing=on icon=􀑪 icon.color=0xff1db954 label="$ARTIST – $TRACK"
         elif [ "$STATE" = "paused" ]; then
           TRACK=$(osascript -e 'tell application "Spotify" to name of current track as string' 2>/dev/null)
           ARTIST=$(osascript -e 'tell application "Spotify" to artist of current track as string' 2>/dev/null)
-          sketchybar --set $NAME drawing=on icon= icon.color=0xff939ab7 label="$ARTIST – $TRACK"
+          sketchybar --set $NAME drawing=on icon=􀊆 icon.color=0xff565f89 label="$ARTIST – $TRACK"
         else
           sketchybar --set $NAME drawing=off
         fi
@@ -595,11 +600,11 @@ in
         if [ "$STATE" = "playing" ]; then
           TRACK=$(osascript -e 'tell application "Music" to name of current track as string' 2>/dev/null)
           ARTIST=$(osascript -e 'tell application "Music" to artist of current track as string' 2>/dev/null)
-          sketchybar --set $NAME drawing=on icon=󰎆 icon.color=0xfffc3c44 label="$ARTIST – $TRACK"
+          sketchybar --set $NAME drawing=on icon=􀑪 icon.color=0xfffc3c44 label="$ARTIST – $TRACK"
         elif [ "$STATE" = "paused" ]; then
           TRACK=$(osascript -e 'tell application "Music" to name of current track as string' 2>/dev/null)
           ARTIST=$(osascript -e 'tell application "Music" to artist of current track as string' 2>/dev/null)
-          sketchybar --set $NAME drawing=on icon= icon.color=0xff939ab7 label="$ARTIST – $TRACK"
+          sketchybar --set $NAME drawing=on icon=􀊆 icon.color=0xff565f89 label="$ARTIST – $TRACK"
         else
           sketchybar --set $NAME drawing=off
         fi
@@ -625,7 +630,7 @@ in
     '';
   };
 
-  # JankyBorders - Window borders (Tokyo Night cyan)
+  # JankyBorders - Window borders with glow (Tokyo Night cyan)
   xdg.configFile."borders/bordersrc" = {
     executable = true;
     text = ''
@@ -633,10 +638,11 @@ in
 
       options=(
         style=round
-        width=5.0
+        width=6.0
         hidpi=on
-        active_color=0xff7dcfff
+        active_color=0xc07dcfff
         inactive_color=0x00000000
+        blur_radius=25
       )
 
       borders "''${options[@]}"

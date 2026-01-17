@@ -1,43 +1,56 @@
-# Shared theme configuration - Nord
-# https://www.nordtheme.com/
+# Shared theme configuration - Tokyo Night
+# https://github.com/enkia/tokyo-night-vscode-theme
 {
-  # Nord color palette
+  # Tokyo Night color palette
   colors = {
-    # Polar Night (dark)
-    nord0 = "#2e3440";  # background
-    nord1 = "#3b4252";  # elevated background
-    nord2 = "#434c5e";  # selection
-    nord3 = "#4c566a";  # comments, subtle
+    # Background shades
+    bg = "#1a1b26";        # main background
+    bgDark = "#16161e";    # darker background
+    bgHighlight = "#292e42"; # selection/highlight
+    bgAlt = "#24283b";     # elevated surfaces
 
-    # Snow Storm (light)
-    nord4 = "#d8dee9";  # foreground
-    nord5 = "#e5e9f0";  # light foreground
-    nord6 = "#eceff4";  # bright foreground
+    # Foreground shades
+    fg = "#c0caf5";        # main foreground
+    fgDark = "#a9b1d6";    # dimmed foreground
+    fgGutter = "#3b4261";  # line numbers, subtle
 
-    # Frost (accent blues)
-    nord7 = "#8fbcbb";  # teal
-    nord8 = "#88c0d0";  # cyan (primary accent)
-    nord9 = "#81a1c1";  # blue
-    nord10 = "#5e81ac"; # deep blue
+    # Terminal colors
+    black = "#15161e";
+    red = "#f7768e";
+    green = "#9ece6a";
+    yellow = "#e0af68";
+    blue = "#7aa2f7";
+    magenta = "#bb9af7";
+    cyan = "#7dcfff";
+    white = "#a9b1d6";
 
-    # Aurora (semantic)
-    nord11 = "#bf616a"; # red (error)
-    nord12 = "#d08770"; # orange (warning)
-    nord13 = "#ebcb8b"; # yellow (caution)
-    nord14 = "#a3be8c"; # green (success)
-    nord15 = "#b48ead"; # purple (special)
+    # Bright variants
+    brightBlack = "#414868";
+    brightRed = "#f7768e";
+    brightGreen = "#9ece6a";
+    brightYellow = "#e0af68";
+    brightBlue = "#7aa2f7";
+    brightMagenta = "#bb9af7";
+    brightCyan = "#7dcfff";
+    brightWhite = "#c0caf5";
+
+    # Accents
+    orange = "#ff9e64";
+    pink = "#ff007c";
+    teal = "#1abc9c";
+    purple = "#9d7cd8";
   };
 
   # Semantic aliases
-  background = "#2e3440";
-  backgroundAlt = "#3b4252";
-  foreground = "#d8dee9";
-  foregroundBright = "#eceff4";
-  accent = "#88c0d0";
-  border = "#4c566a";
-  error = "#bf616a";
-  warning = "#d08770";
-  success = "#a3be8c";
+  background = "#1a1b26";
+  backgroundAlt = "#24283b";
+  foreground = "#c0caf5";
+  foregroundBright = "#c0caf5";
+  accent = "#7dcfff";
+  border = "#3b4261";
+  error = "#f7768e";
+  warning = "#ff9e64";
+  success = "#9ece6a";
 
   # Font
   font = {
@@ -49,9 +62,9 @@
 
   # Bar colors (for SketchyBar/slstatus)
   bar = {
-    background = "0xff2e3440";
-    foreground = "0xffd8dee9";
-    accent = "0xff88c0d0";
-    item = "0xff3b4252";
+    background = "0xff1a1b26";
+    foreground = "0xffc0caf5";
+    accent = "0xff7dcfff";
+    item = "0xff24283b";
   };
 }
