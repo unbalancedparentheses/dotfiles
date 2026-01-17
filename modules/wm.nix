@@ -30,7 +30,7 @@ in
     inner.vertical = 8
     outer.left = 8
     outer.bottom = 8
-    outer.top = 48
+    outer.top = 42
     outer.right = 8
 
     # Main keybindings (alt as modifier)
@@ -237,6 +237,14 @@ in
       script="$CONFIG_DIR/plugins/volume.sh" \
       --subscribe volume volume_change
 
+    # WiFi
+    sketchybar --add item wifi right \
+      --set wifi \
+      update_freq=5 \
+      icon=󰖩 \
+      icon.color=$GREEN \
+      script="$CONFIG_DIR/plugins/wifi.sh"
+
     # CPU
     sketchybar --add item cpu right \
       --set cpu \
@@ -247,7 +255,7 @@ in
       script="$CONFIG_DIR/plugins/cpu.sh"
 
     # Right island bracket
-    sketchybar --add bracket right_island cpu volume battery clock \
+    sketchybar --add bracket right_island cpu wifi volume battery clock \
       --set right_island \
       background.color=$ISLAND_BG \
       background.corner_radius=12 \
@@ -430,6 +438,19 @@ in
       CPU=$(top -l 1 -n 0 2>/dev/null | grep -E "^CPU" | grep -Eo '[0-9]+\.[0-9]+' | head -1)
       [ -z "$CPU" ] && CPU="0"
       sketchybar --set $NAME label="''${CPU}%"
+    '';
+  };
+
+  xdg.configFile."sketchybar/plugins/wifi.sh" = {
+    executable = true;
+    text = ''
+      #!/bin/bash
+      SSID=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I 2>/dev/null | grep -o "SSID: .*" | sed 's/SSID: //')
+      if [ -z "$SSID" ]; then
+        sketchybar --set $NAME icon=󰖪 icon.color=0xff939ab7 label=""
+      else
+        sketchybar --set $NAME icon=󰖩 icon.color=0xffa6da95 label="$SSID"
+      fi
     '';
   };
 
