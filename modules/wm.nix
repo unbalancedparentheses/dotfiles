@@ -243,6 +243,7 @@ in
       update_freq=5 \
       icon=󰖩 \
       icon.color=$GREEN \
+      label.drawing=on \
       script="$CONFIG_DIR/plugins/wifi.sh"
 
     # CPU
