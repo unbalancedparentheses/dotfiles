@@ -27,10 +27,10 @@ in
     # Gaps and padding
     [gaps]
     inner.horizontal = 6
-    inner.vertical = 6
+    inner.vertical = 2
     outer.left = 6
-    outer.bottom = 6
-    outer.top = 36
+    outer.bottom = 2
+    outer.top = 32
     outer.right = 6
 
     # Main keybindings (alt as modifier)
