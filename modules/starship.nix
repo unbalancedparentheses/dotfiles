@@ -16,18 +16,7 @@
         truncate_to_repo = true;
       };
       git_branch.symbol = " ";
-      git_status = {
-        conflicted = "=";
-        ahead = "⇡\${count}";
-        behind = "⇣\${count}";
-        diverged = "⇕⇡\${ahead_count}⇣\${behind_count}";
-        untracked = "?\${count}";
-        stashed = "$\${count}";
-        modified = "!\${count}";
-        staged = "+\${count}";
-        renamed = "»\${count}";
-        deleted = "✘\${count}";
-      };
+      git_status.disabled = true;
       nix_shell = {
         symbol = " ";
         format = "via [$symbol$state]($style) ";

@@ -1,5 +1,5 @@
 # Window management configuration (AeroSpace, SketchyBar, JankyBorders)
-# macOS tiling WM setup inspired by i3/bspwm
+# macOS tiling WM setup - Dynamic Islands style
 { config, pkgs, lib, ... }:
 
 let
@@ -21,17 +21,17 @@ in
 
     # Notify SketchyBar on workspace change
     exec-on-workspace-change = ['/bin/bash', '-c',
-      '${brewPrefix}/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+      '${brewPrefix}/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE && ~/.config/sketchybar/plugins/spaces_update.sh'
     ]
 
-    # Gaps and padding
+    # Gaps and padding (48px top for floating bar + gap)
     [gaps]
-    inner.horizontal = 6
-    inner.vertical = 6
-    outer.left = 6
-    outer.bottom = 6
-    outer.top = 6
-    outer.right = 6
+    inner.horizontal = 8
+    inner.vertical = 8
+    outer.left = 8
+    outer.bottom = 8
+    outer.top = 48
+    outer.right = 8
 
     # Main keybindings (alt as modifier)
     [mode.main.binding]
@@ -104,108 +104,159 @@ in
 
   '';
 
-  # SketchyBar - Status bar
+  # SketchyBar - Status bar (Dynamic Islands style)
   xdg.configFile."sketchybar/sketchybarrc" = {
     executable = true;
     text = ''
     #!/bin/bash
 
-    # Colors (Nord)
-    BAR_COLOR=0xff2e3440
-    ITEM_BG_COLOR=0xff3b4252
-    ACCENT_COLOR=0xff88c0d0
-    TEXT_COLOR=0xffd8dee9
-    SUBTEXT_COLOR=0xff4c566a
+    # Colors (Catppuccin Macchiato)
+    export BLACK=0xff181926
+    export WHITE=0xffcad3f5
+    export RED=0xffed8796
+    export GREEN=0xffa6da95
+    export BLUE=0xff8aadf4
+    export YELLOW=0xffeed49f
+    export ORANGE=0xfff5a97f
+    export MAGENTA=0xffc6a0f6
+    export GREY=0xff939ab7
+    export TRANSPARENT=0x00000000
 
-    # Bar appearance
+    export BAR_COLOR=0x00000000
+    export ICON_COLOR=$WHITE
+    export LABEL_COLOR=$WHITE
+    export ISLAND_BG=0xff24273a
+    export ISLAND_BORDER=0xff363a4f
+    export POPUP_BG=0xff24273a
+    export ACCENT=$BLUE
+
+    # Transparent bar with offset for floating islands
     sketchybar --bar \
       height=32 \
-      blur_radius=30 \
       position=top \
       sticky=on \
-      padding_left=10 \
-      padding_right=10 \
-      color=$BAR_COLOR
+      y_offset=8 \
+      margin=8 \
+      padding_left=8 \
+      padding_right=8 \
+      color=$BAR_COLOR \
+      shadow=off
 
     # Default item properties
     sketchybar --default \
       icon.font="JetBrainsMono Nerd Font:Bold:14.0" \
-      icon.color=$TEXT_COLOR \
+      icon.color=$ICON_COLOR \
+      icon.padding_left=8 \
+      icon.padding_right=4 \
       label.font="JetBrainsMono Nerd Font:Medium:13.0" \
-      label.color=$TEXT_COLOR \
-      background.color=$ITEM_BG_COLOR \
-      background.corner_radius=5 \
-      background.height=24 \
-      padding_left=5 \
-      padding_right=5
+      label.color=$LABEL_COLOR \
+      label.padding_left=4 \
+      label.padding_right=8 \
+      background.color=$TRANSPARENT \
+      background.height=28 \
+      popup.background.color=$POPUP_BG \
+      popup.background.corner_radius=12 \
+      popup.background.border_width=2 \
+      popup.background.border_color=$ISLAND_BORDER
 
-    # Left side - AeroSpace workspaces
+    # === LEFT ISLAND ===
+
+    # Apple logo
+    sketchybar --add item apple left \
+      --set apple \
+      icon= \
+      icon.font="JetBrainsMono Nerd Font:Bold:16.0" \
+      icon.color=$ACCENT \
+      icon.padding_left=12 \
+      icon.padding_right=8 \
+      label.drawing=off \
+      background.drawing=off
+
+    # AeroSpace workspaces (dynamic visibility)
     sketchybar --add event aerospace_workspace_change
 
     for sid in 1 2 3 4 5 6 7 8 9; do
       sketchybar --add item space.$sid left \
         --set space.$sid \
         icon="$sid" \
-        icon.highlight_color=$ACCENT_COLOR \
-        background.color=0x00000000 \
+        icon.padding_left=10 \
+        icon.padding_right=10 \
+        icon.color=$GREY \
+        icon.highlight_color=$ACCENT \
+        label.drawing=off \
+        background.color=$TRANSPARENT \
+        background.corner_radius=6 \
+        background.height=22 \
         background.drawing=off \
+        drawing=off \
         click_script="aerospace workspace $sid" \
         script="$CONFIG_DIR/plugins/space.sh $sid" \
-        --subscribe space.$sid aerospace_workspace_change
+        --subscribe space.$sid aerospace_workspace_change mouse.clicked mouse.entered mouse.exited
     done
 
-    # Highlight current workspace on startup
-    CURRENT=$(aerospace list-workspaces --focused 2>/dev/null || echo "1")
-    sketchybar --set space.$CURRENT background.drawing=on icon.highlight=on
-
-    # Left side - Front app
+    # Front app (with icon)
     sketchybar --add item front_app left \
       --set front_app \
-      background.drawing=on \
-      icon.drawing=off \
+      icon.drawing=on \
+      icon.font="sketchybar-app-font:Regular:14.0" \
+      label.font="JetBrainsMono Nerd Font:Bold:13.0" \
+      label.padding_right=12 \
       script="$CONFIG_DIR/plugins/front_app.sh" \
       --subscribe front_app front_app_switched
 
-    # Right side - Date/time
+    # Left island bracket
+    sketchybar --add bracket left_island apple '/space\..*/' front_app \
+      --set left_island \
+      background.color=$ISLAND_BG \
+      background.corner_radius=12 \
+      background.height=32 \
+      background.border_width=1 \
+      background.border_color=$ISLAND_BORDER
+
+    # === RIGHT ISLAND ===
+
+    # Clock
     sketchybar --add item clock right \
       --set clock \
-      update_freq=10 \
+      update_freq=30 \
       icon= \
+      icon.color=$ACCENT \
+      icon.padding_left=12 \
       script="$CONFIG_DIR/plugins/clock.sh"
 
-    # Right side - Battery
+    # Battery
     sketchybar --add item battery right \
       --set battery \
       update_freq=120 \
       script="$CONFIG_DIR/plugins/battery.sh" \
       --subscribe battery system_woke power_source_change
 
-    # Right side - CPU
-    sketchybar --add item cpu right \
-      --set cpu \
-      update_freq=3 \
-      icon= \
-      script="$CONFIG_DIR/plugins/cpu.sh"
-
-    # Right side - Network
-    sketchybar --add item network right \
-      --set network \
-      update_freq=3 \
-      icon=󰖩 \
-      script="$CONFIG_DIR/plugins/network.sh"
-
-    # Right side - Volume
+    # Volume
     sketchybar --add item volume right \
       --set volume \
       script="$CONFIG_DIR/plugins/volume.sh" \
       --subscribe volume volume_change
 
-    # Center - Spotify
-    sketchybar --add item spotify center \
-      --set spotify \
+    # CPU
+    sketchybar --add item cpu right \
+      --set cpu \
       update_freq=5 \
       icon= \
-      script="$CONFIG_DIR/plugins/spotify.sh"
+      icon.color=$YELLOW \
+      label.padding_right=12 \
+      script="$CONFIG_DIR/plugins/cpu.sh"
+
+    # Right island bracket
+    sketchybar --add bracket right_island cpu volume battery clock \
+      --set right_island \
+      background.color=$ISLAND_BG \
+      background.corner_radius=12 \
+      background.height=32 \
+      background.border_width=1 \
+      background.border_color=$ISLAND_BORDER
+
+    # Update workspaces visibility on startup
+    $CONFIG_DIR/plugins/spaces_update.sh
 
     # Initialize
     sketchybar --update
@@ -217,13 +268,83 @@ in
     executable = true;
     text = ''
       #!/bin/bash
-      # $1 = workspace number this item represents
-      # $FOCUSED_WORKSPACE = currently focused workspace from aerospace
-      if [ "$1" = "$FOCUSED_WORKSPACE" ]; then
-        sketchybar --set $NAME background.drawing=on icon.highlight=on
-      else
-        sketchybar --set $NAME background.drawing=off icon.highlight=off
-      fi
+      WORKSPACE_ID="$1"
+
+      update() {
+        if [ "$FOCUSED_WORKSPACE" = "$WORKSPACE_ID" ]; then
+          sketchybar --set $NAME \
+            icon.highlight=on \
+            background.drawing=on \
+            background.color=0x40ffffff
+        else
+          sketchybar --set $NAME \
+            icon.highlight=off \
+            background.drawing=off
+        fi
+      }
+
+      mouse_clicked() {
+        aerospace workspace "$WORKSPACE_ID"
+      }
+
+      show_apps() {
+        APPS=$(aerospace list-windows --workspace "$WORKSPACE_ID" --format "%{app-name}" 2>/dev/null)
+        if [ -z "$APPS" ]; then
+          sketchybar --set $NAME popup.drawing=on
+          sketchybar --add item popup.empty popup.$NAME \
+            --set popup.empty label="Empty" label.color=0xff939ab7 icon.drawing=off
+        else
+          sketchybar --set $NAME popup.drawing=on
+          COUNT=0
+          echo "$APPS" | while read -r APP; do
+            [ -z "$APP" ] && continue
+            COUNT=$((COUNT + 1))
+            sketchybar --add item popup.$NAME.$COUNT popup.$NAME \
+              --set popup.$NAME.$COUNT \
+              label="$APP" \
+              icon.drawing=off \
+              click_script="open -a \"$APP\""
+          done
+        fi
+      }
+
+      hide_apps() {
+        sketchybar --set $NAME popup.drawing=off
+        sketchybar --remove '/popup\.'"$NAME"'\..*/' 2>/dev/null
+        sketchybar --remove popup.empty 2>/dev/null
+      }
+
+      case "$SENDER" in
+        mouse.clicked) mouse_clicked ;;
+        mouse.entered) show_apps ;;
+        mouse.exited) hide_apps ;;
+        *) update ;;
+      esac
+    '';
+  };
+
+  # Dynamic workspace visibility updater
+  xdg.configFile."sketchybar/plugins/spaces_update.sh" = {
+    executable = true;
+    text = ''
+      #!/bin/bash
+      # Show only active/occupied workspaces
+
+      OCCUPIED=$(aerospace list-workspaces --monitor all --empty no 2>/dev/null)
+      FOCUSED=$(aerospace list-workspaces --focused 2>/dev/null || echo "1")
+
+      for sid in 1 2 3 4 5 6 7 8 9; do
+        if echo "$OCCUPIED" | grep -qw "$sid" || [ "$FOCUSED" = "$sid" ]; then
+          sketchybar --set space.$sid drawing=on
+          if [ "$FOCUSED" = "$sid" ]; then
+            sketchybar --set space.$sid icon.highlight=on background.drawing=on background.color=0x40ffffff
+          else
+            sketchybar --set space.$sid icon.highlight=off background.drawing=off
+          fi
+        else
+          sketchybar --set space.$sid drawing=off
+        fi
+      done
     '';
   };
 
@@ -231,7 +352,11 @@ in
     executable = true;
     text = ''
       #!/bin/bash
-      sketchybar --set $NAME label="$INFO"
+      if [ "$SENDER" = "front_app_switched" ]; then
+        sketchybar --set $NAME label="$INFO" icon=":$(echo "$INFO" | tr '[:upper:]' '[:lower:]' | tr ' ' '_'):"
+        # Update workspace visibility when app switches
+        $CONFIG_DIR/plugins/spaces_update.sh
+      fi
     '';
   };
 
@@ -239,7 +364,7 @@ in
     executable = true;
     text = ''
       #!/bin/bash
-      sketchybar --set $NAME label="$(date '+%a %d %b %H:%M')"
+      sketchybar --set $NAME label="$(date '+%a %d %b  %H:%M')"
     '';
   };
 
@@ -251,20 +376,26 @@ in
       CHARGING=$(pmset -g batt | grep 'AC Power')
 
       if [ "$CHARGING" != "" ]; then
-        ICON=""
+        ICON="󰂄"
+        COLOR=0xffa6da95  # green
       elif [ "$PERCENTAGE" -gt 80 ]; then
-        ICON=""
+        ICON="󰁹"
+        COLOR=0xffcad3f5  # white
       elif [ "$PERCENTAGE" -gt 60 ]; then
-        ICON=""
+        ICON="󰂀"
+        COLOR=0xffcad3f5
       elif [ "$PERCENTAGE" -gt 40 ]; then
-        ICON=""
+        ICON="󰁾"
+        COLOR=0xffcad3f5
       elif [ "$PERCENTAGE" -gt 20 ]; then
-        ICON=""
+        ICON="󰁻"
+        COLOR=0xffeed49f  # yellow
       else
-        ICON=""
+        ICON="󰁺"
+        COLOR=0xffed8796  # red
       fi
 
-      sketchybar --set $NAME icon="$ICON" label="''${PERCENTAGE}%"
+      sketchybar --set $NAME icon="$ICON" icon.color=$COLOR label="''${PERCENTAGE}%"
     '';
   };
 
@@ -276,15 +407,19 @@ in
 
       if [ "$VOLUME" -eq 0 ]; then
         ICON="󰝟"
+        COLOR=0xff939ab7  # grey
       elif [ "$VOLUME" -lt 33 ]; then
         ICON="󰕿"
+        COLOR=0xffc6a0f6  # magenta
       elif [ "$VOLUME" -lt 66 ]; then
         ICON="󰖀"
+        COLOR=0xffc6a0f6
       else
         ICON="󰕾"
+        COLOR=0xffc6a0f6
       fi
 
-      sketchybar --set $NAME icon="$ICON" label="''${VOLUME}%"
+      sketchybar --set $NAME icon="$ICON" icon.color=$COLOR label="''${VOLUME}%"
     '';
   };
 
@@ -292,45 +427,13 @@ in
     executable = true;
     text = ''
       #!/bin/bash
-      CPU=$(top -l 1 | grep -E "^CPU" | grep -Eo '[0-9]+\.[0-9]+%' | head -1 | cut -d% -f1)
+      CPU=$(top -l 1 -n 0 2>/dev/null | grep -E "^CPU" | grep -Eo '[0-9]+\.[0-9]+' | head -1)
+      [ -z "$CPU" ] && CPU="0"
       sketchybar --set $NAME label="''${CPU}%"
     '';
   };
 
-  xdg.configFile."sketchybar/plugins/network.sh" = {
-    executable = true;
-    text = ''
-      #!/bin/bash
-      SSID=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | grep -o "SSID: .*" | sed 's/SSID: //')
-      if [ "$SSID" = "" ]; then
-        sketchybar --set $NAME icon=󰖪 label="N/A"
-      else
-        sketchybar --set $NAME icon=󰖩 label="$SSID"
-      fi
-    '';
-  };
-
-  xdg.configFile."sketchybar/plugins/spotify.sh" = {
-    executable = true;
-    text = ''
-      #!/bin/bash
-      PLAYING=$(osascript -e 'tell application "System Events" to (name of processes) contains "Spotify"')
-      if [ "$PLAYING" = "true" ]; then
-        STATE=$(osascript -e 'tell application "Spotify" to player state as string')
-        if [ "$STATE" = "playing" ]; then
-          TRACK=$(osascript -e 'tell application "Spotify" to name of current track as string')
-          ARTIST=$(osascript -e 'tell application "Spotify" to artist of current track as string')
-          sketchybar --set $NAME icon= label="$ARTIST - $TRACK"
-        else
-          sketchybar --set $NAME icon= label="Paused"
-        fi
-      else
-        sketchybar --set $NAME label=""
-      fi
-    '';
-  };
-
-  # JankyBorders - Window borders with glow effect
+  # JankyBorders - Window borders (Catppuccin accent)
   xdg.configFile."borders/bordersrc" = {
     executable = true;
     text = ''
@@ -338,9 +441,9 @@ in
 
       options=(
         style=round
-        width=6.0
+        width=5.0
         hidpi=on
-        active_color=0xff88c0d0
+        active_color=0xff8aadf4
         inactive_color=0x00000000
       )
 
