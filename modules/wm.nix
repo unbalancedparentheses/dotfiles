@@ -131,6 +131,52 @@ in
     if.app-id = 'com.spotify.client'
     run = 'move-node-to-workspace 5'
 
+    # Float rules - dialogs and utilities
+    [[on-window-detected]]
+    if.app-id = 'com.apple.systempreferences'
+    run = 'layout floating'
+
+    [[on-window-detected]]
+    if.app-id = 'com.apple.SystemPreferences'
+    run = 'layout floating'
+
+    [[on-window-detected]]
+    if.app-id = 'com.apple.finder'
+    if.window-title-regex-substring = '(Copy|Move|Delete|Trash|Info|Connect)'
+    run = 'layout floating'
+
+    [[on-window-detected]]
+    if.app-id = 'com.agilebits.onepassword7'
+    run = 'layout floating'
+
+    [[on-window-detected]]
+    if.app-id = 'com.1password.1password'
+    run = 'layout floating'
+
+    [[on-window-detected]]
+    if.app-id = 'com.apple.calculator'
+    run = 'layout floating'
+
+    [[on-window-detected]]
+    if.app-id = 'com.apple.ActivityMonitor'
+    run = 'layout floating'
+
+    [[on-window-detected]]
+    if.app-id = 'com.apple.DigitalColorMeter'
+    run = 'layout floating'
+
+    [[on-window-detected]]
+    if.app-id = 'com.apple.ColorSyncUtility'
+    run = 'layout floating'
+
+    [[on-window-detected]]
+    if.app-id = 'com.apple.ScreenSharing'
+    run = 'layout floating'
+
+    [[on-window-detected]]
+    if.window-title-regex-substring = '(Preferences|Settings|About|Update)'
+    run = 'layout floating'
+
   '';
 
   # SketchyBar - Status bar (Dynamic Islands style)
@@ -333,12 +379,17 @@ in
         if [ "$FOCUSED_WORKSPACE" = "$WORKSPACE_ID" ]; then
           sketchybar --set $NAME \
             icon.highlight=on \
+            icon.color=0xff7dcfff \
             background.drawing=on \
-            background.color=0x40ffffff
+            background.color=0x307dcfff \
+            background.border_width=1 \
+            background.border_color=0x807dcfff
         else
           sketchybar --set $NAME \
             icon.highlight=off \
-            background.drawing=off
+            icon.color=0xff565f89 \
+            background.drawing=off \
+            background.border_width=0
         fi
       }
 
@@ -396,9 +447,19 @@ in
         if echo "$OCCUPIED" | grep -qw "$sid" || [ "$FOCUSED" = "$sid" ]; then
           sketchybar --set space.$sid drawing=on
           if [ "$FOCUSED" = "$sid" ]; then
-            sketchybar --set space.$sid icon.highlight=on background.drawing=on background.color=0x40ffffff
+            sketchybar --set space.$sid \
+              icon.highlight=on \
+              icon.color=0xff7dcfff \
+              background.drawing=on \
+              background.color=0x307dcfff \
+              background.border_width=1 \
+              background.border_color=0x807dcfff
           else
-            sketchybar --set space.$sid icon.highlight=off background.drawing=off
+            sketchybar --set space.$sid \
+              icon.highlight=off \
+              icon.color=0xff565f89 \
+              background.drawing=off \
+              background.border_width=0
           fi
         else
           sketchybar --set space.$sid drawing=off
