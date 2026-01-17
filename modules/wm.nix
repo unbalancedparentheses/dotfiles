@@ -219,13 +219,13 @@ in
       color=$BAR_COLOR \
       shadow=off
 
-    # Default item properties - SF Pro for native macOS icons
+    # Default item properties
     sketchybar --default \
-      icon.font="SF Pro:Semibold:15.0" \
+      icon.font="JetBrainsMono Nerd Font:Bold:14.0" \
       icon.color=$ICON_COLOR \
       icon.padding_left=12 \
       icon.padding_right=6 \
-      label.font="SF Pro:Medium:13.0" \
+      label.font="JetBrainsMono Nerd Font:Medium:13.0" \
       label.color=$LABEL_COLOR \
       label.padding_left=6 \
       label.padding_right=12 \
@@ -241,8 +241,8 @@ in
     # Apple logo (click to open System Settings)
     sketchybar --add item apple left \
       --set apple \
-      icon=􀣺 \
-      icon.font="SF Pro:Bold:16.0" \
+      icon= \
+      icon.font="JetBrainsMono Nerd Font:Bold:16.0" \
       icon.color=$ACCENT \
       icon.padding_left=14 \
       icon.padding_right=10 \
@@ -257,7 +257,7 @@ in
       sketchybar --add item space.$sid left \
         --set space.$sid \
         icon="$sid" \
-        icon.font="SF Pro:Bold:12.0" \
+        icon.font="JetBrainsMono Nerd Font:Bold:12.0" \
         icon.padding_left=12 \
         icon.padding_right=12 \
         icon.color=$GREY \
@@ -279,7 +279,7 @@ in
       icon.drawing=on \
       icon.font="sketchybar-app-font:Regular:15.0" \
       icon.padding_left=8 \
-      label.font="SF Pro:Semibold:13.0" \
+      label.font="JetBrainsMono Nerd Font:Bold:13.0" \
       label.padding_left=8 \
       label.padding_right=14 \
       script="$CONFIG_DIR/plugins/front_app.sh" \
@@ -300,7 +300,7 @@ in
     sketchybar --add item clock right \
       --set clock \
       update_freq=30 \
-      icon=􀐫 \
+      icon= \
       icon.color=$PINK \
       icon.padding_left=14 \
       label.padding_right=14 \
@@ -326,7 +326,7 @@ in
     sketchybar --add item wifi right \
       --set wifi \
       update_freq=5 \
-      icon=􀙇 \
+      icon=󰖩 \
       icon.color=$GREEN \
       label.drawing=on \
       script="$CONFIG_DIR/plugins/wifi.sh" \
@@ -336,7 +336,7 @@ in
     sketchybar --add item cpu right \
       --set cpu \
       update_freq=5 \
-      icon=􀫥 \
+      icon= \
       icon.color=$CYAN \
       script="$CONFIG_DIR/plugins/cpu.sh" \
       click_script="open -a 'Activity Monitor'"
@@ -344,7 +344,7 @@ in
     # Media (in right island, click to play/pause)
     sketchybar --add item media right \
       --set media \
-      icon=􀑪 \
+      icon= \
       icon.color=$GREEN \
       icon.padding_left=14 \
       label.max_chars=30 \
@@ -501,22 +501,22 @@ in
       CHARGING=$(pmset -g batt | grep 'AC Power')
 
       if [ "$CHARGING" != "" ]; then
-        ICON="􀢋"
+        ICON="󰂄"
         COLOR=0xff9ece6a  # green
       elif [ "$PERCENTAGE" -gt 80 ]; then
-        ICON="􀛨"
+        ICON="󰁹"
         COLOR=0xff9ece6a  # green
       elif [ "$PERCENTAGE" -gt 60 ]; then
-        ICON="􀺸"
+        ICON="󰂀"
         COLOR=0xff7dcfff  # cyan
       elif [ "$PERCENTAGE" -gt 40 ]; then
-        ICON="􀺶"
+        ICON="󰁾"
         COLOR=0xffe0af68  # yellow
       elif [ "$PERCENTAGE" -gt 20 ]; then
-        ICON="􀛩"
+        ICON="󰁻"
         COLOR=0xffff9e64  # orange
       else
-        ICON="􀛪"
+        ICON="󰁺"
         COLOR=0xfff7768e  # red
       fi
 
@@ -531,16 +531,16 @@ in
       VOLUME=$(osascript -e "output volume of (get volume settings)")
 
       if [ "$VOLUME" -eq 0 ]; then
-        ICON="􀊣"
+        ICON="󰝟"
         COLOR=0xff565f89  # grey
       elif [ "$VOLUME" -lt 33 ]; then
-        ICON="􀊥"
+        ICON="󰕿"
         COLOR=0xffbb9af7  # magenta
       elif [ "$VOLUME" -lt 66 ]; then
-        ICON="􀊧"
+        ICON="󰖀"
         COLOR=0xffbb9af7
       else
-        ICON="􀊩"
+        ICON="󰕾"
         COLOR=0xffbb9af7
       fi
 
@@ -567,9 +567,9 @@ in
       SSID=$(networksetup -getairportnetwork "$WIFI_IF" 2>/dev/null | sed 's/Current Wi-Fi Network: //')
 
       if [ -z "$SSID" ] || [ "$SSID" = "You are not associated with an AirPort network." ]; then
-        sketchybar --set $NAME icon=􀙈 icon.color=0xff565f89 label=""
+        sketchybar --set $NAME icon=󰖪 icon.color=0xff565f89 label=""
       else
-        sketchybar --set $NAME icon=􀙇 icon.color=0xff9ece6a label="$SSID"
+        sketchybar --set $NAME icon=󰖩 icon.color=0xff9ece6a label="$SSID"
       fi
     '';
   };
@@ -587,11 +587,11 @@ in
         if [ "$STATE" = "playing" ]; then
           TRACK=$(osascript -e 'tell application "Spotify" to name of current track as string' 2>/dev/null)
           ARTIST=$(osascript -e 'tell application "Spotify" to artist of current track as string' 2>/dev/null)
-          sketchybar --set $NAME drawing=on icon=􀑪 icon.color=0xff1db954 label="$ARTIST – $TRACK"
+          sketchybar --set $NAME drawing=on icon= icon.color=0xff1db954 label="$ARTIST – $TRACK"
         elif [ "$STATE" = "paused" ]; then
           TRACK=$(osascript -e 'tell application "Spotify" to name of current track as string' 2>/dev/null)
           ARTIST=$(osascript -e 'tell application "Spotify" to artist of current track as string' 2>/dev/null)
-          sketchybar --set $NAME drawing=on icon=􀊆 icon.color=0xff565f89 label="$ARTIST – $TRACK"
+          sketchybar --set $NAME drawing=on icon= icon.color=0xff565f89 label="$ARTIST – $TRACK"
         else
           sketchybar --set $NAME drawing=off
         fi
@@ -600,11 +600,11 @@ in
         if [ "$STATE" = "playing" ]; then
           TRACK=$(osascript -e 'tell application "Music" to name of current track as string' 2>/dev/null)
           ARTIST=$(osascript -e 'tell application "Music" to artist of current track as string' 2>/dev/null)
-          sketchybar --set $NAME drawing=on icon=􀑪 icon.color=0xfffc3c44 label="$ARTIST – $TRACK"
+          sketchybar --set $NAME drawing=on icon=󰎆 icon.color=0xfffc3c44 label="$ARTIST – $TRACK"
         elif [ "$STATE" = "paused" ]; then
           TRACK=$(osascript -e 'tell application "Music" to name of current track as string' 2>/dev/null)
           ARTIST=$(osascript -e 'tell application "Music" to artist of current track as string' 2>/dev/null)
-          sketchybar --set $NAME drawing=on icon=􀊆 icon.color=0xff565f89 label="$ARTIST – $TRACK"
+          sketchybar --set $NAME drawing=on icon= icon.color=0xff565f89 label="$ARTIST – $TRACK"
         else
           sketchybar --set $NAME drawing=off
         fi
