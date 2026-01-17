@@ -21,7 +21,7 @@
     scrollback-limit = 100000
 
     # Transparency and blur
-    background-opacity = 0.75
+    background-opacity = 0.95
     background-blur-radius = 35
 
     # Tokyo Night color scheme
