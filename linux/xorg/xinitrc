@@ -1,0 +1,55 @@
+# merge x config
+xrdb -merge ~/.Xresources
+
+# disable the bell
+xset -b
+
+# set a background (update path if repo is cloned elsewhere)
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+feh --bg-max --randomize "$DOTFILES/wallpapers"/*
+
+# Use
+eval $(ssh-agent)
+export SSH_ASKPASS=gnome-ssh-askpass
+ssh-add < /dev/null
+
+# lock computer via slock
+xautolock -time 5 -locker slock&
+
+# automount
+udiskie&
+
+# flux like for linux with Buenos Aires latitude and longitude
+redshift -l -34.603684:-58.381559&
+
+# notifications
+dunst&
+
+# network
+nm-applet&
+
+# autocutsel sync betwen primary and clibpoard 
+autocutsel -fork -selection CLIPBOARD
+autocutsel -fork -selection PRIMARY
+
+# pulseaudio
+pasystray&
+
+firefox&
+slack&
+spotify&
+telegram-desktop&
+
+# update status in dwm
+# while true; do
+# BAT=$(acpi | awk '{ print $4 }' | sed s/","//g)
+# CLK=$( date +'%H:%M')
+# xsetroot -name "$BAT | $CLK"
+# sleep 120
+# done &
+
+cbatticon&
+slstatus&
+
+# start dwm
+exec dwm
