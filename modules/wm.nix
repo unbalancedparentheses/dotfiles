@@ -496,7 +496,10 @@ in
     executable = true;
     text = ''
       #!/bin/bash
-      SSID=$(networksetup -getairportnetwork en0 2>/dev/null | sed 's/Current Wi-Fi Network: //')
+      # Find WiFi interface and get SSID
+      WIFI_IF=$(networksetup -listallhardwareports | awk '/Wi-Fi|AirPort/{getline; print $2}')
+      SSID=$(networksetup -getairportnetwork "$WIFI_IF" 2>/dev/null | sed 's/Current Wi-Fi Network: //')
+
       if [ -z "$SSID" ] || [ "$SSID" = "You are not associated with an AirPort network." ]; then
         sketchybar --set $NAME icon=󰖪 icon.color=0xff565f89 label=""
       else
