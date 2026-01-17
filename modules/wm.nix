@@ -292,31 +292,22 @@ in
       script="$CONFIG_DIR/plugins/cpu.sh" \
       click_script="open -a 'Activity Monitor'"
 
-    # Right island bracket
-    sketchybar --add bracket right_island cpu wifi volume battery clock \
-      --set right_island \
-      background.color=$ISLAND_BG \
-      background.corner_radius=12 \
-      background.height=32 \
-      background.border_width=1 \
-      background.border_color=$ISLAND_BORDER
-
-    # === CENTER ISLAND (Media) ===
-    sketchybar --add item media center \
+    # Media (in right island, click to play/pause)
+    sketchybar --add item media right \
       --set media \
       icon= \
       icon.color=$GREEN \
       icon.padding_left=12 \
-      label.max_chars=40 \
-      label.padding_right=12 \
+      label.max_chars=30 \
       scroll_texts=on \
       update_freq=3 \
       script="$CONFIG_DIR/plugins/media.sh" \
       click_script="$CONFIG_DIR/plugins/media_click.sh" \
       --subscribe media media_change
 
-    sketchybar --add bracket center_island media \
-      --set center_island \
+    # Right island bracket
+    sketchybar --add bracket right_island media cpu wifi volume battery clock \
+      --set right_island \
       background.color=$ISLAND_BG \
       background.corner_radius=12 \
       background.height=32 \
