@@ -30,7 +30,7 @@ in
     inner.vertical = 2
     outer.left = 6
     outer.bottom = 2
-    outer.top = 16
+    outer.top = 12
     outer.right = 6
 
     # Main keybindings (alt as modifier)
