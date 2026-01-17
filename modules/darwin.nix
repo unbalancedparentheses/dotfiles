@@ -152,8 +152,6 @@ in
 
       # Fonts
       "font-jetbrains-mono-nerd-font"
-      "font-fira-code-nerd-font"
-      "font-hack-nerd-font"
       "font-sketchybar-app-font"
     ];
   };
