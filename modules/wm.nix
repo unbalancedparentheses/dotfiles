@@ -97,10 +97,43 @@ in
     r = ['flatten-workspace-tree', 'mode main']
     backspace = ['close-all-windows-but-current', 'mode main']
 
-    # Workspace assignments (optional - uncomment to use)
-    # [[on-window-detected]]
-    # if.app-id = 'com.brave.Browser'
-    # run = 'move-node-to-workspace 1'
+    # Workspace assignments
+    # 1 = browsers, 2 = terminals/code, 3 = communication, 4 = notes, 5 = music
+    [[on-window-detected]]
+    if.app-id = 'com.brave.Browser'
+    run = 'move-node-to-workspace 1'
+
+    [[on-window-detected]]
+    if.app-id = 'org.mozilla.firefox'
+    run = 'move-node-to-workspace 1'
+
+    [[on-window-detected]]
+    if.app-id = 'com.mitchellh.ghostty'
+    run = 'move-node-to-workspace 2'
+
+    [[on-window-detected]]
+    if.app-id = 'dev.zed.Zed'
+    run = 'move-node-to-workspace 2'
+
+    [[on-window-detected]]
+    if.app-id = 'com.tinyspeck.slackmacgap'
+    run = 'move-node-to-workspace 3'
+
+    [[on-window-detected]]
+    if.app-id = 'org.telegram.desktop'
+    run = 'move-node-to-workspace 3'
+
+    [[on-window-detected]]
+    if.app-id = 'net.whatsapp.WhatsApp'
+    run = 'move-node-to-workspace 3'
+
+    [[on-window-detected]]
+    if.app-id = 'md.obsidian'
+    run = 'move-node-to-workspace 4'
+
+    [[on-window-detected]]
+    if.app-id = 'com.spotify.client'
+    run = 'move-node-to-workspace 5'
 
   '';
 
@@ -110,25 +143,27 @@ in
     text = ''
     #!/bin/bash
 
-    # Colors (Catppuccin Macchiato)
-    export BLACK=0xff181926
-    export WHITE=0xffcad3f5
-    export RED=0xffed8796
-    export GREEN=0xffa6da95
-    export BLUE=0xff8aadf4
-    export YELLOW=0xffeed49f
-    export ORANGE=0xfff5a97f
-    export MAGENTA=0xffc6a0f6
-    export GREY=0xff939ab7
+    # Colors (Tokyo Night - vibrant)
+    export BLACK=0xff1a1b26
+    export WHITE=0xffc0caf5
+    export RED=0xfff7768e
+    export GREEN=0xff9ece6a
+    export BLUE=0xff7aa2f7
+    export CYAN=0xff7dcfff
+    export YELLOW=0xffe0af68
+    export ORANGE=0xffff9e64
+    export MAGENTA=0xffbb9af7
+    export PINK=0xffff007c
+    export GREY=0xff565f89
     export TRANSPARENT=0x00000000
 
     export BAR_COLOR=0x00000000
     export ICON_COLOR=$WHITE
     export LABEL_COLOR=$WHITE
-    export ISLAND_BG=0xff24273a
-    export ISLAND_BORDER=0xff363a4f
-    export POPUP_BG=0xff24273a
-    export ACCENT=$BLUE
+    export ISLAND_BG=0xd91a1b26
+    export ISLAND_BORDER=0xff3b4261
+    export POPUP_BG=0xff1a1b26
+    export ACCENT=$CYAN
 
     # Transparent bar with offset for floating islands
     sketchybar --bar \
@@ -161,7 +196,7 @@ in
 
     # === LEFT ISLAND ===
 
-    # Apple logo
+    # Apple logo (click to open System Settings)
     sketchybar --add item apple left \
       --set apple \
       icon= \
@@ -170,7 +205,8 @@ in
       icon.padding_left=12 \
       icon.padding_right=8 \
       label.drawing=off \
-      background.drawing=off
+      background.drawing=off \
+      click_script="open -a 'System Settings'"
 
     # AeroSpace workspaces (dynamic visibility)
     sketchybar --add event aerospace_workspace_change
@@ -215,49 +251,76 @@ in
 
     # === RIGHT ISLAND ===
 
-    # Clock
+    # Clock (click to open Calendar)
     sketchybar --add item clock right \
       --set clock \
       update_freq=30 \
       icon= \
-      icon.color=$ACCENT \
+      icon.color=$PINK \
       icon.padding_left=12 \
-      script="$CONFIG_DIR/plugins/clock.sh"
+      script="$CONFIG_DIR/plugins/clock.sh" \
+      click_script="open -a Calendar"
 
-    # Battery
+    # Battery (click to open Energy settings)
     sketchybar --add item battery right \
       --set battery \
       update_freq=120 \
       script="$CONFIG_DIR/plugins/battery.sh" \
+      click_script="open 'x-apple.systempreferences:com.apple.preference.battery'" \
       --subscribe battery system_woke power_source_change
 
-    # Volume
+    # Volume (click to open Sound settings)
     sketchybar --add item volume right \
       --set volume \
       script="$CONFIG_DIR/plugins/volume.sh" \
+      click_script="open 'x-apple.systempreferences:com.apple.preference.sound'" \
       --subscribe volume volume_change
 
-    # WiFi
+    # WiFi (click to open WiFi settings)
     sketchybar --add item wifi right \
       --set wifi \
       update_freq=5 \
       icon=󰖩 \
       icon.color=$GREEN \
       label.drawing=on \
-      script="$CONFIG_DIR/plugins/wifi.sh"
+      script="$CONFIG_DIR/plugins/wifi.sh" \
+      click_script="open 'x-apple.systempreferences:com.apple.wifi-settings-extension'"
 
-    # CPU
+    # CPU (click to open Activity Monitor)
     sketchybar --add item cpu right \
       --set cpu \
       update_freq=5 \
       icon= \
-      icon.color=$YELLOW \
+      icon.color=$CYAN \
       label.padding_right=12 \
-      script="$CONFIG_DIR/plugins/cpu.sh"
+      script="$CONFIG_DIR/plugins/cpu.sh" \
+      click_script="open -a 'Activity Monitor'"
 
     # Right island bracket
     sketchybar --add bracket right_island cpu wifi volume battery clock \
       --set right_island \
+      background.color=$ISLAND_BG \
+      background.corner_radius=12 \
+      background.height=32 \
+      background.border_width=1 \
+      background.border_color=$ISLAND_BORDER
+
+    # === CENTER ISLAND (Media) ===
+    sketchybar --add item media center \
+      --set media \
+      icon= \
+      icon.color=$GREEN \
+      icon.padding_left=12 \
+      label.max_chars=40 \
+      label.padding_right=12 \
+      scroll_texts=on \
+      update_freq=3 \
+      script="$CONFIG_DIR/plugins/media.sh" \
+      click_script="$CONFIG_DIR/plugins/media_click.sh" \
+      --subscribe media media_change
+
+    sketchybar --add bracket center_island media \
+      --set center_island \
       background.color=$ISLAND_BG \
       background.corner_radius=12 \
       background.height=32 \
@@ -386,22 +449,22 @@ in
 
       if [ "$CHARGING" != "" ]; then
         ICON="󰂄"
-        COLOR=0xffa6da95  # green
+        COLOR=0xff9ece6a  # green
       elif [ "$PERCENTAGE" -gt 80 ]; then
         ICON="󰁹"
-        COLOR=0xffcad3f5  # white
+        COLOR=0xff9ece6a  # green
       elif [ "$PERCENTAGE" -gt 60 ]; then
         ICON="󰂀"
-        COLOR=0xffcad3f5
+        COLOR=0xff7dcfff  # cyan
       elif [ "$PERCENTAGE" -gt 40 ]; then
         ICON="󰁾"
-        COLOR=0xffcad3f5
+        COLOR=0xffe0af68  # yellow
       elif [ "$PERCENTAGE" -gt 20 ]; then
         ICON="󰁻"
-        COLOR=0xffeed49f  # yellow
+        COLOR=0xffff9e64  # orange
       else
         ICON="󰁺"
-        COLOR=0xffed8796  # red
+        COLOR=0xfff7768e  # red
       fi
 
       sketchybar --set $NAME icon="$ICON" icon.color=$COLOR label="''${PERCENTAGE}%"
@@ -416,16 +479,16 @@ in
 
       if [ "$VOLUME" -eq 0 ]; then
         ICON="󰝟"
-        COLOR=0xff939ab7  # grey
+        COLOR=0xff565f89  # grey
       elif [ "$VOLUME" -lt 33 ]; then
         ICON="󰕿"
-        COLOR=0xffc6a0f6  # magenta
+        COLOR=0xffbb9af7  # magenta
       elif [ "$VOLUME" -lt 66 ]; then
         ICON="󰖀"
-        COLOR=0xffc6a0f6
+        COLOR=0xffbb9af7
       else
         ICON="󰕾"
-        COLOR=0xffc6a0f6
+        COLOR=0xffbb9af7
       fi
 
       sketchybar --set $NAME icon="$ICON" icon.color=$COLOR label="''${VOLUME}%"
@@ -446,16 +509,72 @@ in
     executable = true;
     text = ''
       #!/bin/bash
-      SSID=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I 2>/dev/null | grep -o "SSID: .*" | sed 's/SSID: //')
+      SSID=$(ipconfig getsummary en0 2>/dev/null | awk -F': ' '/SSID/ {print $2}')
       if [ -z "$SSID" ]; then
-        sketchybar --set $NAME icon=󰖪 icon.color=0xff939ab7 label=""
+        sketchybar --set $NAME icon=󰖪 icon.color=0xff565f89 label=""
       else
-        sketchybar --set $NAME icon=󰖩 icon.color=0xffa6da95 label="$SSID"
+        sketchybar --set $NAME icon=󰖩 icon.color=0xff9ece6a label="$SSID"
       fi
     '';
   };
 
-  # JankyBorders - Window borders (Catppuccin accent)
+  xdg.configFile."sketchybar/plugins/media.sh" = {
+    executable = true;
+    text = ''
+      #!/bin/bash
+      # Try Spotify first, then Apple Music
+      SPOTIFY_RUNNING=$(pgrep -x "Spotify" >/dev/null && echo "true" || echo "false")
+      MUSIC_RUNNING=$(pgrep -x "Music" >/dev/null && echo "true" || echo "false")
+
+      if [ "$SPOTIFY_RUNNING" = "true" ]; then
+        STATE=$(osascript -e 'tell application "Spotify" to player state as string' 2>/dev/null)
+        if [ "$STATE" = "playing" ]; then
+          TRACK=$(osascript -e 'tell application "Spotify" to name of current track as string' 2>/dev/null)
+          ARTIST=$(osascript -e 'tell application "Spotify" to artist of current track as string' 2>/dev/null)
+          sketchybar --set $NAME drawing=on icon= icon.color=0xff1db954 label="$ARTIST – $TRACK"
+        elif [ "$STATE" = "paused" ]; then
+          TRACK=$(osascript -e 'tell application "Spotify" to name of current track as string' 2>/dev/null)
+          ARTIST=$(osascript -e 'tell application "Spotify" to artist of current track as string' 2>/dev/null)
+          sketchybar --set $NAME drawing=on icon= icon.color=0xff939ab7 label="$ARTIST – $TRACK"
+        else
+          sketchybar --set $NAME drawing=off
+        fi
+      elif [ "$MUSIC_RUNNING" = "true" ]; then
+        STATE=$(osascript -e 'tell application "Music" to player state as string' 2>/dev/null)
+        if [ "$STATE" = "playing" ]; then
+          TRACK=$(osascript -e 'tell application "Music" to name of current track as string' 2>/dev/null)
+          ARTIST=$(osascript -e 'tell application "Music" to artist of current track as string' 2>/dev/null)
+          sketchybar --set $NAME drawing=on icon=󰎆 icon.color=0xfffc3c44 label="$ARTIST – $TRACK"
+        elif [ "$STATE" = "paused" ]; then
+          TRACK=$(osascript -e 'tell application "Music" to name of current track as string' 2>/dev/null)
+          ARTIST=$(osascript -e 'tell application "Music" to artist of current track as string' 2>/dev/null)
+          sketchybar --set $NAME drawing=on icon= icon.color=0xff939ab7 label="$ARTIST – $TRACK"
+        else
+          sketchybar --set $NAME drawing=off
+        fi
+      else
+        sketchybar --set $NAME drawing=off
+      fi
+    '';
+  };
+
+  xdg.configFile."sketchybar/plugins/media_click.sh" = {
+    executable = true;
+    text = ''
+      #!/bin/bash
+      # Toggle play/pause for Spotify or Apple Music
+      SPOTIFY_RUNNING=$(pgrep -x "Spotify" >/dev/null && echo "true" || echo "false")
+      MUSIC_RUNNING=$(pgrep -x "Music" >/dev/null && echo "true" || echo "false")
+
+      if [ "$SPOTIFY_RUNNING" = "true" ]; then
+        osascript -e 'tell application "Spotify" to playpause'
+      elif [ "$MUSIC_RUNNING" = "true" ]; then
+        osascript -e 'tell application "Music" to playpause'
+      fi
+    '';
+  };
+
+  # JankyBorders - Window borders (Tokyo Night cyan)
   xdg.configFile."borders/bordersrc" = {
     executable = true;
     text = ''
@@ -465,7 +584,7 @@ in
         style=round
         width=5.0
         hidpi=on
-        active_color=0xff8aadf4
+        active_color=0xff7dcfff
         inactive_color=0x00000000
       )
 
