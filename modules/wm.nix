@@ -26,12 +26,12 @@ in
 
     # Gaps and padding
     [gaps]
-    inner.horizontal = 8
-    inner.vertical = 8
-    outer.left = 8
-    outer.bottom = 8
-    outer.top = 40
-    outer.right = 8
+    inner.horizontal = 6
+    inner.vertical = 6
+    outer.left = 6
+    outer.bottom = 6
+    outer.top = 36
+    outer.right = 6
 
     # Main keybindings (alt as modifier)
     [mode.main.binding]
@@ -163,13 +163,13 @@ in
 
     # Transparent bar with offset for floating islands
     sketchybar --bar \
-      height=32 \
+      height=28 \
       position=top \
       sticky=on \
-      y_offset=4 \
-      margin=8 \
-      padding_left=8 \
-      padding_right=8 \
+      y_offset=2 \
+      margin=6 \
+      padding_left=6 \
+      padding_right=6 \
       color=$BAR_COLOR \
       shadow=off
 
@@ -184,7 +184,7 @@ in
       label.padding_left=4 \
       label.padding_right=8 \
       background.color=$TRANSPARENT \
-      background.height=28 \
+      background.height=24 \
       popup.background.color=$POPUP_BG \
       popup.background.corner_radius=12 \
       popup.background.border_width=2 \
@@ -240,8 +240,8 @@ in
     sketchybar --add bracket left_island apple '/space\..*/' front_app \
       --set left_island \
       background.color=$ISLAND_BG \
-      background.corner_radius=12 \
-      background.height=32 \
+      background.corner_radius=10 \
+      background.height=28 \
       background.border_width=1 \
       background.border_color=$ISLAND_BORDER
 
@@ -309,8 +309,8 @@ in
     sketchybar --add bracket right_island media cpu wifi volume battery clock \
       --set right_island \
       background.color=$ISLAND_BG \
-      background.corner_radius=12 \
-      background.height=32 \
+      background.corner_radius=10 \
+      background.height=28 \
       background.border_width=1 \
       background.border_color=$ISLAND_BORDER
 
