@@ -125,7 +125,7 @@ run_installer() {
         -serial mon:stdio
 
     log ""
-    log "Base installation complete. Now installing packages..."
+    log "Base installation complete. Now installing Sway..."
     log "Starting VM for post-install setup..."
 
     # Start VM in background for post-install
@@ -148,10 +148,9 @@ run_installer() {
     log "Waiting for VM to boot (30 seconds)..."
     sleep 30
 
-    log "Installing packages from packages.txt..."
-    PACKAGES=$(grep -v '^#' "${SCRIPT_DIR}/packages.txt" | grep -v '^$' | tr '\n' ' ')
+    log "Installing Sway and Wayland packages..."
     for i in 1 2 3 4 5; do
-        if ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 root@localhost "xbps-install -Sy ${PACKAGES} && echo 'Packages installed successfully!'" 2>/dev/null; then
+        if ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 root@localhost "xbps-install -Sy sway foot wmenu swaylock swayidle swaybg grim slurp wl-clipboard mako mesa-dri dejavu-fonts-ttf && echo 'WLR_NO_HARDWARE_CURSORS=1' >> /etc/environment && echo 'Sway installed successfully!'" 2>/dev/null; then
             break
         fi
         log "Retry $i - waiting for SSH..."
