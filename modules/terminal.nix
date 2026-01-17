@@ -17,9 +17,12 @@
     shell-integration = fish
     command = ${pkgs.fish}/bin/fish
 
+    # Scrollback
+    scrollback-limit = 100000
+
     # Transparency and blur
-    background-opacity = 0.95
-    background-blur-radius = 20
+    background-opacity = 0.75
+    background-blur-radius = 35
 
     # Tokyo Night color scheme
     background = 1a1b26
