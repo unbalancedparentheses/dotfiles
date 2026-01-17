@@ -1,0 +1,138 @@
+# Void Linux packages for VM setup
+# Install with: xbps-install -Sy $(cat packages.txt | grep -v '^#' | tr '\n' ' ')
+
+# Base system
+base-system
+void-docs-browse
+void-repo-nonfree
+void-repo-multilib-nonfree
+
+# Desktop (DWM/X11)
+xorg-minimal
+xorg-server-devel
+xorg-fonts
+xf86-video-intel
+xrandr
+xset
+setxkbmap
+xclip
+xautolock
+xbacklight
+dmenu
+dunst
+feh
+scrot
+slock
+slstatus
+st
+
+# Fonts
+google-fonts-ttf
+
+# Shell & Terminal
+fish-shell
+tmux
+alacritty
+kitty
+
+# Editors
+neovim
+emacs-gtk2
+
+# Development
+gcc
+make
+patch
+nasm
+rust
+git
+gdb
+cgdb
+strace
+
+# CLI Tools
+bat
+fd
+ripgrep
+dust
+htop
+btop
+tig
+gitui
+zoxide
+tokei
+loc
+
+# System
+acpi
+brightnessctl
+powertop
+powerstat
+psmisc
+lvm2
+cryptsetup
+mdadm
+unzip
+xxd
+
+# Network
+NetworkManager
+NetworkManager-openvpn
+network-manager-applet
+gnome-ssh-askpass
+
+# Audio
+alsa-utils
+alsa-tools
+AlsaMixer.app
+pasystray
+pavucontrol
+
+# Power/Battery
+cbatticon-gtk2
+
+# Clipboard
+autocutsel
+parcellite
+
+# File Manager
+Thunar
+udiskie
+
+# Documents
+mupdf
+zathura
+zathura-pdf-mupdf
+MultiMarkdown
+
+# Browsers
+firefox
+chromium
+surf
+
+# Communication
+telegram-desktop
+
+# Media
+redshift
+spotify
+
+# Containers & VMs
+docker
+qemu
+nix
+
+# Security
+ufw
+yubikey-manager
+
+# Tracing/Debug
+bpftrace
+nemiver
+ugdb
+
+# Development languages
+julia
+
+# Misc
+bandwhich
