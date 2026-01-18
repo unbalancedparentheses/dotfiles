@@ -97,40 +97,6 @@ in
     r = ['flatten-workspace-tree', 'mode main']
     backspace = ['close-all-windows-but-current', 'mode main']
 
-    # Workspace assignments
-    # 1 = browsers, 2 = terminals/code, 3 = communication, 4 = notes, 5 = music
-    [[on-window-detected]]
-    if.app-id = 'com.brave.Browser'
-    run = 'move-node-to-workspace 1'
-
-    [[on-window-detected]]
-    if.app-id = 'org.mozilla.firefox'
-    run = 'move-node-to-workspace 1'
-
-    [[on-window-detected]]
-    if.app-id = 'dev.zed.Zed'
-    run = 'move-node-to-workspace 2'
-
-    [[on-window-detected]]
-    if.app-id = 'com.tinyspeck.slackmacgap'
-    run = 'move-node-to-workspace 3'
-
-    [[on-window-detected]]
-    if.app-id = 'org.telegram.desktop'
-    run = 'move-node-to-workspace 3'
-
-    [[on-window-detected]]
-    if.app-id = 'net.whatsapp.WhatsApp'
-    run = 'move-node-to-workspace 3'
-
-    [[on-window-detected]]
-    if.app-id = 'md.obsidian'
-    run = 'move-node-to-workspace 4'
-
-    [[on-window-detected]]
-    if.app-id = 'com.spotify.client'
-    run = 'move-node-to-workspace 5'
-
     # Float rules - dialogs and utilities
     [[on-window-detected]]
     if.app-id = 'com.apple.systempreferences'
