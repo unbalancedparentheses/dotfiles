@@ -371,15 +371,19 @@ in
       script="$CONFIG_DIR/plugins/cpu.sh" \
       click_script="open -a 'Activity Monitor'"
 
-    # Memory
-    sketchybar --add item memory right \
+    # Memory graph
+    sketchybar --add graph memory right 40 \
       --set memory \
       update_freq=5 \
       icon=󰍛 \
       icon.color=$MAGENTA \
       icon.padding_left=10 \
-      icon.padding_right=10 \
+      icon.padding_right=0 \
       label.drawing=off \
+      graph.color=$MAGENTA \
+      graph.fill_color=0x40bb9af7 \
+      graph.line_width=1 \
+      width=50 \
       script="$CONFIG_DIR/plugins/memory.sh" \
       click_script="open -a 'Activity Monitor'"
 
@@ -638,18 +642,9 @@ in
       MEMORY=$(memory_pressure 2>/dev/null | grep "System-wide memory free percentage" | awk '{print 100-$5}')
       [ -z "$MEMORY" ] && MEMORY="0"
 
-      # Color based on usage
-      if [ "$MEMORY" -gt 80 ]; then
-        COLOR=0xfff7768e  # red
-      elif [ "$MEMORY" -gt 60 ]; then
-        COLOR=0xffff9e64  # orange
-      elif [ "$MEMORY" -gt 40 ]; then
-        COLOR=0xffe0af68  # yellow
-      else
-        COLOR=0xffbb9af7  # magenta (normal)
-      fi
-
-      sketchybar --set $NAME icon.color=$COLOR
+      # Push value to graph (normalized to 0-1)
+      MEMORY_NORMALIZED=$(echo "scale=2; $MEMORY / 100" | bc)
+      sketchybar --push $NAME $MEMORY_NORMALIZED
     '';
   };
 
