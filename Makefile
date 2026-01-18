@@ -55,6 +55,7 @@ ifeq ($(OS),macos)
 	sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"
 	@pgrep -q AeroSpace && aerospace reload-config || echo "Note: Run 'open -a AeroSpace' to start the window manager"
 	@pgrep -q sketchybar && sketchybar --reload || true
+	@pgrep -q borders && brew services restart borders || true
 	@echo ""
 	@echo "Installing development tools via mise..."
 	@/run/current-system/sw/bin/mise install -y 2>/dev/null || mise install -y 2>/dev/null || echo "Run 'mise install' in a new terminal"
@@ -113,6 +114,9 @@ check:
 	@command -v atuin >/dev/null && echo "  ✓ atuin" || echo "  ✗ atuin"
 	@command -v mise >/dev/null && echo "  ✓ mise" || echo "  ✗ mise"
 	@command -v just >/dev/null && echo "  ✓ just" || echo "  ✗ just"
+	@command -v delta >/dev/null && echo "  ✓ delta" || echo "  ✗ delta"
+	@command -v glow >/dev/null && echo "  ✓ glow" || echo "  ✗ glow"
+	@command -v btop >/dev/null && echo "  ✓ btop" || echo "  ✗ btop"
 	@command -v difft >/dev/null && echo "  ✓ difftastic" || echo "  ✗ difftastic"
 	@command -v sd >/dev/null && echo "  ✓ sd" || echo "  ✗ sd"
 	@command -v hyperfine >/dev/null && echo "  ✓ hyperfine" || echo "  ✗ hyperfine"
@@ -124,6 +128,7 @@ ifeq ($(OS),macos)
 	@[ -f ~/.config/zed/settings.json ] && echo "  ✓ zed" || echo "  ✗ zed"
 	@[ -f ~/.config/aerospace/aerospace.toml ] && echo "  ✓ aerospace" || echo "  ✗ aerospace"
 	@[ -f ~/.config/sketchybar/sketchybarrc ] && echo "  ✓ sketchybar" || echo "  ✗ sketchybar"
+	@[ -f ~/.config/borders/bordersrc ] && echo "  ✓ borders" || echo "  ✗ borders"
 else
 	@echo ""
 	@echo "Linux (suckless):"
