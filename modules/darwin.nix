@@ -79,6 +79,12 @@ in
     # Disable window shadows for cleaner tiling look
     defaults write com.apple.WindowManager HideDesktop -bool true
     defaults write com.apple.WindowManager StandardHideDesktopIcons -bool true
+
+    # Set wallpaper (Tokyo Night style)
+    WALLPAPER="$HOME/Desktop/projects/dotfiles/wallpapers/neon_shallows.png"
+    if [ -f "$WALLPAPER" ]; then
+      osascript -e "tell application \"System Events\" to tell every desktop to set picture to \"$WALLPAPER\""
+    fi
   '';
 
   # LaunchAgents for window management services

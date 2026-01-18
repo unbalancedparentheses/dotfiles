@@ -9,8 +9,9 @@
     cursor-style = block
     cursor-style-blink = false
     mouse-hide-while-typing = true
-    window-padding-x = 10
-    window-padding-y = 10
+    window-padding-x = 16
+    window-padding-y = 12
+    window-padding-balance = true
     window-decoration = false
     copy-on-select = clipboard
     confirm-close-surface = false
@@ -21,13 +22,17 @@
     scrollback-limit = 100000
 
     # Transparency and blur
-    background-opacity = 0.95
-    background-blur-radius = 35
+    background-opacity = 0.92
+    background-blur-radius = 40
+
+    # Unfocused state
+    unfocused-split-opacity = 0.85
 
     # Tokyo Night color scheme
     background = 1a1b26
     foreground = c0caf5
-    cursor-color = c0caf5
+    cursor-color = 7dcfff
+    cursor-text = 1a1b26
     selection-background = 292e42
     selection-foreground = c0caf5
 
