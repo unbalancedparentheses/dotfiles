@@ -42,8 +42,9 @@
 
       # Copy mode (prefix + [ to enter, v to select, y to copy)
       bind -T copy-mode-vi v send -X begin-selection
-      bind -T copy-mode-vi y send -X copy-selection-and-cancel
+      bind -T copy-mode-vi y send -X copy-pipe-and-cancel "pbcopy"
       bind -T copy-mode-vi Escape send -X cancel
+      bind -T copy-mode-vi MouseDragEnd1Pane send -X copy-pipe-and-cancel "pbcopy"
 
       # Tokyo Night theme
       set -g status-position top
