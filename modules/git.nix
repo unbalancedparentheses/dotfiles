@@ -23,7 +23,8 @@
     options = {
       navigate = true;
       side-by-side = true;
-      syntax-theme = "Nord";
+      line-numbers = true;
+      syntax-theme = "TwoDark";  # Closest to Tokyo Night
     };
   };
 }
