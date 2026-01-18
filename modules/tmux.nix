@@ -7,6 +7,7 @@
 #   prefix + hjkl  Navigate panes (vim-style)
 #   prefix + HJKL  Resize panes (vim-style)
 #   prefix + c     New window
+#   prefix + [     Enter copy mode (then v to select, y to copy, Escape to cancel)
 { config, pkgs, lib, ... }:
 
 {
@@ -38,6 +39,11 @@
       bind -r L resize-pane -R 5
 
       bind c new-window -c "#{pane_current_path}"
+
+      # Copy mode (prefix + [ to enter, v to select, y to copy)
+      bind -T copy-mode-vi v send -X begin-selection
+      bind -T copy-mode-vi y send -X copy-selection-and-cancel
+      bind -T copy-mode-vi Escape send -X cancel
 
       # Tokyo Night theme
       set -g status-position top
