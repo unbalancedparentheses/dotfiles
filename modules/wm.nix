@@ -327,10 +327,7 @@ in
     sketchybar --add graph cpu right 40 \
       --set cpu \
       update_freq=2 \
-      icon= \
-      icon.color=$CYAN \
-      icon.padding_left=10 \
-      icon.padding_right=0 \
+      icon.drawing=off \
       label.drawing=off \
       graph.color=$CYAN \
       graph.fill_color=0x407dcfff \
@@ -343,10 +340,7 @@ in
     sketchybar --add graph memory right 40 \
       --set memory \
       update_freq=5 \
-      icon=󰍛 \
-      icon.color=$MAGENTA \
-      icon.padding_left=10 \
-      icon.padding_right=0 \
+      icon.drawing=off \
       label.drawing=off \
       graph.color=$MAGENTA \
       graph.fill_color=0x40bb9af7 \
@@ -538,27 +532,36 @@ in
     executable = true;
     text = ''
       #!/bin/bash
-      PERCENTAGE=$(pmset -g batt | grep -Eo "\d+%" | cut -d% -f1)
-      CHARGING=$(pmset -g batt | grep 'AC Power')
+      BATT_INFO=$(pmset -g batt)
+      PERCENTAGE=$(echo "$BATT_INFO" | grep -Eo '[0-9]+%' | cut -d% -f1)
 
-      if [ "$CHARGING" != "" ]; then
-        ICON="󰂄"
-        COLOR=0xff9ece6a  # green
-      elif [ "$PERCENTAGE" -gt 80 ]; then
-        ICON="󰁹"
-        COLOR=0xff9ece6a  # green
-      elif [ "$PERCENTAGE" -gt 60 ]; then
-        ICON="󰂀"
-        COLOR=0xff7dcfff  # cyan
-      elif [ "$PERCENTAGE" -gt 40 ]; then
-        ICON="󰁾"
-        COLOR=0xffe0af68  # yellow
-      elif [ "$PERCENTAGE" -gt 20 ]; then
-        ICON="󰁻"
-        COLOR=0xffff9e64  # orange
+      if echo "$BATT_INFO" | grep -q 'AC Power'; then
+        # Plugged in
+        if echo "$BATT_INFO" | grep -q 'charged'; then
+          ICON="󰁹"
+          COLOR=0xff9ece6a  # green - fully charged
+        else
+          ICON="󰂄"
+          COLOR=0xff9ece6a  # green - charging
+        fi
       else
-        ICON="󰁺"
-        COLOR=0xfff7768e  # red
+        # Discharging (on battery)
+        if [ "$PERCENTAGE" -gt 80 ]; then
+          ICON="󰁹"
+          COLOR=0xff7dcfff  # cyan
+        elif [ "$PERCENTAGE" -gt 60 ]; then
+          ICON="󰂀"
+          COLOR=0xff7dcfff  # cyan
+        elif [ "$PERCENTAGE" -gt 40 ]; then
+          ICON="󰁾"
+          COLOR=0xffe0af68  # yellow
+        elif [ "$PERCENTAGE" -gt 20 ]; then
+          ICON="󰁻"
+          COLOR=0xffff9e64  # orange
+        else
+          ICON="󰁺"
+          COLOR=0xfff7768e  # red
+        fi
       fi
 
       sketchybar --set $NAME icon="$ICON" icon.color=$COLOR
@@ -620,17 +623,17 @@ in
     executable = true;
     text = ''
       #!/bin/bash
-      # Check WiFi power state and connection
-      WIFI_POWER=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I 2>/dev/null | grep -c "AirPort: Off")
+      # Check WiFi power state
+      WIFI_POWER=$(networksetup -getairportpower en0 2>/dev/null | grep -c "On")
 
-      if [ "$WIFI_POWER" -gt 0 ]; then
+      if [ "$WIFI_POWER" -eq 0 ]; then
         # WiFi is turned off
         sketchybar --set $NAME icon=󰖪 icon.color=0xfff7768e
       else
-        # WiFi is on, check if connected
-        SSID=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I 2>/dev/null | grep ' SSID' | awk '{print $2}')
-        if [ -z "$SSID" ]; then
-          # Not connected to any network
+        # WiFi is on, check if connected via IP address
+        IP=$(ipconfig getifaddr en0 2>/dev/null)
+        if [ -z "$IP" ]; then
+          # Not connected
           sketchybar --set $NAME icon=󰖪 icon.color=0xff565f89
         else
           # Connected
