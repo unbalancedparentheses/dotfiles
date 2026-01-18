@@ -299,6 +299,7 @@ in
       --subscribe volume volume_change
 
     # WiFi (click to open WiFi settings)
+    sketchybar --add event wifi_change "com.apple.system.config.network_change"
     sketchybar --add item wifi right \
       --set wifi \
       update_freq=5 \
@@ -308,7 +309,8 @@ in
       icon.padding_right=10 \
       label.drawing=off \
       script="$CONFIG_DIR/plugins/wifi.sh" \
-      click_script="open 'x-apple.systempreferences:com.apple.wifi-settings-extension'"
+      click_script="open 'x-apple.systempreferences:com.apple.wifi-settings-extension'" \
+      --subscribe wifi wifi_change system_woke
 
     # Weather
     sketchybar --add item weather right \
@@ -618,13 +620,22 @@ in
     executable = true;
     text = ''
       #!/bin/bash
-      # Check if connected by looking for an IP address on en0
-      IP=$(ipconfig getifaddr en0 2>/dev/null)
+      # Check WiFi power state and connection
+      WIFI_POWER=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I 2>/dev/null | grep -c "AirPort: Off")
 
-      if [ -z "$IP" ]; then
-        sketchybar --set $NAME icon=󰖪 icon.color=0xff565f89
+      if [ "$WIFI_POWER" -gt 0 ]; then
+        # WiFi is turned off
+        sketchybar --set $NAME icon=󰖪 icon.color=0xfff7768e
       else
-        sketchybar --set $NAME icon=󰖩 icon.color=0xff9ece6a
+        # WiFi is on, check if connected
+        SSID=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I 2>/dev/null | grep ' SSID' | awk '{print $2}')
+        if [ -z "$SSID" ]; then
+          # Not connected to any network
+          sketchybar --set $NAME icon=󰖪 icon.color=0xff565f89
+        else
+          # Connected
+          sketchybar --set $NAME icon=󰖩 icon.color=0xff9ece6a
+        fi
       fi
     '';
   };
