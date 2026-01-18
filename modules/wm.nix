@@ -257,11 +257,14 @@ in
       sketchybar --add item space.$sid left \
         --set space.$sid \
         icon="$sid" \
-        icon.font="JetBrainsMono Nerd Font:Bold:12.0" \
-        icon.padding_left=12 \
-        icon.padding_right=12 \
+        icon.font="JetBrainsMono Nerd Font:Bold:10.0" \
+        icon.padding_left=8 \
+        icon.padding_right=2 \
         icon.color=$GREY \
         icon.highlight_color=$ACCENT \
+        label.font="sketchybar-app-font:Regular:14.0" \
+        label.padding_left=2 \
+        label.padding_right=8 \
         label.drawing=off \
         background.color=$TRANSPARENT \
         background.corner_radius=8 \
@@ -270,7 +273,7 @@ in
         drawing=off \
         click_script="aerospace workspace $sid" \
         script="$CONFIG_DIR/plugins/space.sh $sid" \
-        --subscribe space.$sid aerospace_workspace_change mouse.clicked mouse.entered mouse.exited
+        --subscribe space.$sid aerospace_workspace_change mouse.clicked
     done
 
     # Front app (with icon)
@@ -302,8 +305,9 @@ in
       update_freq=30 \
       icon= \
       icon.color=$PINK \
-      icon.padding_left=14 \
-      label.padding_right=14 \
+      icon.padding_left=10 \
+      icon.padding_right=10 \
+      label.drawing=off \
       script="$CONFIG_DIR/plugins/clock.sh" \
       click_script="open -a Calendar"
 
@@ -311,6 +315,9 @@ in
     sketchybar --add item battery right \
       --set battery \
       update_freq=120 \
+      icon.padding_left=10 \
+      icon.padding_right=10 \
+      label.drawing=off \
       script="$CONFIG_DIR/plugins/battery.sh" \
       click_script="open 'x-apple.systempreferences:com.apple.preference.battery'" \
       --subscribe battery system_woke power_source_change
@@ -318,6 +325,9 @@ in
     # Volume (click to open Sound settings)
     sketchybar --add item volume right \
       --set volume \
+      icon.padding_left=10 \
+      icon.padding_right=10 \
+      label.drawing=off \
       script="$CONFIG_DIR/plugins/volume.sh" \
       click_script="open 'x-apple.systempreferences:com.apple.preference.sound'" \
       --subscribe volume volume_change
@@ -328,26 +338,59 @@ in
       update_freq=5 \
       icon=󰖩 \
       icon.color=$GREEN \
-      label.drawing=on \
+      icon.padding_left=10 \
+      icon.padding_right=10 \
+      label.drawing=off \
       script="$CONFIG_DIR/plugins/wifi.sh" \
       click_script="open 'x-apple.systempreferences:com.apple.wifi-settings-extension'"
 
-    # CPU (click to open Activity Monitor)
-    sketchybar --add item cpu right \
+    # Weather
+    sketchybar --add item weather right \
+      --set weather \
+      update_freq=900 \
+      icon= \
+      icon.color=$YELLOW \
+      icon.padding_left=10 \
+      icon.padding_right=10 \
+      label.drawing=off \
+      script="$CONFIG_DIR/plugins/weather.sh"
+
+    # CPU graph (click to open Activity Monitor)
+    sketchybar --add graph cpu right 40 \
       --set cpu \
-      update_freq=5 \
+      update_freq=2 \
       icon= \
       icon.color=$CYAN \
+      icon.padding_left=10 \
+      icon.padding_right=0 \
+      label.drawing=off \
+      graph.color=$CYAN \
+      graph.fill_color=0x407dcfff \
+      graph.line_width=1 \
+      width=50 \
       script="$CONFIG_DIR/plugins/cpu.sh" \
       click_script="open -a 'Activity Monitor'"
 
-    # Media (in right island, click to play/pause)
+    # Memory
+    sketchybar --add item memory right \
+      --set memory \
+      update_freq=5 \
+      icon=󰍛 \
+      icon.color=$MAGENTA \
+      icon.padding_left=10 \
+      icon.padding_right=10 \
+      label.drawing=off \
+      script="$CONFIG_DIR/plugins/memory.sh" \
+      click_script="open -a 'Activity Monitor'"
+
+    # Media (in right island, click to play/pause) - always show song
     sketchybar --add item media right \
       --set media \
       icon= \
       icon.color=$GREEN \
-      icon.padding_left=14 \
-      label.max_chars=30 \
+      icon.padding_left=10 \
+      label.max_chars=35 \
+      label.drawing=on \
       scroll_texts=on \
       update_freq=3 \
       script="$CONFIG_DIR/plugins/media.sh" \
@@ -355,7 +398,7 @@ in
       --subscribe media media_change
 
     # Right island bracket
-    sketchybar --add bracket right_island media cpu wifi volume battery clock \
+    sketchybar --add bracket right_island media memory cpu weather wifi volume battery clock \
       --set right_island \
       background.color=$ISLAND_BG \
       background.corner_radius=12 \
@@ -378,11 +421,38 @@ in
       #!/bin/bash
       WORKSPACE_ID="$1"
 
+      # Get app icon for sketchybar-app-font
+      get_app_icon() {
+        local app="$1"
+        echo ":$(echo "$app" | tr '[:upper:]' '[:lower:]' | tr ' ' '_'):"
+      }
+
       update() {
+        # Get first app in workspace for icon
+        FIRST_APP=$(aerospace list-windows --workspace "$WORKSPACE_ID" --format "%{app-name}" 2>/dev/null | head -1)
+
+        if [ -n "$FIRST_APP" ]; then
+          # Show number + app icon
+          ICON=$(get_app_icon "$FIRST_APP")
+          sketchybar --set $NAME \
+            icon="$WORKSPACE_ID" \
+            icon.font="JetBrainsMono Nerd Font:Bold:10.0" \
+            label="$ICON" \
+            label.font="sketchybar-app-font:Regular:14.0" \
+            label.drawing=on
+        else
+          # Empty workspace - just show number
+          sketchybar --set $NAME \
+            icon="$WORKSPACE_ID" \
+            icon.font="JetBrainsMono Nerd Font:Bold:12.0" \
+            label.drawing=off
+        fi
+
         if [ "$FOCUSED_WORKSPACE" = "$WORKSPACE_ID" ]; then
           sketchybar --set $NAME \
             icon.highlight=on \
             icon.color=0xff7dcfff \
+            label.color=0xff7dcfff \
             background.drawing=on \
             background.color=0x257dcfff \
             background.corner_radius=8 \
@@ -392,6 +462,7 @@ in
           sketchybar --set $NAME \
             icon.highlight=off \
             icon.color=0xff565f89 \
+            label.color=0xff565f89 \
             background.drawing=off \
             background.border_width=0
         fi
@@ -401,37 +472,8 @@ in
         aerospace workspace "$WORKSPACE_ID"
       }
 
-      show_apps() {
-        APPS=$(aerospace list-windows --workspace "$WORKSPACE_ID" --format "%{app-name}" 2>/dev/null)
-        if [ -z "$APPS" ]; then
-          sketchybar --set $NAME popup.drawing=on
-          sketchybar --add item popup.empty popup.$NAME \
-            --set popup.empty label="Empty" label.color=0xff939ab7 icon.drawing=off
-        else
-          sketchybar --set $NAME popup.drawing=on
-          COUNT=0
-          echo "$APPS" | while read -r APP; do
-            [ -z "$APP" ] && continue
-            COUNT=$((COUNT + 1))
-            sketchybar --add item popup.$NAME.$COUNT popup.$NAME \
-              --set popup.$NAME.$COUNT \
-              label="$APP" \
-              icon.drawing=off \
-              click_script="open -a \"$APP\""
-          done
-        fi
-      }
-
-      hide_apps() {
-        sketchybar --set $NAME popup.drawing=off
-        sketchybar --remove '/popup\.'"$NAME"'\..*/' 2>/dev/null
-        sketchybar --remove popup.empty 2>/dev/null
-      }
-
       case "$SENDER" in
         mouse.clicked) mouse_clicked ;;
-        mouse.entered) show_apps ;;
-        mouse.exited) hide_apps ;;
         *) update ;;
       esac
     '';
@@ -442,18 +484,43 @@ in
     executable = true;
     text = ''
       #!/bin/bash
-      # Show only active/occupied workspaces
+      # Show only active/occupied workspaces with numbers + app icons
+
+      get_app_icon() {
+        local app="$1"
+        echo ":$(echo "$app" | tr '[:upper:]' '[:lower:]' | tr ' ' '_'):"
+      }
 
       OCCUPIED=$(aerospace list-workspaces --monitor all --empty no 2>/dev/null)
       FOCUSED=$(aerospace list-workspaces --focused 2>/dev/null || echo "1")
 
       for sid in 1 2 3 4 5 6 7 8 9; do
         if echo "$OCCUPIED" | grep -qw "$sid" || [ "$FOCUSED" = "$sid" ]; then
-          sketchybar --set space.$sid drawing=on
+          # Get first app for icon
+          FIRST_APP=$(aerospace list-windows --workspace "$sid" --format "%{app-name}" 2>/dev/null | head -1)
+
+          if [ -n "$FIRST_APP" ]; then
+            ICON=$(get_app_icon "$FIRST_APP")
+            sketchybar --set space.$sid \
+              drawing=on \
+              icon="$sid" \
+              icon.font="JetBrainsMono Nerd Font:Bold:10.0" \
+              label="$ICON" \
+              label.font="sketchybar-app-font:Regular:14.0" \
+              label.drawing=on
+          else
+            sketchybar --set space.$sid \
+              drawing=on \
+              icon="$sid" \
+              icon.font="JetBrainsMono Nerd Font:Bold:12.0" \
+              label.drawing=off
+          fi
+
           if [ "$FOCUSED" = "$sid" ]; then
             sketchybar --set space.$sid \
               icon.highlight=on \
               icon.color=0xff7dcfff \
+              label.color=0xff7dcfff \
               background.drawing=on \
               background.color=0x257dcfff \
               background.corner_radius=8 \
@@ -463,6 +530,7 @@ in
             sketchybar --set space.$sid \
               icon.highlight=off \
               icon.color=0xff565f89 \
+              label.color=0xff565f89 \
               background.drawing=off \
               background.border_width=0
           fi
@@ -489,6 +557,7 @@ in
     executable = true;
     text = ''
       #!/bin/bash
+      # Update label (hidden, but available for potential popup)
       sketchybar --set $NAME label="$(date '+%a %d %b  %H:%M')"
     '';
   };
@@ -520,7 +589,7 @@ in
         COLOR=0xfff7768e  # red
       fi
 
-      sketchybar --set $NAME icon="$ICON" icon.color=$COLOR label="''${PERCENTAGE}%"
+      sketchybar --set $NAME icon="$ICON" icon.color=$COLOR
     '';
   };
 
@@ -544,7 +613,7 @@ in
         COLOR=0xffbb9af7
       fi
 
-      sketchybar --set $NAME icon="$ICON" icon.color=$COLOR label="''${VOLUME}%"
+      sketchybar --set $NAME icon="$ICON" icon.color=$COLOR
     '';
   };
 
@@ -554,7 +623,33 @@ in
       #!/bin/bash
       CPU=$(top -l 1 -n 0 2>/dev/null | grep -E "^CPU" | grep -Eo '[0-9]+\.[0-9]+' | head -1)
       [ -z "$CPU" ] && CPU="0"
-      sketchybar --set $NAME label="''${CPU}%"
+      # Push value to graph (0-100 scale, normalized to 0-1)
+      CPU_INT=''${CPU%.*}
+      CPU_NORMALIZED=$(echo "scale=2; $CPU_INT / 100" | bc)
+      sketchybar --push $NAME $CPU_NORMALIZED
+    '';
+  };
+
+  xdg.configFile."sketchybar/plugins/memory.sh" = {
+    executable = true;
+    text = ''
+      #!/bin/bash
+      # Get memory pressure (percentage of memory used)
+      MEMORY=$(memory_pressure 2>/dev/null | grep "System-wide memory free percentage" | awk '{print 100-$5}')
+      [ -z "$MEMORY" ] && MEMORY="0"
+
+      # Color based on usage
+      if [ "$MEMORY" -gt 80 ]; then
+        COLOR=0xfff7768e  # red
+      elif [ "$MEMORY" -gt 60 ]; then
+        COLOR=0xffff9e64  # orange
+      elif [ "$MEMORY" -gt 40 ]; then
+        COLOR=0xffe0af68  # yellow
+      else
+        COLOR=0xffbb9af7  # magenta (normal)
+      fi
+
+      sketchybar --set $NAME icon.color=$COLOR
     '';
   };
 
@@ -562,14 +657,13 @@ in
     executable = true;
     text = ''
       #!/bin/bash
-      # Find WiFi interface and get SSID
-      WIFI_IF=$(networksetup -listallhardwareports | awk '/Wi-Fi|AirPort/{getline; print $2}')
-      SSID=$(networksetup -getairportnetwork "$WIFI_IF" 2>/dev/null | sed 's/Current Wi-Fi Network: //')
+      # Check if connected by looking for an IP address on en0
+      IP=$(ipconfig getifaddr en0 2>/dev/null)
 
-      if [ -z "$SSID" ] || [ "$SSID" = "You are not associated with an AirPort network." ]; then
-        sketchybar --set $NAME icon=󰖪 icon.color=0xff565f89 label=""
+      if [ -z "$IP" ]; then
+        sketchybar --set $NAME icon=󰖪 icon.color=0xff565f89
       else
-        sketchybar --set $NAME icon=󰖩 icon.color=0xff9ece6a label="$SSID"
+        sketchybar --set $NAME icon=󰖩 icon.color=0xff9ece6a
       fi
     '';
   };
@@ -626,6 +720,36 @@ in
         osascript -e 'tell application "Spotify" to playpause'
       elif [ "$MUSIC_RUNNING" = "true" ]; then
         osascript -e 'tell application "Music" to playpause'
+      fi
+    '';
+  };
+
+  xdg.configFile."sketchybar/plugins/weather.sh" = {
+    executable = true;
+    text = ''
+      #!/bin/bash
+      # Fetch weather from wttr.in (no API key needed)
+      WEATHER=$(curl -s "wttr.in/?format=%c%t" 2>/dev/null | head -1)
+
+      if [ -z "$WEATHER" ] || [[ "$WEATHER" == *"Unknown"* ]]; then
+        sketchybar --set $NAME icon=""
+      else
+        # Extract icon and temp
+        ICON=$(echo "$WEATHER" | cut -c1-1)
+
+        # Map weather emoji to nerd font icons
+        case "$ICON" in
+          ☀️|☀) NERD_ICON="" ;;
+          🌤️|🌤|⛅) NERD_ICON="" ;;
+          ☁️|☁) NERD_ICON="" ;;
+          🌧️|🌧|🌦️|🌦) NERD_ICON="" ;;
+          ⛈️|⛈|🌩️|🌩) NERD_ICON="" ;;
+          🌨️|🌨|❄️|❄) NERD_ICON="" ;;
+          🌫️|🌫) NERD_ICON="" ;;
+          *) NERD_ICON="" ;;
+        esac
+
+        sketchybar --set $NAME icon="$NERD_ICON"
       fi
     '';
   };

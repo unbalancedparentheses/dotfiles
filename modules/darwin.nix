@@ -73,6 +73,7 @@ in
     screensaver.askForPasswordDelay = 10;
   };
 
+
   system.activationScripts.postActivation.text = ''
     mkdir -p ~/Pictures/Screenshots
     # Disable window shadows for cleaner tiling look

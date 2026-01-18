@@ -51,6 +51,11 @@ in
       nvim-autopairs
       which-key-nvim
       indent-blankline-nvim
+
+      # Navigation & editing
+      nvim-surround
+      flash-nvim
+      harpoon2
     ];
 
     extraPackages = lsp.servers ++ lsp.tools;
@@ -72,12 +77,23 @@ in
       vim.opt.colorcolumn = "100"
       vim.opt.ignorecase = true
       vim.opt.smartcase = true
-      vim.opt.hlsearch = false
+      vim.opt.hlsearch = true
       vim.opt.incsearch = true
       vim.opt.clipboard = "unnamedplus"
       vim.opt.splitright = true
       vim.opt.splitbelow = true
       vim.g.mapleader = " "
+
+      -- Persistent undo
+      vim.opt.undofile = true
+      vim.opt.undodir = vim.fn.stdpath("data") .. "/undo"
+
+      -- No backup/swap clutter
+      vim.opt.backup = false
+      vim.opt.swapfile = false
+
+      -- Mouse support
+      vim.opt.mouse = "a"
 
       -- Theme
       require("tokyonight").setup({ style = "night" })
@@ -207,6 +223,32 @@ in
       vim.keymap.set("n", "<C-j>", "<C-w>j")
       vim.keymap.set("n", "<C-k>", "<C-w>k")
       vim.keymap.set("n", "<C-l>", "<C-w>l")
+
+      -- Clear search highlight
+      vim.keymap.set("n", "<Esc>", ":nohlsearch<CR>", { desc = "Clear search" })
+
+      -- Buffer navigation
+      vim.keymap.set("n", "<S-h>", ":bprevious<CR>", { desc = "Previous buffer" })
+      vim.keymap.set("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
+      vim.keymap.set("n", "<leader>bd", ":bdelete<CR>", { desc = "Delete buffer" })
+
+      -- Surround (ys, ds, cs)
+      require("nvim-surround").setup()
+
+      -- Flash (fast navigation)
+      require("flash").setup()
+      vim.keymap.set({ "n", "x", "o" }, "s", function() require("flash").jump() end, { desc = "Flash" })
+      vim.keymap.set({ "n", "x", "o" }, "S", function() require("flash").treesitter() end, { desc = "Flash Treesitter" })
+
+      -- Harpoon (quick file switching)
+      local harpoon = require("harpoon")
+      harpoon:setup()
+      vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end, { desc = "Harpoon add" })
+      vim.keymap.set("n", "<leader>h", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, { desc = "Harpoon menu" })
+      vim.keymap.set("n", "<leader>1", function() harpoon:list():select(1) end, { desc = "Harpoon 1" })
+      vim.keymap.set("n", "<leader>2", function() harpoon:list():select(2) end, { desc = "Harpoon 2" })
+      vim.keymap.set("n", "<leader>3", function() harpoon:list():select(3) end, { desc = "Harpoon 3" })
+      vim.keymap.set("n", "<leader>4", function() harpoon:list():select(4) end, { desc = "Harpoon 4" })
     '';
   };
 }

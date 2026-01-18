@@ -49,26 +49,26 @@
 
   programs.bat = {
     enable = true;
-    config.theme = "Nord";
+    config.theme = "tokyonight";
   };
 
   programs.fzf = {
     enable = true;
     enableFishIntegration = true;
     colors = {
-      # Nord theme
-      fg = "#d8dee9";
-      bg = "#2e3440";
-      hl = "#88c0d0";
-      "fg+" = "#eceff4";
-      "bg+" = "#3b4252";
-      "hl+" = "#88c0d0";
-      info = "#88c0d0";
-      prompt = "#88c0d0";
-      pointer = "#bf616a";
-      marker = "#a3be8c";
-      spinner = "#b48ead";
-      header = "#88c0d0";
+      # Tokyo Night theme
+      fg = "#c0caf5";
+      bg = "#1a1b26";
+      hl = "#7dcfff";
+      "fg+" = "#c0caf5";
+      "bg+" = "#292e42";
+      "hl+" = "#7dcfff";
+      info = "#7aa2f7";
+      prompt = "#7dcfff";
+      pointer = "#f7768e";
+      marker = "#9ece6a";
+      spinner = "#bb9af7";
+      header = "#7dcfff";
     };
   };
 
