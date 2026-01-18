@@ -387,13 +387,13 @@ in
       script="$CONFIG_DIR/plugins/memory.sh" \
       click_script="open -a 'Activity Monitor'"
 
-    # Media (in right island, click to play/pause) - always show song
+    # Media (in right island, click to play/pause)
     sketchybar --add item media right \
       --set media \
       icon= \
       icon.color=$GREEN \
       icon.padding_left=10 \
-      label.max_chars=35 \
+      label.max_chars=30 \
       label.drawing=on \
       scroll_texts=on \
       update_freq=3 \
@@ -401,7 +401,7 @@ in
       click_script="$CONFIG_DIR/plugins/media_click.sh" \
       --subscribe media media_change
 
-    # Right island bracket
+    # Right island bracket (system info + media)
     sketchybar --add bracket right_island media memory cpu weather wifi volume battery clock \
       --set right_island \
       background.color=$ISLAND_BG \
@@ -749,22 +749,18 @@ in
     '';
   };
 
-  # JankyBorders - Window borders with glow (Tokyo Night cyan)
+  # JankyBorders - Window borders with glow
   xdg.configFile."borders/bordersrc" = {
     executable = true;
     text = ''
       #!/bin/bash
 
-      options=(
-        style=round
-        width=6.0
-        hidpi=on
-        active_color=0xc07dcfff
+      borders \
+        style=round \
+        width=5.0 \
+        hidpi=on \
+        active_color=0xc07dcfff \
         inactive_color=0x00000000
-        blur_radius=25
-      )
-
-      borders "''${options[@]}"
     '';
   };
   };
