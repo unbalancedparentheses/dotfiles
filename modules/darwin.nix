@@ -80,12 +80,12 @@ in
     defaults write com.apple.WindowManager HideDesktop -bool true
     defaults write com.apple.WindowManager StandardHideDesktopIcons -bool true
 
-    # Set random wallpaper
+    # Set random wallpaper using desktoppr
     WALLPAPER_DIR="$HOME/Desktop/projects/dotfiles/wallpapers"
     if [ -d "$WALLPAPER_DIR" ]; then
       WALLPAPER=$(find "$WALLPAPER_DIR" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) 2>/dev/null | sort -R | head -1)
-      if [ -f "$WALLPAPER" ]; then
-        osascript -e "tell application \"System Events\" to tell every desktop to set picture to \"$WALLPAPER\""
+      if [ -f "$WALLPAPER" ] && command -v desktoppr >/dev/null; then
+        desktoppr "$WALLPAPER"
       fi
     fi
   '';
@@ -119,8 +119,8 @@ in
           WALLPAPER_DIR="$HOME/Desktop/projects/dotfiles/wallpapers"
           if [ -d "$WALLPAPER_DIR" ]; then
             WALLPAPER=$(find "$WALLPAPER_DIR" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) 2>/dev/null | sort -R | head -1)
-            if [ -f "$WALLPAPER" ]; then
-              osascript -e "tell application \"System Events\" to tell every desktop to set picture to \"$WALLPAPER\""
+            if [ -f "$WALLPAPER" ] && command -v desktoppr >/dev/null; then
+              desktoppr "$WALLPAPER"
             fi
           fi
         ''

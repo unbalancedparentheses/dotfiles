@@ -242,12 +242,23 @@ in
         --subscribe space.$sid aerospace_workspace_change mouse.clicked
     done
 
+    # Separator between workspaces and front app
+    sketchybar --add item separator left \
+      --set separator \
+      icon="│" \
+      icon.font="JetBrainsMono Nerd Font:Regular:16.0" \
+      icon.color=0xff3b4261 \
+      icon.padding_left=6 \
+      icon.padding_right=6 \
+      label.drawing=off \
+      background.drawing=off
+
     # Front app (with icon)
     sketchybar --add item front_app left \
       --set front_app \
       icon.drawing=on \
       icon.font="sketchybar-app-font:Regular:15.0" \
-      icon.padding_left=8 \
+      icon.padding_left=4 \
       label.font="JetBrainsMono Nerd Font:Bold:13.0" \
       label.padding_left=8 \
       label.padding_right=14 \
@@ -255,7 +266,7 @@ in
       --subscribe front_app front_app_switched
 
     # Left island bracket
-    sketchybar --add bracket left_island apple '/space\..*/' front_app \
+    sketchybar --add bracket left_island apple '/space\..*/' separator front_app \
       --set left_island \
       background.color=$ISLAND_BG \
       background.corner_radius=12 \
@@ -407,11 +418,13 @@ in
             label.font="sketchybar-app-font:Regular:14.0" \
             label.drawing=on
         else
-          # Empty workspace - just show number
+          # Empty workspace - show number + desktop icon for consistent spacing
           sketchybar --set $NAME \
             icon="$WORKSPACE_ID" \
-            icon.font="JetBrainsMono Nerd Font:Bold:12.0" \
-            label.drawing=off
+            icon.font="JetBrainsMono Nerd Font:Bold:10.0" \
+            label=":default:" \
+            label.font="sketchybar-app-font:Regular:14.0" \
+            label.drawing=on
         fi
 
         if [ "$FOCUSED_WORKSPACE" = "$WORKSPACE_ID" ]; then
@@ -475,11 +488,14 @@ in
               label.font="sketchybar-app-font:Regular:14.0" \
               label.drawing=on
           else
+            # Empty workspace - show number + desktop icon for consistent spacing
             sketchybar --set space.$sid \
               drawing=on \
               icon="$sid" \
-              icon.font="JetBrainsMono Nerd Font:Bold:12.0" \
-              label.drawing=off
+              icon.font="JetBrainsMono Nerd Font:Bold:10.0" \
+              label=":default:" \
+              label.font="sketchybar-app-font:Regular:14.0" \
+              label.drawing=on
           fi
 
           if [ "$FOCUSED" = "$sid" ]; then
@@ -512,7 +528,12 @@ in
     text = ''
       #!/bin/bash
       if [ "$SENDER" = "front_app_switched" ]; then
-        sketchybar --set $NAME label="$INFO" icon=":$(echo "$INFO" | tr '[:upper:]' '[:lower:]' | tr ' ' '_'):"
+        if [ -z "$INFO" ] || [ "$INFO" = "Finder" ]; then
+          # Desktop or Finder - show clean desktop label
+          sketchybar --set $NAME label="Desktop" icon=":finder:"
+        else
+          sketchybar --set $NAME label="$INFO" icon=":$(echo "$INFO" | tr '[:upper:]' '[:lower:]' | tr ' ' '_'):"
+        fi
         # Update workspace visibility when app switches
         $CONFIG_DIR/plugins/spaces_update.sh
       fi
@@ -737,10 +758,10 @@ in
 
       borders \
         style=round \
-        width=5.0 \
+        width=4.0 \
         hidpi=on \
         active_color=0xc07dcfff \
-        inactive_color=0x00000000
+        inactive_color=0x303b4261
     '';
   };
   };

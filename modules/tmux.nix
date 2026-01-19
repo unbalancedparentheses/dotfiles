@@ -14,10 +14,11 @@
   programs.tmux = {
     enable = true;
     terminal = "tmux-256color";
+    shell = "${pkgs.fish}/bin/fish";
     prefix = "C-a";
     baseIndex = 1;
     escapeTime = 0;
-    historyLimit = 50000;
+    historyLimit = 1000000;
     mouse = true;
     keyMode = "vi";
     extraConfig = ''
