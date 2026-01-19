@@ -16,10 +16,10 @@
     copy-on-select = clipboard
     confirm-close-surface = false
     shell-integration = fish
-    command = ${pkgs.fish}/bin/fish
+    command = ${pkgs.tmux}/bin/tmux new-session -A -s main
 
     # Scrollback
-    scrollback-limit = 100000
+    scrollback-limit = 1000000
 
     # Transparency and blur
     background-opacity = 0.92
