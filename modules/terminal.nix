@@ -16,7 +16,7 @@
     copy-on-select = clipboard
     confirm-close-surface = false
     shell-integration = fish
-    command = ${pkgs.tmux}/bin/tmux new-session -A -s main
+    command = ${pkgs.tmux}/bin/tmux new-session
 
     # Scrollback
     scrollback-limit = 1000000

@@ -15,6 +15,8 @@
       push.autoSetupRemote = true;
       pull.rebase = true;
       gpg.format = "ssh";
+      rerere.enabled = true;  # Remember merge conflict resolutions
+      diff.algorithm = "histogram";  # Better diff algorithm
     };
   };
 
