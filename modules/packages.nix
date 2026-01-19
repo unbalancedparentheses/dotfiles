@@ -25,6 +25,7 @@
     tree       # Directory tree
     wget       # Download files
     tmux       # Terminal multiplexer
+    mosh       # Mobile shell (better SSH)
     tig        # Git TUI
     glow       # Markdown renderer
     # Rust managed by mise (see .mise.toml)
