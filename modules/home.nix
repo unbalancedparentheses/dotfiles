@@ -10,7 +10,6 @@
     ./git.nix
     ./tmux.nix
     ./terminal.nix
-    ./wm.nix
     ./linux.nix
   ];
 

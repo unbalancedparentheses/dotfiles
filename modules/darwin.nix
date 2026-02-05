@@ -1,9 +1,6 @@
 # macOS (nix-darwin) specific configuration
 { config, pkgs, lib, username, ... }:
 
-let
-  brewPrefix = if pkgs.stdenv.hostPlatform.isAarch64 then "/opt/homebrew" else "/usr/local";
-in
 {
   # Disable nix-darwin's Nix management (using Determinate Nix installer)
   nix.enable = false;
@@ -17,19 +14,14 @@ in
 
   # macOS system preferences
   system.defaults = {
-    # Dock - completely hidden for tiling WM setup
-    dock.autohide = true;
-    dock.autohide-delay = 1000.0;  # 1000s delay = effectively hidden
-    dock.autohide-time-modifier = 0.0;
+    # Dock
+    dock.autohide = false;
     dock.mru-spaces = false;
     dock.minimize-to-application = true;
     dock.show-recents = false;
-    dock.launchanim = false;
-    dock.static-only = true;  # Only show running apps
-    dock.tilesize = 32;
-
-    # Menu bar - auto-hide (SketchyBar will replace it)
-    NSGlobalDomain._HIHideMenuBar = true;
+    dock.launchanim = true;
+    dock.static-only = false;
+    dock.tilesize = 48;
 
     # Finder
     finder.AppleShowAllExtensions = true;
@@ -62,7 +54,7 @@ in
     CustomUserPreferences."com.apple.Siri".SiriPrefStashedStatusMenuVisible = false;
     CustomUserPreferences."com.apple.Siri".VoiceTriggerUserEnabled = false;
 
-    # Ghostty - disable macOS tabbing (conflicts with tiling WM)
+    # Ghostty
     CustomUserPreferences."com.mitchellh.ghostty".AppleWindowTabbingMode = "manual";
 
     # Screenshots
@@ -76,9 +68,6 @@ in
 
   system.activationScripts.postActivation.text = ''
     mkdir -p ~/Pictures/Screenshots
-    # Disable window shadows for cleaner tiling look
-    defaults write com.apple.WindowManager HideDesktop -bool true
-    defaults write com.apple.WindowManager StandardHideDesktopIcons -bool true
 
     # Set random wallpaper using desktoppr
     WALLPAPER_DIR="$HOME/Desktop/projects/dotfiles/wallpapers"
@@ -90,26 +79,7 @@ in
     fi
   '';
 
-  # LaunchAgents for window management services
-  launchd.user.agents.sketchybar = {
-    serviceConfig = {
-      ProgramArguments = [ "${brewPrefix}/bin/sketchybar" ];
-      KeepAlive = true;
-      RunAtLoad = true;
-      EnvironmentVariables = {
-        PATH = "${brewPrefix}/bin:/usr/local/bin:/usr/bin:/bin";
-      };
-    };
-  };
-
-  launchd.user.agents.borders = {
-    serviceConfig = {
-      ProgramArguments = [ "${brewPrefix}/bin/borders" ];
-      KeepAlive = true;
-      RunAtLoad = true;
-    };
-  };
-
+  # LaunchAgents
   launchd.user.agents.wallpaper = {
     serviceConfig = {
       ProgramArguments = [
@@ -138,19 +108,7 @@ in
       cleanup = "uninstall";
     };
 
-    taps = [
-      "FelixKratz/formulae"
-      "nikitabobko/tap"
-    ];
-
-    brews = [
-      "FelixKratz/formulae/sketchybar"
-      "FelixKratz/formulae/borders"
-    ];
-
     casks = [
-      # Window Management
-      "nikitabobko/tap/aerospace"
       # Browsers
       "brave-browser"
       "firefox"
@@ -182,7 +140,6 @@ in
 
       # Fonts
       "font-jetbrains-mono-nerd-font"
-      "font-sketchybar-app-font"
     ];
   };
 }
