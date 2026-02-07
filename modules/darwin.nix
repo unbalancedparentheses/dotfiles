@@ -31,6 +31,7 @@
     finder.FXEnableExtensionChangeWarning = false;
     finder.ShowPathbar = true;
     finder.ShowStatusBar = true;
+    finder._FXShowPosixPathInTitle = true;
     NSGlobalDomain.AppleShowAllFiles = true;
 
     # Trackpad
@@ -45,6 +46,9 @@
     NSGlobalDomain.NSAutomaticSpellingCorrectionEnabled = false;
     NSGlobalDomain.NSAutomaticCapitalizationEnabled = false;
     NSGlobalDomain.NSAutomaticPeriodSubstitutionEnabled = false;
+    NSGlobalDomain.NSAutomaticQuoteSubstitutionEnabled = false;
+    NSGlobalDomain.NSAutomaticDashSubstitutionEnabled = false;
+    NSGlobalDomain.NSWindowShouldDragOnGesture = true;
 
     # Faster animations
     NSGlobalDomain.NSWindowResizeTime = 0.001;

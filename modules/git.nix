@@ -17,6 +17,9 @@
       gpg.format = "ssh";
       rerere.enabled = true;  # Remember merge conflict resolutions
       diff.algorithm = "histogram";  # Better diff algorithm
+      fetch.prune = true;  # Auto-prune deleted remote branches
+      merge.conflictstyle = "zdiff3";  # Better 3-way conflict markers
+      column.ui = "auto";  # Columnar output for branch/tag lists
     };
   };
 

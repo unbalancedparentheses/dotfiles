@@ -9,11 +9,6 @@
       # Homebrew paths (needed for fish since it doesn't use /etc/paths.d)
       fish_add_path /opt/homebrew/bin /opt/homebrew/sbin
       fish_add_path ~/.cargo/bin
-      set -gx PYENV_ROOT $HOME/.pyenv
-      fish_add_path $PYENV_ROOT/bin
-      if command -v pyenv > /dev/null
-        pyenv init - | source
-      end
       set -gx LC_ALL en_US.UTF-8
       set -gx LANG en_US.UTF-8
     '';
