@@ -15,7 +15,9 @@
   # macOS system preferences
   system.defaults = {
     # Dock
-    dock.autohide = false;
+    dock.autohide = true;
+    dock.autohide-delay = 0.0;
+    dock.autohide-time-modifier = 0.5;
     dock.mru-spaces = false;
     dock.minimize-to-application = true;
     dock.show-recents = false;
@@ -48,6 +50,7 @@
     NSGlobalDomain.NSWindowResizeTime = 0.001;
 
     # Menu bar
+    NSGlobalDomain._HIHideMenuBar = false;
     controlcenter.BatteryShowPercentage = true;
 
     # Siri
@@ -79,7 +82,6 @@
     fi
   '';
 
-  # LaunchAgents
   launchd.user.agents.wallpaper = {
     serviceConfig = {
       ProgramArguments = [
@@ -108,6 +110,9 @@
       cleanup = "uninstall";
     };
 
+    taps = [];
+
+    brews = [];
     casks = [
       # Browsers
       "brave-browser"

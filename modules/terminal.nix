@@ -1,7 +1,90 @@
-# Terminal and editor configurations (Ghostty, Zed)
+# Terminal and editor configurations (Ghostty, Alacritty, Zed)
 { config, pkgs, lib, ... }:
 
 {
+  # Alacritty terminal
+  programs.alacritty = {
+    enable = true;
+    settings = {
+      env.TERM = "xterm-256color";
+
+      window = {
+        padding = { x = 16; y = 12; };
+        decorations = "buttonless";
+        opacity = 0.92;
+        blur = true;
+        option_as_alt = "Both";
+      };
+
+      font = {
+        normal.family = "JetBrainsMono Nerd Font";
+        size = 20;
+      };
+
+      cursor = {
+        style.shape = "Block";
+        style.blinking = "Never";
+      };
+
+      mouse.hide_when_typing = true;
+
+      scrolling.history = 100000;
+
+      selection.save_to_clipboard = true;
+
+      # Tokyo Night color scheme
+      colors = {
+        primary = {
+          background = "#1a1b26";
+          foreground = "#c0caf5";
+        };
+        cursor = {
+          text = "#1a1b26";
+          cursor = "#7dcfff";
+        };
+        selection = {
+          text = "#c0caf5";
+          background = "#292e42";
+        };
+        normal = {
+          black = "#15161e";
+          red = "#f7768e";
+          green = "#9ece6a";
+          yellow = "#e0af68";
+          blue = "#7aa2f7";
+          magenta = "#bb9af7";
+          cyan = "#7dcfff";
+          white = "#a9b1d6";
+        };
+        bright = {
+          black = "#414868";
+          red = "#f7768e";
+          green = "#9ece6a";
+          yellow = "#e0af68";
+          blue = "#7aa2f7";
+          magenta = "#bb9af7";
+          cyan = "#7dcfff";
+          white = "#c0caf5";
+        };
+      };
+
+      keyboard.bindings = [
+        # tmux prefix shortcuts (Ctrl+b equivalents using Cmd)
+        { key = "T"; mods = "Command"; chars = "\\u0002c"; }  # new window
+        { key = "W"; mods = "Command"; chars = "\\u0002x"; }  # close pane
+        { key = "D"; mods = "Command"; chars = "\\u0002%"; }  # split vertical
+        { key = "D"; mods = "Command|Shift"; chars = "\\u0002\""; }  # split horizontal
+        { key = "Left"; mods = "Command"; chars = "\\u0002p"; }   # prev window
+        { key = "Right"; mods = "Command"; chars = "\\u0002n"; }  # next window
+        { key = "Key1"; mods = "Command"; chars = "\\u00021"; }
+        { key = "Key2"; mods = "Command"; chars = "\\u00022"; }
+        { key = "Key3"; mods = "Command"; chars = "\\u00023"; }
+        { key = "Key4"; mods = "Command"; chars = "\\u00024"; }
+        { key = "Key5"; mods = "Command"; chars = "\\u00025"; }
+      ];
+    };
+  };
+
   # Ghostty terminal
   xdg.configFile."ghostty/config".text = ''
     font-family = JetBrainsMono Nerd Font
@@ -12,7 +95,7 @@
     window-padding-x = 16
     window-padding-y = 12
     window-padding-balance = true
-    window-decoration = false
+    window-decoration = true
     copy-on-select = clipboard
     confirm-close-surface = false
     shell-integration = fish
