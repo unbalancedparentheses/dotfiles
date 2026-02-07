@@ -77,7 +77,7 @@
     mkdir -p ~/Pictures/Screenshots
 
     # Set random wallpaper using desktoppr
-    WALLPAPER_DIR="$HOME/Desktop/projects/dotfiles/wallpapers"
+    WALLPAPER_DIR="$HOME/projects/dotfiles/wallpapers"
     if [ -d "$WALLPAPER_DIR" ]; then
       WALLPAPER=$(find "$WALLPAPER_DIR" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) 2>/dev/null | sort -R | head -1)
       if [ -f "$WALLPAPER" ] && command -v desktoppr >/dev/null; then
@@ -92,7 +92,7 @@
         "/bin/sh"
         "-c"
         ''
-          WALLPAPER_DIR="$HOME/Desktop/projects/dotfiles/wallpapers"
+          WALLPAPER_DIR="$HOME/projects/dotfiles/wallpapers"
           if [ -d "$WALLPAPER_DIR" ]; then
             WALLPAPER=$(find "$WALLPAPER_DIR" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) 2>/dev/null | sort -R | head -1)
             if [ -f "$WALLPAPER" ] && command -v desktoppr >/dev/null; then
