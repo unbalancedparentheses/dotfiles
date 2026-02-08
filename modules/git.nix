@@ -2,6 +2,11 @@
 { config, pkgs, lib, gitName, gitEmail, ... }:
 
 {
+  # SSH allowed signers for commit verification
+  home.file.".ssh/allowed_signers".text = ''
+    ${gitEmail} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIotJbOjyTXL2WZordj/zL/qU2GRcCavsEmq8GhoCcmP
+  '';
+
   programs.git = {
     enable = true;
     signing = {
@@ -15,6 +20,7 @@
       push.autoSetupRemote = true;
       pull.rebase = true;
       gpg.format = "ssh";
+      gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
       rerere.enabled = true;  # Remember merge conflict resolutions
       diff.algorithm = "histogram";  # Better diff algorithm
       fetch.prune = true;  # Auto-prune deleted remote branches

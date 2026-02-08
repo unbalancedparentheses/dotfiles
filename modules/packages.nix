@@ -31,6 +31,9 @@
     # Rust managed by mise (see .mise.toml)
     # atuin and mise configured via programs.* in shell.nix
 
+    # Secrets
+    _1password-cli  # op command for secrets in scripts
+
     # Extra utilities
     just       # Modern command runner (Makefile alternative)
     watchexec  # Run commands on file changes
