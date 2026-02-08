@@ -21,6 +21,7 @@
     fd         # Fast find
     tldr       # Simplified man pages
     btop       # Better htop
+    bottom     # Beautiful system monitor (btm)
     dust       # Better du
     tree       # Directory tree
     wget       # Download files
