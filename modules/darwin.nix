@@ -59,7 +59,6 @@
 
     # Interface
     NSGlobalDomain.AppleInterfaceStyleSwitchesAutomatically = false;  # Don't auto switch dark/light
-    NSGlobalDomain.AppleReduceDesktopTinting = true;  # Reduce transparency
     NSGlobalDomain."com.apple.swipescrolldirection" = true;  # Natural scrolling
 
     # Faster animations
@@ -126,6 +125,9 @@
 
     # Enable full keyboard access for all controls (tab through dialogs)
     defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+
+    # Reduce transparency
+    defaults write NSGlobalDomain AppleReduceDesktopTinting -bool true
 
     # Disable press-and-hold for keys in favor of key repeat
     defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
