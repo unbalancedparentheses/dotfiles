@@ -11,7 +11,7 @@
 
     # Systems
     rust-analyzer
-    zls                    # Zig
+    # zls                  # Zig - disabled due to nixpkgs build bug
 
     # Backend
     gopls
