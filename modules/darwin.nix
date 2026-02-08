@@ -241,6 +241,7 @@
 
       # Utilities
       "utm"
+      "tailscale"
 
       # Fonts
       "font-jetbrains-mono-nerd-font"
