@@ -236,6 +236,7 @@
       "chatgpt"
       "claude"
       "claude-code"
+      "kimi"
 
       # Media
       "spotify"
