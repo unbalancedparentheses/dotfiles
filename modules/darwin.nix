@@ -77,12 +77,16 @@
     mkdir -p ~/Pictures/Screenshots
 
     # Set random wallpaper using desktoppr
-    WALLPAPER_DIR="$HOME/projects/dotfiles/wallpapers"
-    if [ -d "$WALLPAPER_DIR" ]; then
-      WALLPAPER=$(find "$WALLPAPER_DIR" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) 2>/dev/null | sort -R | head -1)
-      if [ -f "$WALLPAPER" ] && command -v desktoppr >/dev/null; then
-        desktoppr "$WALLPAPER"
+    # Search multiple common locations for wallpapers
+    WALLPAPER=""
+    for dir in "$HOME/projects/dotfiles/wallpapers" "$HOME/dotfiles/wallpapers" "$HOME/.dotfiles/wallpapers" "$HOME/.config/wallpapers" "$HOME/Pictures/Wallpapers"; do
+      if [ -d "$dir" ]; then
+        WALLPAPER=$(find "$dir" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) 2>/dev/null | sort -R | head -1)
+        [ -n "$WALLPAPER" ] && break
       fi
+    done
+    if [ -f "$WALLPAPER" ] && command -v desktoppr >/dev/null; then
+      desktoppr "$WALLPAPER"
     fi
   '';
 
@@ -92,12 +96,16 @@
         "/bin/sh"
         "-c"
         ''
-          WALLPAPER_DIR="$HOME/projects/dotfiles/wallpapers"
-          if [ -d "$WALLPAPER_DIR" ]; then
-            WALLPAPER=$(find "$WALLPAPER_DIR" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) 2>/dev/null | sort -R | head -1)
-            if [ -f "$WALLPAPER" ] && command -v desktoppr >/dev/null; then
-              desktoppr "$WALLPAPER"
+          # Search multiple common locations for wallpapers
+          WALLPAPER=""
+          for dir in "$HOME/projects/dotfiles/wallpapers" "$HOME/dotfiles/wallpapers" "$HOME/.dotfiles/wallpapers" "$HOME/.config/wallpapers" "$HOME/Pictures/Wallpapers"; do
+            if [ -d "$dir" ]; then
+              WALLPAPER=$(find "$dir" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) 2>/dev/null | sort -R | head -1)
+              [ -n "$WALLPAPER" ] && break
             fi
+          done
+          if [ -f "$WALLPAPER" ] && command -v desktoppr >/dev/null; then
+            desktoppr "$WALLPAPER"
           fi
         ''
       ];

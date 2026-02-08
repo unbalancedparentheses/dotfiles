@@ -7,6 +7,9 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+# Source shared library
+source "${SCRIPT_DIR}/../lib.sh"
+
 # Configuration
 ARCH="aarch64"
 ISO_BASE_URL="https://repo-default.voidlinux.org/live/current"
@@ -16,37 +19,12 @@ DISK_SIZE="40G"
 MEMORY="4G"
 CPUS="4"
 SSH_PORT="2223"
-
-# UEFI firmware
-UEFI_CODE_SRC=""
 UEFI_VARS="edk2-aarch64-vars.fd"
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
-
-log() { echo -e "${GREEN}[*]${NC} $1"; }
-warn() { echo -e "${YELLOW}[!]${NC} $1"; }
-error() { echo -e "${RED}[x]${NC} $1"; exit 1; }
-
-check_deps() {
-    log "Checking dependencies..."
-    command -v qemu-system-aarch64 >/dev/null || error "qemu not found. Run: make switch"
-    command -v qemu-img >/dev/null || error "qemu-img not found"
-}
-
 download_iso() {
-    if [ -f "$ISO_FILE" ]; then
-        ISO_SIZE=$(stat -f%z "$ISO_FILE" 2>/dev/null || stat -c%s "$ISO_FILE" 2>/dev/null)
-        if [ "$ISO_SIZE" -lt 300000000 ]; then
-            warn "ISO file appears incomplete. Re-downloading..."
-            rm -f "$ISO_FILE"
-        else
-            log "ISO already exists: $ISO_FILE"
-            return
-        fi
+    if verify_iso_size "$ISO_FILE" 300000000; then
+        log "ISO already exists: $ISO_FILE"
+        return
     fi
     log "Finding latest Void Linux ${ARCH} ISO..."
     ISO_NAME=$(curl -s "${ISO_BASE_URL}/" | grep -o "void-live-${ARCH}-[0-9]*-base\.iso" | head -1)
@@ -55,44 +33,7 @@ download_iso() {
     fi
     ISO_URL="${ISO_BASE_URL}/${ISO_NAME}"
     log "Downloading: $ISO_NAME"
-    curl -L -o "$ISO_FILE" "$ISO_URL"
-}
-
-setup_uefi() {
-    QEMU_PATH=$(which qemu-system-aarch64)
-    QEMU_REAL=$(readlink -f "$QEMU_PATH")
-    QEMU_STORE_PATH=$(echo "$QEMU_REAL" | sed 's|/bin/qemu-system-aarch64||')
-    UEFI_CODE_SRC="${QEMU_STORE_PATH}/share/qemu/edk2-aarch64-code.fd"
-
-    if [ ! -f "$UEFI_CODE_SRC" ]; then
-        UEFI_CODE_SRC=$(find /nix/store -name "edk2-aarch64-code.fd" -path "*qemu*" 2>/dev/null | head -1)
-    fi
-
-    if [ ! -f "$UEFI_CODE_SRC" ]; then
-        error "UEFI firmware not found"
-    fi
-    log "Using UEFI firmware: $UEFI_CODE_SRC"
-
-    if [ ! -f "$UEFI_VARS" ]; then
-        log "Creating UEFI vars file..."
-        dd if=/dev/zero of="$UEFI_VARS" bs=1M count=64 2>/dev/null
-    fi
-}
-
-create_disk() {
-    if [ -f "$DISK_IMAGE" ]; then
-        warn "Disk image already exists: $DISK_IMAGE"
-        read -p "Delete and recreate? (y/N) " -n 1 -r
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            rm -f "$DISK_IMAGE" "$UEFI_VARS"
-        else
-            return 1
-        fi
-    fi
-    log "Creating ${DISK_SIZE} disk image..."
-    qemu-img create -f qcow2 "$DISK_IMAGE" "$DISK_SIZE"
-    rm -f "$UEFI_VARS"
+    curl -L -o "$ISO_FILE" "$ISO_URL" || error "Failed to download ISO"
 }
 
 # Run installer (CLI mode)
@@ -107,6 +48,8 @@ run_installer() {
     log ""
     log "Exit VM: Ctrl+A then X"
     log ""
+
+    trap 'cleanup_on_exit' EXIT
 
     qemu-system-aarch64 \
         -machine virt,accel=hvf,highmem=on \
@@ -128,7 +71,6 @@ run_installer() {
     log "Base installation complete. Now installing packages..."
     log "Starting VM for post-install setup..."
 
-    # Start VM in background for post-install
     qemu-system-aarch64 \
         -machine virt,accel=hvf,highmem=on \
         -cpu host \
@@ -144,22 +86,40 @@ run_installer() {
         -serial mon:stdio &
 
     QEMU_PID=$!
+    register_cleanup_pid $QEMU_PID
 
-    log "Waiting for VM to boot (30 seconds)..."
+    # Verify QEMU started
+    sleep 2
+    if ! kill -0 $QEMU_PID 2>/dev/null; then
+        error "Failed to start QEMU"
+    fi
+
+    log "Waiting for VM to boot..."
     sleep 30
 
     log "Installing packages from packages.txt..."
-    PACKAGES=$(grep -v '^#' "${SCRIPT_DIR}/packages.txt" | grep -v '^$' | tr '\n' ' ')
-    for i in 1 2 3 4 5; do
-        if ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 root@localhost "xbps-install -Sy ${PACKAGES} && echo 'Packages installed successfully!'" 2>/dev/null; then
-            break
-        fi
-        log "Retry $i - waiting for SSH..."
-        sleep 10
-    done
+    if [ ! -f "${SCRIPT_DIR}/packages.txt" ]; then
+        warn "packages.txt not found, skipping package installation"
+    else
+        PACKAGES=$(grep -v '^#' "${SCRIPT_DIR}/packages.txt" | grep -v '^$' | tr '\n' ' ')
+        for i in 1 2 3 4 5 6 7 8 9 10; do
+            if ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+                   -o ConnectTimeout=10 root@localhost \
+                   "xbps-install -Sy ${PACKAGES} && echo 'Packages installed successfully!'" 2>/dev/null; then
+                break
+            fi
+            if [ $i -eq 10 ]; then
+                warn "Could not install packages via SSH"
+                break
+            fi
+            log "Retry $i/10 - waiting for SSH..."
+            sleep 10
+        done
+    fi
 
     log "Shutting down VM..."
-    ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@localhost "poweroff" 2>/dev/null || true
+    ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+        root@localhost "poweroff" 2>/dev/null || true
     sleep 5
     kill $QEMU_PID 2>/dev/null || true
 
@@ -215,26 +175,26 @@ run_vm() {
 
 case "${1:-}" in
     install)
-        check_deps
+        check_qemu_deps
         download_iso
-        create_disk || exit 0
-        setup_uefi
+        create_disk "$DISK_IMAGE" "$DISK_SIZE" "$UEFI_VARS" || exit 0
+        setup_uefi "$UEFI_VARS"
         run_installer
         ;;
     run|start)
-        check_deps
-        setup_uefi
+        check_qemu_deps
+        setup_uefi "$UEFI_VARS"
         [ -f "$DISK_IMAGE" ] || error "No disk image. Run: $0 install"
         run_vm
         ;;
     gui)
-        check_deps
-        setup_uefi
+        check_qemu_deps
+        setup_uefi "$UEFI_VARS"
         [ -f "$DISK_IMAGE" ] || error "No disk image. Run: $0 install"
         run_vm_gui
         ;;
     ssh)
-        ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@localhost
+        ssh_cmd "$SSH_PORT" root
         ;;
     clean)
         log "Cleaning up VM files..."
