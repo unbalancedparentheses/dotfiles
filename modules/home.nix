@@ -13,6 +13,8 @@
     ./linux.nix
   ];
 
+  # State version for Home Manager (do not change after initial setup)
+  # Note: NixOS VMs use 24.11 as they are fresh installs
   home.stateVersion = "24.05";
 
   manual.manpages.enable = false;

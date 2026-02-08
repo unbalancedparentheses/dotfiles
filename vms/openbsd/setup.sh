@@ -1,12 +1,14 @@
 #!/bin/bash
 # OpenBSD arm64 VM automation script using QEMU
 # Supports fully automated installation via autoinstall
-# For GUI alternative, use UTM - see README.md
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
+
+# Source shared library
+source "${SCRIPT_DIR}/../lib.sh"
 
 # Configuration
 OPENBSD_VERSION="7.8"
@@ -21,26 +23,11 @@ MEMORY="2G"
 CPUS="2"
 SSH_PORT="2222"
 HTTP_PORT="8080"
-
-# UEFI firmware (required for arm64)
-UEFI_CODE_SRC=""
 UEFI_VARS="edk2-aarch64-vars.fd"
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
-
-log() { echo -e "${GREEN}[*]${NC} $1"; }
-warn() { echo -e "${YELLOW}[!]${NC} $1"; }
-error() { echo -e "${RED}[x]${NC} $1"; exit 1; }
-
-# Check dependencies
+# Check dependencies (OpenBSD also needs expect and python3)
 check_deps() {
-    log "Checking dependencies..."
-    command -v qemu-system-aarch64 >/dev/null || error "qemu not found. Run: make switch"
-    command -v qemu-img >/dev/null || error "qemu-img not found"
+    check_qemu_deps
     command -v python3 >/dev/null || error "python3 not found"
     command -v expect >/dev/null || error "expect not found. Run: make switch"
 }
@@ -77,20 +64,14 @@ verify_iso() {
 
 # Download OpenBSD ISO
 download_iso() {
-    if [ -f "$ISO_FILE" ]; then
-        # Check if ISO is valid (should be > 500MB)
-        ISO_SIZE=$(stat -f%z "$ISO_FILE" 2>/dev/null || stat -c%s "$ISO_FILE" 2>/dev/null)
-        if [ "$ISO_SIZE" -lt 500000000 ]; then
-            warn "ISO file appears incomplete (${ISO_SIZE} bytes). Re-downloading..."
-            rm -f "$ISO_FILE" "${ISO_FILE}.verified"
-        else
-            log "ISO already exists: $ISO_FILE"
-            verify_iso
-            return
-        fi
+    if verify_iso_size "$ISO_FILE" 500000000; then
+        log "ISO already exists: $ISO_FILE"
+        verify_iso
+        return
     fi
+    rm -f "${ISO_FILE}.verified"
     log "Downloading OpenBSD ${OPENBSD_VERSION} ${ARCH} ISO..."
-    curl -L -o "$ISO_FILE" "$ISO_URL"
+    curl -L -o "$ISO_FILE" "$ISO_URL" || error "Failed to download ISO"
     verify_iso
 }
 
@@ -126,73 +107,16 @@ Directory does not contain SHA256.sig. Continue without verification = yes
 EOF
 }
 
-# Setup UEFI firmware
-setup_uefi() {
-    # Find UEFI firmware from qemu package in nix store
-    QEMU_PATH=$(which qemu-system-aarch64)
-    if [ -z "$QEMU_PATH" ]; then
-        error "qemu-system-aarch64 not found"
-    fi
-
-    # Resolve symlinks to find actual nix store path
-    QEMU_REAL=$(readlink -f "$QEMU_PATH")
-    QEMU_STORE_PATH=$(echo "$QEMU_REAL" | sed 's|/bin/qemu-system-aarch64||')
-    UEFI_CODE_SRC="${QEMU_STORE_PATH}/share/qemu/edk2-aarch64-code.fd"
-
-    if [ ! -f "$UEFI_CODE_SRC" ]; then
-        # Fallback: search in nix store
-        UEFI_CODE_SRC=$(find /nix/store -name "edk2-aarch64-code.fd" -path "*qemu*" 2>/dev/null | head -1)
-    fi
-
-    if [ ! -f "$UEFI_CODE_SRC" ]; then
-        error "UEFI firmware not found. Run: make switch"
-    fi
-    log "Using UEFI firmware: $UEFI_CODE_SRC"
-
-    # Create UEFI vars file if it doesn't exist (must be 64MB)
-    if [ ! -f "$UEFI_VARS" ]; then
-        log "Creating UEFI vars file (64MB)..."
-        dd if=/dev/zero of="$UEFI_VARS" bs=1M count=64 2>/dev/null
-    fi
-}
-
-# Create disk image
-create_disk() {
-    if [ -f "$DISK_IMAGE" ]; then
-        # Check if disk is valid (should be > 1MB for a real qcow2)
-        DISK_ACTUAL_SIZE=$(stat -f%z "$DISK_IMAGE" 2>/dev/null || stat -c%s "$DISK_IMAGE" 2>/dev/null)
-        if [ "$DISK_ACTUAL_SIZE" -lt 1000000 ]; then
-            warn "Disk image appears incomplete. Recreating..."
-            rm -f "$DISK_IMAGE"
-        else
-            warn "Disk image already exists: $DISK_IMAGE"
-            read -p "Delete and recreate? (y/N) " -n 1 -r
-            echo
-            if [[ $REPLY =~ ^[Yy]$ ]]; then
-                rm -f "$DISK_IMAGE" "$UEFI_VARS"
-            else
-                return 1
-            fi
-        fi
-    fi
-    log "Creating ${DISK_SIZE} disk image..."
-    qemu-img create -f qcow2 "$DISK_IMAGE" "$DISK_SIZE"
-    # Reset UEFI vars for fresh install
-    rm -f "$UEFI_VARS"
-}
-
 # Start HTTP server for autoinstall
 start_http_server() {
     log "Starting HTTP server on port ${HTTP_PORT} for autoinstall..."
-    # Kill any existing server on this port
     pkill -f "python3 -m http.server ${HTTP_PORT}" 2>/dev/null || true
     sleep 1
-    # Start server in background
     python3 -m http.server ${HTTP_PORT} --directory "$SCRIPT_DIR" > /dev/null 2>&1 &
     HTTP_PID=$!
     echo $HTTP_PID > .http_server.pid
+    register_cleanup_pid $HTTP_PID
     sleep 1
-    # Verify it started
     if ! kill -0 $HTTP_PID 2>/dev/null; then
         error "Failed to start HTTP server"
     fi
@@ -220,15 +144,11 @@ run_autoinstall() {
     log "  4. Install OpenBSD automatically"
     log "  5. Halt when complete"
     log ""
-    log "Installation takes ~10-15 minutes. Progress shown below."
-    log ""
 
-    # Generate install.conf and start HTTP server
     generate_install_conf
     start_http_server
-    trap 'stop_http_server; rm -f install.conf' EXIT
+    trap 'stop_http_server; rm -f install.conf; cleanup_on_exit' EXIT
 
-    # Create expect script for automation
     EXPECT_SCRIPT="/tmp/openbsd-autoinstall-$$.exp"
     cat > "$EXPECT_SCRIPT" << 'EXPECT_EOF'
 #!/usr/bin/expect -f
@@ -237,10 +157,8 @@ set http_port [lindex $argv 0]
 
 log_user 1
 
-# Spawn QEMU
 spawn {*}[lrange $argv 1 end]
 
-# Wait for install menu
 expect {
     "boot>" {
         send "\r"
@@ -253,7 +171,6 @@ expect {
     timeout { puts "Timeout waiting for install menu"; exit 1 }
 }
 
-# Provide URL for install.conf
 expect {
     "ocation?" {
         send "http://10.0.2.2:${http_port}/install.conf\r"
@@ -261,7 +178,6 @@ expect {
     timeout { puts "Timeout waiting for response file prompt"; exit 1 }
 }
 
-# Let the installation proceed - wait for CONGRATULATIONS or halt
 set timeout 3600
 expect {
     "CONGRATULATIONS" {
@@ -274,7 +190,6 @@ expect {
         }
     }
     "The following command" {
-        # This appears right before CONGRATULATIONS
         exp_continue
     }
     "syncing disks" {
@@ -289,7 +204,6 @@ EXPECT_EOF
 
     chmod +x "$EXPECT_SCRIPT"
 
-    # Run expect with QEMU command
     expect "$EXPECT_SCRIPT" "$HTTP_PORT" \
         qemu-system-aarch64 \
         -machine virt,accel=hvf,highmem=on \
@@ -307,7 +221,6 @@ EXPECT_EOF
         -nographic \
         -serial mon:stdio || true
 
-    # Cleanup
     rm -f "$EXPECT_SCRIPT"
     stop_http_server
     rm -f install.conf
@@ -345,35 +258,28 @@ provision_vm() {
 
     SSH_CMD="ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@localhost"
 
-    # Check VM is reachable
     log "Checking VM is reachable..."
     $SSH_CMD "echo ok" >/dev/null 2>&1 || error "Cannot SSH into VM. Is it running? Start with: $0 run"
 
-    # Install packages
     log "Installing packages..."
     $SSH_CMD "pkg_add -I vim git curl wget htop"
 
-    # Setup doas for user account
     log "Configuring doas..."
     $SSH_CMD "echo 'permit keepenv persist user' > /etc/doas.conf && chmod 600 /etc/doas.conf"
 
-    # Copy SSH key if available
     HOST_PUBKEY="$HOME/.ssh/id_ed25519.pub"
     if [ -f "$HOST_PUBKEY" ]; then
         log "Setting up SSH key authentication..."
         PUBKEY_CONTENT=$(cat "$HOST_PUBKEY")
 
-        # Root key
         $SSH_CMD "mkdir -p /root/.ssh && chmod 700 /root/.ssh"
         $SSH_CMD "echo '${PUBKEY_CONTENT}' >> /root/.ssh/authorized_keys && chmod 600 /root/.ssh/authorized_keys"
 
-        # User key
         $SSH_CMD "mkdir -p /home/user/.ssh && chmod 700 /home/user/.ssh && \
             echo '${PUBKEY_CONTENT}' >> /home/user/.ssh/authorized_keys && \
             chmod 600 /home/user/.ssh/authorized_keys && \
             chown -R user:user /home/user/.ssh"
 
-        # Disable root password login (keep key auth)
         log "Disabling root password login..."
         $SSH_CMD "sed -i 's/^#*PermitRootLogin.*/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config && rcctl restart sshd"
     else
@@ -395,18 +301,18 @@ case "${1:-}" in
     install)
         check_deps
         download_iso
-        create_disk || exit 0
-        setup_uefi
+        create_disk "$DISK_IMAGE" "$DISK_SIZE" "$UEFI_VARS" || exit 0
+        setup_uefi "$UEFI_VARS"
         run_autoinstall
         ;;
     run|start)
         check_deps
-        setup_uefi
+        setup_uefi "$UEFI_VARS"
         [ -f "$DISK_IMAGE" ] || error "No disk image. Run: $0 install"
         run_vm
         ;;
     ssh)
-        ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@localhost
+        ssh_cmd "$SSH_PORT" root
         ;;
     provision)
         provision_vm

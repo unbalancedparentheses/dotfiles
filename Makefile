@@ -1,4 +1,4 @@
-.PHONY: help update clean check _prereqs _suckless
+.PHONY: help update clean check _prereqs _suckless _configure
 
 .DEFAULT_GOAL := update
 
@@ -16,9 +16,10 @@ endif
 help:
 	@echo "Dotfiles ($(OS))"
 	@echo ""
-	@echo "  make      Install/update everything"
-	@echo "  clean     Garbage collect"
-	@echo "  check     Verify installation"
+	@echo "  make           Install/update everything"
+	@echo "  make configure Interactive setup (username, git name/email)"
+	@echo "  make clean     Garbage collect"
+	@echo "  make check     Verify installation"
 	@echo ""
 	@echo "VMs (macOS only):"
 	@echo "  nixos-{install,run,gui,ssh,clean}   port 2224"
@@ -38,9 +39,39 @@ else
 	@command -v nix >/dev/null || { echo "Install Nix first: curl -L https://install.determinate.systems/nix | sh"; exit 1; }
 endif
 
+_configure:
+	@echo "Dotfiles Configuration"
+	@echo "======================"
+	@echo ""
+	@# Get current values from flake.nix
+	@CURRENT_USER=$$(grep 'username = "' flake.nix | head -1 | sed 's/.*username = "\([^"]*\)".*/\1/'); \
+	CURRENT_NAME=$$(grep 'gitName = "' flake.nix | head -1 | sed 's/.*gitName = "\([^"]*\)".*/\1/'); \
+	CURRENT_EMAIL=$$(grep 'gitEmail = "' flake.nix | head -1 | sed 's/.*gitEmail = "\([^"]*\)".*/\1/'); \
+	echo "Current configuration:"; \
+	echo "  Username:  $$CURRENT_USER"; \
+	echo "  Git Name:  $$CURRENT_NAME"; \
+	echo "  Git Email: $$CURRENT_EMAIL"; \
+	echo ""; \
+	read -p "Username [$$CURRENT_USER]: " NEW_USER; \
+	NEW_USER=$${NEW_USER:-$$CURRENT_USER}; \
+	read -p "Git Name [$$CURRENT_NAME]: " NEW_NAME; \
+	NEW_NAME=$${NEW_NAME:-$$CURRENT_NAME}; \
+	read -p "Git Email [$$CURRENT_EMAIL]: " NEW_EMAIL; \
+	NEW_EMAIL=$${NEW_EMAIL:-$$CURRENT_EMAIL}; \
+	echo ""; \
+	cp flake.nix flake.nix.bak; \
+	sed -i.tmp "s/username = \"[^\"]*\";/username = \"$$NEW_USER\";/" flake.nix && rm -f flake.nix.tmp; \
+	sed -i.tmp "s/gitName = \"[^\"]*\";/gitName = \"$$NEW_NAME\";/" flake.nix && rm -f flake.nix.tmp; \
+	sed -i.tmp "s/gitEmail = \"[^\"]*\";/gitEmail = \"$$NEW_EMAIL\";/" flake.nix && rm -f flake.nix.tmp; \
+	echo "Configuration updated in flake.nix"
+
+configure: _configure
+
 update: _prereqs
-	@# Update username
-	@sed -i.bak 's/username = "[^"]*";/username = "$(USER)";/' flake.nix && rm -f flake.nix.bak
+	@# Backup flake.nix before modifying
+	@cp flake.nix flake.nix.bak
+	@# Update username to current user
+	@sed -i.tmp 's/username = "[^"]*";/username = "$(USER)";/' flake.nix && rm -f flake.nix.tmp || { mv flake.nix.bak flake.nix; exit 1; }
 	@# Update flake
 	$(NIX) flake update
 ifeq ($(OS),macos)
@@ -69,6 +100,8 @@ else
 	@echo "Building suckless software..."
 	@$(MAKE) -s _suckless
 endif
+	@# Remove backup on success
+	@rm -f flake.nix.bak
 
 _suckless:
 	@# st
@@ -89,6 +122,7 @@ clean:
 		sudo $(NIX) store gc; \
 	else \
 		$(NIX) store gc; \
+		rm -rf /tmp/st /tmp/dwm /tmp/slstatus; \
 	fi
 
 check:
