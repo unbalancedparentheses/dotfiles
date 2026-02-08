@@ -83,6 +83,7 @@ in
       vterm
       envrc
       gcmh
+      restart-emacs
 
       # Org
       org-bullets
