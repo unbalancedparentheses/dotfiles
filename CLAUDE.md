@@ -2,69 +2,68 @@
 
 Cross-platform Nix configuration for macOS (nix-darwin) and Linux (Home Manager).
 
-## Key Commands
+## Commands
 
-- `make` — Install/update everything (nix-darwin on macOS, home-manager on Linux)
+- `make` — Install/update everything
 - `make clean` — Nix garbage collect
 - `make check` — Verify installation
 
 ## Structure
 
-- `flake.nix` — Main configuration (username, git name/email at top)
-- `Makefile` — Build commands
-- `modules/` — Nix modules (shell, git, neovim, emacs, tmux, terminal, wm, etc.)
-- `linux/` — Suckless configs (dwm, st, slstatus)
-- `vms/` — VM automation scripts (macOS only, QEMU + Apple Silicon)
-- `wallpapers/` — Desktop wallpapers
+```
+flake.nix               # Main config (username, gitName, gitEmail at top)
+Makefile                # Build commands
+modules/
+  darwin.nix            # macOS settings, Homebrew casks, defaults
+  home.nix              # Home Manager entry point
+  packages.nix          # CLI packages (shared + platform-specific)
+  shell.nix             # Fish shell, zoxide, fzf, eza, direnv, atuin
+  starship.nix          # Prompt config
+  git.nix               # Git and lazygit config
+  neovim.nix            # Neovim with LSP, Treesitter, Telescope
+  emacs.nix             # Emacs with evil, eglot, vertico, corfu
+  tmux.nix              # Tmux config
+  terminal.nix          # Ghostty and Zed settings
+  ssh.nix               # SSH config and host aliases
+  lsp.nix               # Language servers (shared by editors)
+  linux.nix             # Linux desktop (dwm, rofi, picom, dunst)
+  theme.nix             # Color scheme definitions
+  secrets.nix.template  # Template for API keys (copy to secrets.nix)
+linux/                  # Suckless configs (dwm, st, slstatus config.h)
+vms/                    # VM automation (macOS only)
+  lib.sh                # Shared VM functions
+  openbsd/              # OpenBSD VM (port 2222)
+  nixos/                # NixOS VM (port 2224)
+  void/                 # Void Linux VM (port 2223)
+wallpapers/             # Desktop wallpapers
+```
 
 ## VMs (macOS only)
 
-All VMs use QEMU with HVF acceleration on Apple Silicon. Each has a `setup.sh` with the same interface.
-
-### OpenBSD (port 2222)
+QEMU with HVF on Apple Silicon. SSH aliases configured: `ssh openbsd-vm`, `ssh nixos-vm`, `ssh void-vm`
 
 ```bash
-cd vms/openbsd
-./setup.sh install      # Download ISO + fully automated install (~15 min)
-./setup.sh run          # Boot the VM (serial console, Ctrl+A then X to exit)
-./setup.sh ssh          # SSH into running VM
-./setup.sh provision    # Install packages (vim, git, curl, wget, htop), setup doas + SSH keys
-./setup.sh clean        # Remove disk image (keep ISO)
+make openbsd-install    # Automated install
+make openbsd-run        # Start VM (serial)
+make openbsd-ssh        # SSH into VM
+
+make nixos-install / nixos-run / nixos-gui / nixos-ssh
+make void-install / void-run / void-gui / void-ssh
 ```
 
-Or from the repo root: `make openbsd-{install,run,ssh,clean}`
-
-Credentials: `root:openbsd` / `user:openbsd`
-
-### NixOS (port 2224)
-
-```bash
-cd vms/nixos
-./setup.sh install      # Download ISO + automated install
-./setup.sh run          # Boot the VM (serial console)
-./setup.sh gui          # Boot with GUI (VNC/display)
-./setup.sh ssh          # SSH into running VM
-./setup.sh clean        # Remove disk image
-```
-
-Or from the repo root: `make nixos-{install,run,gui,ssh,clean}`
-
-### Void Linux (port 2223)
-
-```bash
-cd vms/void
-./setup.sh install      # Download ISO + automated install
-./setup.sh run          # Boot the VM (serial console)
-./setup.sh gui          # Boot with GUI (VNC/display)
-./setup.sh ssh          # SSH into running VM
-./setup.sh clean        # Remove disk image
-```
-
-Or from the repo root: `make void-{install,run,gui,ssh,clean}`
+Credentials: `root:openbsd`, `root:nixos`, `root:voidlinux`
 
 ## Conventions
 
-- Packages are managed via Nix (system-level on macOS, home-manager on Linux)
-- macOS GUI apps are managed via Homebrew casks (declared in `modules/darwin.nix`)
-- Languages are managed via mise (rust, go, python, node, erlang, elixir, zig, gleam)
-- VM disk images, ISOs, and build artifacts are gitignored
+- Edit `flake.nix` to change username, git name/email
+- Nix manages CLI tools, Homebrew manages macOS GUI apps
+- Languages via mise: rust, go, python, node, erlang, elixir, zig, gleam
+- Secrets go in `modules/secrets.nix` (gitignored)
+- VM artifacts (*.qcow2, *.iso) are gitignored
+
+## Code Style
+
+- Nix modules use 2-space indent
+- Shell scripts use `set -e` and source `lib.sh` for shared functions
+- Prefer Home Manager options over raw config files
+- Keep darwin.nix for macOS-only, linux.nix for Linux-only
