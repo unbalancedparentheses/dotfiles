@@ -233,6 +233,7 @@
       "ghostty"
       "github"
       "zed"
+      "chatgpt"
       "claude"
       "claude-code"
 
