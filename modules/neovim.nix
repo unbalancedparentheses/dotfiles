@@ -60,7 +60,7 @@ in
 
     extraPackages = lsp.servers ++ lsp.tools;
 
-    extraLuaConfig = ''
+    initLua = ''
       -- Basic settings
       vim.opt.number = true
       vim.opt.relativenumber = true

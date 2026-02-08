@@ -40,6 +40,7 @@
           system.configurationRevision = self.rev or self.dirtyRev or null;
           system.primaryUser = username;
           nixpkgs.hostPlatform = darwinSystem;
+          nixpkgs.config.allowUnfree = true;
         })
         ./modules/darwin.nix
         home-manager.darwinModules.home-manager
