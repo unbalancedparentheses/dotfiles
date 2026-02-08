@@ -1,6 +1,20 @@
 # macOS (nix-darwin) specific configuration
 { config, pkgs, lib, username, ... }:
 
+let
+  wallpaperScript = pkgs.writeShellScript "set-random-wallpaper" ''
+    WALLPAPER=""
+    for dir in "$HOME/projects/dotfiles/wallpapers" "$HOME/dotfiles/wallpapers" "$HOME/.dotfiles/wallpapers" "$HOME/.config/wallpapers" "$HOME/Pictures/Wallpapers"; do
+      if [ -d "$dir" ]; then
+        WALLPAPER=$(find "$dir" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) 2>/dev/null | sort -R | head -1)
+        [ -n "$WALLPAPER" ] && break
+      fi
+    done
+    if [ -f "$WALLPAPER" ] && command -v desktoppr >/dev/null; then
+      desktoppr "$WALLPAPER"
+    fi
+  '';
+in
 {
   # Disable nix-darwin's Nix management (using Determinate Nix installer)
   nix.enable = false;
@@ -129,26 +143,13 @@
     # Reduce transparency
     defaults write NSGlobalDomain AppleReduceDesktopTinting -bool true
 
-    # Disable press-and-hold for keys in favor of key repeat
-    defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
-
-    # Finder: show hidden files
-    defaults write com.apple.finder AppleShowAllFiles -bool true
-
     # Finder: disable window animations
     defaults write com.apple.finder DisableAllAnimations -bool true
-
-    # Avoid creating .DS_Store files on network or USB volumes
-    defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
-    defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 
     # Disable disk image verification
     defaults write com.apple.frameworks.diskimages skip-verify -bool true
     defaults write com.apple.frameworks.diskimages skip-verify-locked -bool true
     defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
-
-    # Use column view in all Finder windows by default
-    defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
 
     # Show the ~/Library folder
     chflags nohidden ~/Library 2>/dev/null || true
@@ -165,39 +166,13 @@
     # Disable Notification Center and remove from menu bar (requires restart)
     # launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2>/dev/null || true
 
-    # Set random wallpaper using desktoppr
-    # Search multiple common locations for wallpapers
-    WALLPAPER=""
-    for dir in "$HOME/projects/dotfiles/wallpapers" "$HOME/dotfiles/wallpapers" "$HOME/.dotfiles/wallpapers" "$HOME/.config/wallpapers" "$HOME/Pictures/Wallpapers"; do
-      if [ -d "$dir" ]; then
-        WALLPAPER=$(find "$dir" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) 2>/dev/null | sort -R | head -1)
-        [ -n "$WALLPAPER" ] && break
-      fi
-    done
-    if [ -f "$WALLPAPER" ] && command -v desktoppr >/dev/null; then
-      desktoppr "$WALLPAPER"
-    fi
+    # Set random wallpaper
+    ${wallpaperScript}
   '';
 
   launchd.user.agents.wallpaper = {
     serviceConfig = {
-      ProgramArguments = [
-        "/bin/sh"
-        "-c"
-        ''
-          # Search multiple common locations for wallpapers
-          WALLPAPER=""
-          for dir in "$HOME/projects/dotfiles/wallpapers" "$HOME/dotfiles/wallpapers" "$HOME/.dotfiles/wallpapers" "$HOME/.config/wallpapers" "$HOME/Pictures/Wallpapers"; do
-            if [ -d "$dir" ]; then
-              WALLPAPER=$(find "$dir" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) 2>/dev/null | sort -R | head -1)
-              [ -n "$WALLPAPER" ] && break
-            fi
-          done
-          if [ -f "$WALLPAPER" ] && command -v desktoppr >/dev/null; then
-            desktoppr "$WALLPAPER"
-          fi
-        ''
-      ];
+      ProgramArguments = [ "${wallpaperScript}" ];
       StartInterval = 1800;  # 30 minutes
       RunAtLoad = true;
     };
