@@ -1,4 +1,4 @@
-.PHONY: help update clean check _prereqs _suckless
+.PHONY: help update clean check test _prereqs _suckless
 
 .DEFAULT_GOAL := update
 
@@ -16,6 +16,7 @@ help:
 	@echo "Dotfiles ($(OS))"
 	@echo ""
 	@echo "  make       Install/update everything"
+	@echo "  make test  Validate config (dry-run build)"
 	@echo "  make clean Garbage collect"
 	@echo "  make check Verify installation"
 	@echo ""
@@ -77,6 +78,14 @@ _suckless:
 	@if [ ! -d /tmp/slstatus ]; then git clone --quiet https://git.suckless.org/slstatus /tmp/slstatus; fi
 	@cp $(CURDIR)/linux/slstatus/config.h /tmp/slstatus/
 	@cd /tmp/slstatus && sudo make clean install >/dev/null 2>&1 && echo "  ✓ slstatus" || echo "  ✗ slstatus (run: cd /tmp/slstatus && sudo make clean install)"
+
+test:
+	@echo "Validating configuration..."
+ifeq ($(OS),macos)
+	@$(NIX) build .#darwinConfigurations.default.system --dry-run 2>&1 && echo "✓ Config valid" || { echo "✗ Config has errors"; exit 1; }
+else
+	@$(NIX) build .#homeConfigurations.linux.activationPackage --dry-run 2>&1 && echo "✓ Config valid" || { echo "✗ Config has errors"; exit 1; }
+endif
 
 clean:
 	@if [ "$(OS)" = "macos" ]; then \
