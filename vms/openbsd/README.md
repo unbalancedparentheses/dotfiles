@@ -89,11 +89,14 @@ For automation and scripting, use QEMU directly.
 # Ensure qemu is installed (from nix-darwin config)
 make switch  # from parent directory
 
-# Install OpenBSD
+# Install OpenBSD (fully automated)
 ./setup.sh install
 
 # Start the VM (after installation)
 ./setup.sh run
+
+# Provision with packages, SSH keys, and doas
+./setup.sh provision
 
 # SSH into the VM
 ./setup.sh ssh
@@ -101,21 +104,23 @@ make switch  # from parent directory
 
 ### Installation Process
 
-When you run `./setup.sh install`:
+When you run `./setup.sh install`, everything is fully automated:
 
-1. **At the boot prompt**, press Enter or type `boot`
-2. Follow the installer prompts (same as UTM above)
-3. After installation completes, select **Halt**
-4. Exit QEMU: `Ctrl+A` then `X`
-5. Run `./setup.sh run` to boot the installed system
+1. Downloads and verifies the ISO (SHA256 check)
+2. Generates `install.conf` dynamically from the configured version
+3. Boots the VM and completes installation unattended
+4. Halts when complete
+
+After installation, run `./setup.sh provision` to install packages and configure SSH.
 
 ### Commands
 
 | Command | Description |
 |---------|-------------|
-| `./setup.sh install` | Download ISO and install OpenBSD |
+| `./setup.sh install` | Download ISO, verify, and install OpenBSD |
 | `./setup.sh run` | Start the VM |
 | `./setup.sh ssh` | SSH into running VM (port 2222) |
+| `./setup.sh provision` | Install packages and configure the VM |
 | `./setup.sh clean` | Remove disk image (keep ISO) |
 | `./setup.sh cleanall` | Remove all files |
 
@@ -144,7 +149,23 @@ SSH_PORT="2222"          # Host SSH port
 
 ## Post-Installation Setup
 
-After installing OpenBSD:
+For QEMU, run the automated provisioning:
+
+```bash
+# Start the VM first
+./setup.sh run
+
+# In another terminal, provision it
+./setup.sh provision
+```
+
+This will:
+- Install packages: vim, git, curl, wget, htop
+- Configure `doas` for the `user` account
+- Deploy your SSH key (`~/.ssh/id_ed25519.pub`) to the VM
+- Disable root password login (key auth only)
+
+For UTM or manual setup:
 
 ```bash
 # SSH into VM
@@ -194,10 +215,10 @@ qemu-img snapshot -a clean openbsd.qcow2  # restore
 | File | Purpose |
 |------|---------|
 | `setup.sh` | QEMU automation script |
-| `install.conf` | Autoinstall response file (optional) |
-| `disklabel.auto` | Disk partitioning template (optional) |
-| `openbsd.qcow2` | Virtual disk (created by QEMU) |
-| `install78.iso` | Installation media (downloaded) |
+| `openbsd.qcow2` | Virtual disk (created during install) |
+| `install*.iso` | Installation media (downloaded) |
+
+`install.conf` is generated dynamically by `setup.sh` during installation to match the configured version.
 
 ## References
 

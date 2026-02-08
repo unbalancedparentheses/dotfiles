@@ -11,8 +11,10 @@ cd "$SCRIPT_DIR"
 # Configuration
 OPENBSD_VERSION="7.8"
 ARCH="arm64"
-ISO_URL="https://cdn.openbsd.org/pub/OpenBSD/${OPENBSD_VERSION}/${ARCH}/install78.iso"
-ISO_FILE="install78.iso"
+VERSION_SHORT="${OPENBSD_VERSION//./}"
+ISO_FILE="install${VERSION_SHORT}.iso"
+ISO_URL="https://cdn.openbsd.org/pub/OpenBSD/${OPENBSD_VERSION}/${ARCH}/${ISO_FILE}"
+SHA256_URL="https://cdn.openbsd.org/pub/OpenBSD/${OPENBSD_VERSION}/${ARCH}/SHA256"
 DISK_IMAGE="openbsd.qcow2"
 DISK_SIZE="20G"
 MEMORY="2G"
@@ -43,6 +45,36 @@ check_deps() {
     command -v expect >/dev/null || error "expect not found. Run: make switch"
 }
 
+# Verify ISO against SHA256
+verify_iso() {
+    if [ -f "${ISO_FILE}.verified" ]; then
+        log "ISO previously verified"
+        return 0
+    fi
+
+    log "Downloading SHA256 checksums..."
+    curl -sL -o SHA256 "$SHA256_URL" || { warn "Could not download SHA256 file, skipping verification"; return 0; }
+
+    log "Verifying ISO checksum..."
+    EXPECTED=$(grep "(${ISO_FILE})" SHA256 | awk '{print $NF}')
+    if [ -z "$EXPECTED" ]; then
+        warn "No checksum found for ${ISO_FILE} in SHA256 file, skipping verification"
+        rm -f SHA256
+        return 0
+    fi
+
+    ACTUAL=$(shasum -a 256 "$ISO_FILE" | awk '{print $1}')
+    rm -f SHA256
+
+    if [ "$EXPECTED" = "$ACTUAL" ]; then
+        log "ISO checksum verified"
+        touch "${ISO_FILE}.verified"
+        return 0
+    else
+        error "ISO checksum mismatch! Expected: ${EXPECTED}, Got: ${ACTUAL}"
+    fi
+}
+
 # Download OpenBSD ISO
 download_iso() {
     if [ -f "$ISO_FILE" ]; then
@@ -50,14 +82,48 @@ download_iso() {
         ISO_SIZE=$(stat -f%z "$ISO_FILE" 2>/dev/null || stat -c%s "$ISO_FILE" 2>/dev/null)
         if [ "$ISO_SIZE" -lt 500000000 ]; then
             warn "ISO file appears incomplete (${ISO_SIZE} bytes). Re-downloading..."
-            rm -f "$ISO_FILE"
+            rm -f "$ISO_FILE" "${ISO_FILE}.verified"
         else
             log "ISO already exists: $ISO_FILE"
+            verify_iso
             return
         fi
     fi
     log "Downloading OpenBSD ${OPENBSD_VERSION} ${ARCH} ISO..."
     curl -L -o "$ISO_FILE" "$ISO_URL"
+    verify_iso
+}
+
+# Generate install.conf for autoinstall
+generate_install_conf() {
+    log "Generating install.conf for OpenBSD ${OPENBSD_VERSION} ${ARCH}..."
+    cat > install.conf << EOF
+# OpenBSD autoinstall response file
+# https://man.openbsd.org/autoinstall
+
+System hostname = openbsd
+Which network interface do you wish to configure = vio0
+IPv4 address for vio0 = dhcp
+IPv6 address for vio0 = none
+Which network interface do you wish to configure = done
+Password for root account = openbsd
+Do you expect to run the X Window System = no
+Setup a user = user
+Full name for user user = User
+Password for user user = openbsd
+Allow root ssh login = yes
+What timezone are you in = UTC
+Which disk is the root disk = sd0
+Use (W)hole disk MBR, whole disk (G)PT, (O)penBSD area or (E)dit = G
+Use (A)uto layout, (E)dit auto layout, or create (C)ustom layout = A
+Location of sets = http
+HTTP proxy URL = none
+HTTP Server = cdn.openbsd.org
+Unable to connect using https. Use http instead = yes
+Server directory = pub/OpenBSD/${OPENBSD_VERSION}/${ARCH}
+Set name(s) = -game*.tgz -x*.tgz
+Directory does not contain SHA256.sig. Continue without verification = yes
+EOF
 }
 
 # Setup UEFI firmware
@@ -157,9 +223,10 @@ run_autoinstall() {
     log "Installation takes ~10-15 minutes. Progress shown below."
     log ""
 
-    # Start HTTP server for install.conf
+    # Generate install.conf and start HTTP server
+    generate_install_conf
     start_http_server
-    trap stop_http_server EXIT
+    trap 'stop_http_server; rm -f install.conf' EXIT
 
     # Create expect script for automation
     EXPECT_SCRIPT="/tmp/openbsd-autoinstall-$$.exp"
@@ -243,6 +310,7 @@ EXPECT_EOF
     # Cleanup
     rm -f "$EXPECT_SCRIPT"
     stop_http_server
+    rm -f install.conf
 
     log ""
     log "Installation complete!"
@@ -271,6 +339,57 @@ run_vm() {
         -serial mon:stdio
 }
 
+# Provision the VM with packages and configuration
+provision_vm() {
+    log "Provisioning OpenBSD VM..."
+
+    SSH_CMD="ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@localhost"
+
+    # Check VM is reachable
+    log "Checking VM is reachable..."
+    $SSH_CMD "echo ok" >/dev/null 2>&1 || error "Cannot SSH into VM. Is it running? Start with: $0 run"
+
+    # Install packages
+    log "Installing packages..."
+    $SSH_CMD "pkg_add -I vim git curl wget htop"
+
+    # Setup doas for user account
+    log "Configuring doas..."
+    $SSH_CMD "echo 'permit keepenv persist user' > /etc/doas.conf && chmod 600 /etc/doas.conf"
+
+    # Copy SSH key if available
+    HOST_PUBKEY="$HOME/.ssh/id_ed25519.pub"
+    if [ -f "$HOST_PUBKEY" ]; then
+        log "Setting up SSH key authentication..."
+        PUBKEY_CONTENT=$(cat "$HOST_PUBKEY")
+
+        # Root key
+        $SSH_CMD "mkdir -p /root/.ssh && chmod 700 /root/.ssh"
+        $SSH_CMD "echo '${PUBKEY_CONTENT}' >> /root/.ssh/authorized_keys && chmod 600 /root/.ssh/authorized_keys"
+
+        # User key
+        $SSH_CMD "mkdir -p /home/user/.ssh && chmod 700 /home/user/.ssh && \
+            echo '${PUBKEY_CONTENT}' >> /home/user/.ssh/authorized_keys && \
+            chmod 600 /home/user/.ssh/authorized_keys && \
+            chown -R user:user /home/user/.ssh"
+
+        # Disable root password login (keep key auth)
+        log "Disabling root password login..."
+        $SSH_CMD "sed -i 's/^#*PermitRootLogin.*/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config && rcctl restart sshd"
+    else
+        warn "No SSH key found at ${HOST_PUBKEY}, skipping key setup"
+        warn "Root password login left enabled"
+    fi
+
+    log ""
+    log "Provisioning complete!"
+    log "Installed: vim, git, curl, wget, htop"
+    log "doas configured for 'user' account"
+    if [ -f "$HOST_PUBKEY" ]; then
+        log "SSH key deployed, root password login disabled"
+    fi
+}
+
 # Main
 case "${1:-}" in
     install)
@@ -289,16 +408,19 @@ case "${1:-}" in
     ssh)
         ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@localhost
         ;;
+    provision)
+        provision_vm
+        ;;
     clean)
         log "Cleaning up VM files..."
         stop_http_server
-        rm -f "$DISK_IMAGE" "$UEFI_VARS" .http_server.pid
+        rm -f "$DISK_IMAGE" "$UEFI_VARS" .http_server.pid install.conf
         log "Done. ISO preserved."
         ;;
     cleanall)
         log "Removing all files..."
         stop_http_server
-        rm -f "$DISK_IMAGE" "$UEFI_VARS" "$ISO_FILE" .http_server.pid
+        rm -f "$DISK_IMAGE" "$UEFI_VARS" "$ISO_FILE" "${ISO_FILE}.verified" .http_server.pid install.conf SHA256
         log "Done."
         ;;
     *)
@@ -307,11 +429,12 @@ case "${1:-}" in
         echo "Usage: $0 <command>"
         echo ""
         echo "Commands:"
-        echo "  install   Fully automated installation (unattended)"
-        echo "  run       Start the VM (after installation)"
-        echo "  ssh       SSH into the running VM (port ${SSH_PORT})"
-        echo "  clean     Remove disk image (keep ISO)"
-        echo "  cleanall  Remove all files including ISO"
+        echo "  install    Fully automated installation (unattended)"
+        echo "  run        Start the VM (after installation)"
+        echo "  ssh        SSH into the running VM (port ${SSH_PORT})"
+        echo "  provision  Install packages and configure the VM"
+        echo "  clean      Remove disk image (keep ISO)"
+        echo "  cleanall   Remove all files including ISO"
         echo ""
         echo "Default credentials: root:openbsd  user:openbsd"
         ;;
