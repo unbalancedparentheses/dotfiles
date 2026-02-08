@@ -4,6 +4,7 @@
 {
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;  # We set defaults manually in matchBlocks."*"
 
     # Global settings
     extraConfig = ''
