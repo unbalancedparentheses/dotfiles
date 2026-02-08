@@ -1,9 +1,8 @@
-.PHONY: help update clean check _prereqs _suckless _configure
+.PHONY: help update clean check _prereqs _suckless
 
 .DEFAULT_GOAL := update
 
 UNAME := $(shell uname -s)
-USER  := $(shell whoami)
 
 ifeq ($(UNAME),Darwin)
     OS  := macos
@@ -16,10 +15,9 @@ endif
 help:
 	@echo "Dotfiles ($(OS))"
 	@echo ""
-	@echo "  make           Install/update everything"
-	@echo "  make configure Interactive setup (username, git name/email)"
-	@echo "  make clean     Garbage collect"
-	@echo "  make check     Verify installation"
+	@echo "  make       Install/update everything"
+	@echo "  make clean Garbage collect"
+	@echo "  make check Verify installation"
 	@echo ""
 	@echo "VMs (macOS only):"
 	@echo "  nixos-{install,run,gui,ssh,clean}   port 2224"
@@ -39,39 +37,7 @@ else
 	@command -v nix >/dev/null || { echo "Install Nix first: curl -L https://install.determinate.systems/nix | sh"; exit 1; }
 endif
 
-_configure:
-	@echo "Dotfiles Configuration"
-	@echo "======================"
-	@echo ""
-	@# Get current values from flake.nix
-	@CURRENT_USER=$$(grep 'username = "' flake.nix | head -1 | sed 's/.*username = "\([^"]*\)".*/\1/'); \
-	CURRENT_NAME=$$(grep 'gitName = "' flake.nix | head -1 | sed 's/.*gitName = "\([^"]*\)".*/\1/'); \
-	CURRENT_EMAIL=$$(grep 'gitEmail = "' flake.nix | head -1 | sed 's/.*gitEmail = "\([^"]*\)".*/\1/'); \
-	echo "Current configuration:"; \
-	echo "  Username:  $$CURRENT_USER"; \
-	echo "  Git Name:  $$CURRENT_NAME"; \
-	echo "  Git Email: $$CURRENT_EMAIL"; \
-	echo ""; \
-	read -p "Username [$$CURRENT_USER]: " NEW_USER; \
-	NEW_USER=$${NEW_USER:-$$CURRENT_USER}; \
-	read -p "Git Name [$$CURRENT_NAME]: " NEW_NAME; \
-	NEW_NAME=$${NEW_NAME:-$$CURRENT_NAME}; \
-	read -p "Git Email [$$CURRENT_EMAIL]: " NEW_EMAIL; \
-	NEW_EMAIL=$${NEW_EMAIL:-$$CURRENT_EMAIL}; \
-	echo ""; \
-	cp flake.nix flake.nix.bak; \
-	sed -i.tmp "s/username = \"[^\"]*\";/username = \"$$NEW_USER\";/" flake.nix && rm -f flake.nix.tmp; \
-	sed -i.tmp "s/gitName = \"[^\"]*\";/gitName = \"$$NEW_NAME\";/" flake.nix && rm -f flake.nix.tmp; \
-	sed -i.tmp "s/gitEmail = \"[^\"]*\";/gitEmail = \"$$NEW_EMAIL\";/" flake.nix && rm -f flake.nix.tmp; \
-	echo "Configuration updated in flake.nix"
-
-configure: _configure
-
 update: _prereqs
-	@# Backup flake.nix before modifying
-	@cp flake.nix flake.nix.bak
-	@# Update username to current user
-	@sed -i.tmp 's/username = "[^"]*";/username = "$(USER)";/' flake.nix && rm -f flake.nix.tmp || { mv flake.nix.bak flake.nix; exit 1; }
 	@# Update flake
 	$(NIX) flake update
 ifeq ($(OS),macos)
@@ -84,9 +50,6 @@ ifeq ($(OS),macos)
 	done
 	@# Build nix-darwin
 	sudo -H $(NIX) run nix-darwin -- switch --flake ".#default"
-	@pgrep -q AeroSpace && aerospace reload-config || echo "Note: Run 'open -a AeroSpace' to start the window manager"
-	@pgrep -q sketchybar && sketchybar --reload || true
-	@pgrep -q borders && brew services restart borders || true
 	@echo ""
 	@echo "Installing development tools via mise..."
 	@/run/current-system/sw/bin/mise install -y 2>/dev/null || mise install -y 2>/dev/null || echo "Run 'mise install' in a new terminal"
@@ -100,8 +63,6 @@ else
 	@echo "Building suckless software..."
 	@$(MAKE) -s _suckless
 endif
-	@# Remove backup on success
-	@rm -f flake.nix.bak
 
 _suckless:
 	@# st
@@ -160,9 +121,6 @@ ifeq ($(OS),macos)
 	@echo "macOS configs:"
 	@[ -f ~/.config/ghostty/config ] && echo "  ✓ ghostty" || echo "  ✗ ghostty"
 	@[ -f ~/.config/zed/settings.json ] && echo "  ✓ zed" || echo "  ✗ zed"
-	@[ -f ~/.config/aerospace/aerospace.toml ] && echo "  ✓ aerospace" || echo "  ✗ aerospace"
-	@[ -f ~/.config/sketchybar/sketchybarrc ] && echo "  ✓ sketchybar" || echo "  ✗ sketchybar"
-	@[ -f ~/.config/borders/bordersrc ] && echo "  ✓ borders" || echo "  ✗ borders"
 else
 	@echo ""
 	@echo "Linux (suckless):"

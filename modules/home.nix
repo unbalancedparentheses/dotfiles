@@ -10,6 +10,7 @@
     ./git.nix
     ./tmux.nix
     ./terminal.nix
+    ./ssh.nix
     ./linux.nix
   ];
 

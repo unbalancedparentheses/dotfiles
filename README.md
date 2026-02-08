@@ -7,8 +7,8 @@ Cross-platform Nix configuration for macOS and Linux.
 ```bash
 git clone https://github.com/unbalancedparentheses/dotfiles ~/projects/dotfiles
 cd ~/projects/dotfiles
-make configure  # Set your username and git credentials
-make            # Install everything
+# Edit flake.nix to set username, gitName, gitEmail
+make
 ```
 
 On macOS, this installs Xcode CLI tools, Nix, and Homebrew automatically if missing.
@@ -18,7 +18,6 @@ On macOS, this installs Xcode CLI tools, Nix, and Homebrew automatically if miss
 | Command | Description |
 |---------|-------------|
 | `make` | Install/update everything |
-| `make configure` | Interactive setup (username, git name/email) |
 | `make check` | Verify installation |
 | `make clean` | Garbage collect Nix store |
 
@@ -50,27 +49,8 @@ Rust, Go, Python, Node, Erlang, Elixir, Zig, Gleam
 
 ## macOS
 
-### Window Management
-- **AeroSpace** - Tiling window manager (i3-like)
-- **SketchyBar** - Custom status bar
-- **JankyBorders** - Window border highlighting
-
-Start AeroSpace after first install: `open -a AeroSpace`
-
-### Key Bindings
-
-| Keys | Action |
-|------|--------|
-| `alt + h/j/k/l` | Focus window |
-| `alt + shift + h/j/k/l` | Move window |
-| `alt + 1-9` | Switch workspace |
-| `alt + shift + 1-9` | Move to workspace |
-| `alt + enter` | Open terminal |
-| `alt + q` | Close window |
-| `alt + f` | Fullscreen |
-
 ### Apps (Homebrew)
-Brave, Firefox, Ghostty, Zed, Slack, Telegram, WhatsApp, Signal, 1Password, Obsidian, Spotify
+Brave, Firefox, Ghostty, Zed, Slack, Telegram, WhatsApp, Signal, 1Password, Obsidian, Spotify, Tailscale
 
 ## Linux
 
@@ -100,41 +80,56 @@ make nixos-gui          # Start VM with GUI
 make openbsd-ssh        # SSH into running VM
 ```
 
+SSH aliases are configured for VMs: `ssh openbsd-vm`, `ssh nixos-vm`, `ssh void-vm`
+
 ## Structure
 
 ```
-flake.nix           # Main config (username, git credentials at top)
-Makefile            # Build commands
+flake.nix               # Main config (username, git credentials at top)
+Makefile                # Build commands
 modules/
-  darwin.nix        # macOS settings, Homebrew
-  home.nix          # Home Manager entry
-  packages.nix      # CLI packages
-  shell.nix         # Fish, zoxide, fzf
-  neovim.nix        # Neovim config
-  emacs.nix         # Emacs config
-  git.nix           # Git config
-  tmux.nix          # Tmux config
-  terminal.nix      # Ghostty, Zed
-  linux.nix         # Linux desktop (rofi, picom, dunst)
-  lsp.nix           # Language servers
-linux/              # Suckless configs (dwm, st, slstatus)
-vms/                # VM automation scripts
-  lib.sh            # Shared VM utilities
-  openbsd/          # OpenBSD VM
-  nixos/            # NixOS VM
-  void/             # Void Linux VM
-wallpapers/         # Desktop wallpapers
+  darwin.nix            # macOS settings, Homebrew
+  home.nix              # Home Manager entry
+  packages.nix          # CLI packages
+  shell.nix             # Fish, zoxide, fzf
+  neovim.nix            # Neovim config
+  emacs.nix             # Emacs config
+  git.nix               # Git config
+  tmux.nix              # Tmux config
+  terminal.nix          # Ghostty, Zed
+  ssh.nix               # SSH config and hosts
+  linux.nix             # Linux desktop (rofi, picom, dunst)
+  lsp.nix               # Language servers
+  secrets.nix.template  # Template for API keys (copy to secrets.nix)
+linux/                  # Suckless configs (dwm, st, slstatus)
+vms/                    # VM automation scripts
+  lib.sh                # Shared VM utilities
+  openbsd/              # OpenBSD VM
+  nixos/                # NixOS VM
+  void/                 # Void Linux VM
+wallpapers/             # Desktop wallpapers
 ```
 
 ## Configuration
 
-Edit `flake.nix` or run `make configure`:
+Edit `flake.nix`:
 
 ```nix
 username = "your-username";
 gitName = "Your Name";
 gitEmail = "your@email.com";
 ```
+
+## Secrets
+
+For API keys and tokens, copy the template:
+
+```bash
+cp modules/secrets.nix.template modules/secrets.nix
+# Edit modules/secrets.nix with your values
+```
+
+The `secrets.nix` file is gitignored.
 
 ## Shell Abbreviations
 
