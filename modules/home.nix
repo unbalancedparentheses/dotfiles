@@ -3,6 +3,7 @@
 
 {
   imports = [
+    ./claude-code.nix
     ./emacs.nix
     ./neovim.nix
     ./shell.nix

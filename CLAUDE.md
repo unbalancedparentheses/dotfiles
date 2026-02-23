@@ -14,6 +14,7 @@ Cross-platform Nix configuration for macOS (nix-darwin) and Linux (Home Manager)
 flake.nix               # Main config (username, gitName, gitEmail at top)
 Makefile                # Build commands
 modules/
+  claude-code.nix       # Claude Code CLI settings and statusline
   darwin.nix            # macOS settings, Homebrew casks, defaults
   home.nix              # Home Manager entry point
   packages.nix          # CLI packages (shared + platform-specific)
