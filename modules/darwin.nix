@@ -213,6 +213,7 @@ in
       "chatgpt"
       "claude"
       "claude-code"
+      "codex"
 
       # Media
       "spotify"
