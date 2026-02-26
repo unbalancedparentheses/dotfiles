@@ -20,6 +20,10 @@
     shell-integration = fish
     command = ${pkgs.tmux}/bin/tmux new-session
 
+    # Clipboard (OSC 52)
+    clipboard-read = allow
+    clipboard-write = allow
+
     # Scrollback
     scrollback-limit = 1000000
 
