@@ -20,6 +20,7 @@ in
       commit = "";
       pr = "";
     };
+    enableAllProjectMcpServers = true;
     statusLine = {
       type = "command";
       command = "~/.claude/statusline.sh";
@@ -37,6 +38,13 @@ in
         "Bash(CLAUDECODE= claude mcp add:*)"
         "Bash(git commit:*)"
         "Bash(gh api:*)"
+        "Bash(make:*)"
+        "Bash(nix:*)"
+        "Bash(cargo:*)"
+        "Bash(go:*)"
+        "Bash(mix:*)"
+        "Bash(npm:*)"
+        "Bash(mise:*)"
       ];
     };
   };
