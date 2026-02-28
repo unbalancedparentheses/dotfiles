@@ -16,6 +16,10 @@ in
     };
     skipDangerousModePermissionPrompt = true;
     model = "opus[1m]";
+    attribution = {
+      commit = "";
+      pr = "";
+    };
     statusLine = {
       type = "command";
       command = "~/.claude/statusline.sh";
