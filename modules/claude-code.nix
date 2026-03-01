@@ -15,7 +15,7 @@ in
       "frontend-design@claude-plugins-official" = true;
     };
     skipDangerousModePermissionPrompt = true;
-    model = "opus[1m]";
+    model = "opus";
     attribution = {
       commit = "";
       pr = "";
