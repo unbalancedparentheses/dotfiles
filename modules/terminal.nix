@@ -20,6 +20,16 @@
     shell-integration = fish
     command = ${pkgs.tmux}/bin/tmux new-session
 
+    # Display
+    resize-overlay = never
+    bold-is-bright = false
+    adjust-cell-height = 2
+    link-url = true
+
+    # Keybindings
+    keybind = super+t=new_tab
+    keybind = super+w=close_surface
+
     # Clipboard (OSC 52)
     clipboard-read = allow
     clipboard-write = allow

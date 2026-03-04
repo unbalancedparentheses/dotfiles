@@ -41,11 +41,18 @@
 
       bind c new-window -c "#{pane_current_path}"
 
+      # Clipboard: use OSC 52 passthrough to Ghostty
+      set -g set-clipboard on
+      set -g allow-passthrough on
+      set -g focus-events on
+      set -g extended-keys on
+
       # Copy mode (prefix + [ to enter, v to select, y to copy)
       bind -T copy-mode-vi v send -X begin-selection
-      bind -T copy-mode-vi y send -X copy-pipe-and-cancel "pbcopy"
+      bind -T copy-mode-vi C-v send -X rectangle-toggle
+      bind -T copy-mode-vi y send -X copy-pipe-and-cancel
       bind -T copy-mode-vi Escape send -X cancel
-      bind -T copy-mode-vi MouseDragEnd1Pane send -X copy-pipe-and-cancel "pbcopy"
+      bind -T copy-mode-vi MouseDragEnd1Pane send -X copy-pipe-and-cancel
 
       # Tokyo Night theme
       set -g status-position top
@@ -57,7 +64,7 @@
       set -g window-status-format '#[fg=#565f89] #I:#W '
       set -g pane-border-style 'fg=#3b4261'
       set -g pane-active-border-style 'fg=#7dcfff'
-      set -ag terminal-overrides ",xterm-256color:RGB"
+      set -ag terminal-overrides ",xterm-256color:RGB,xterm-ghostty:RGB:clipboard"
     '';
   };
 }
