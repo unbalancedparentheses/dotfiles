@@ -188,7 +188,9 @@ in
 
     taps = [];
 
-    brews = [];
+    brews = [
+      "cmux"
+    ];
     casks = [
       # Browsers
       "brave-browser"
