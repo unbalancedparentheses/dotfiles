@@ -188,9 +188,7 @@ in
 
     taps = [];
 
-    brews = [
-      "cmux"
-    ];
+    brews = [];
     casks = [
       # Browsers
       "brave-browser"
@@ -222,6 +220,7 @@ in
       "spotify"
 
       # Utilities
+      "cmux"
       "utm"
       "tailscale-app"
 
