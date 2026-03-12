@@ -1,6 +1,10 @@
-# Terminal and editor configurations (Ghostty, Zed)
+# Terminal and editor configurations (Ghostty, Kitty, Zed)
 { config, pkgs, lib, ... }:
-
+let
+  kittyTmuxLauncher = pkgs.writeShellScript "kitty-tmux-launcher" ''
+    exec ${pkgs.tmux}/bin/tmux new-session -A -s main
+  '';
+in
 {
   # Ghostty terminal
   xdg.configFile."ghostty/config".text = ''
@@ -71,6 +75,71 @@
     palette = 13=#bb9af7
     palette = 14=#7dcfff
     palette = 15=#c0caf5
+  '';
+
+  # Kitty terminal
+  xdg.configFile."kitty/kitty.conf".text = ''
+    font_family JetBrainsMono Nerd Font
+    font_size 20.0
+    cursor_shape block
+    cursor_blink_interval 0
+    shell_integration enabled
+
+    # Launch straight into tmux; tmux itself uses fish as the shell.
+    shell ${kittyTmuxLauncher}
+
+    # Window chrome and spacing
+    macos_titlebar_color background
+    tab_bar_edge top
+    tab_bar_style powerline
+    tab_powerline_style slanted
+    window_padding_width 16
+    remember_window_size yes
+    initial_window_width 140c
+    initial_window_height 40c
+
+    # Clipboard and scrollback
+    copy_on_select yes
+    clipboard_control write-clipboard write-primary read-clipboard read-primary
+    scrollback_lines 1000000
+
+    # Display
+    enable_audio_bell no
+    background_opacity 0.92
+    hide_window_decorations no
+    allow_remote_control yes
+
+    # Keybindings
+    map cmd+t new_tab_with_cwd
+    map cmd+enter new_window_with_cwd
+    map cmd+w close_window
+    map cmd+shift+] next_tab
+    map cmd+shift+[ previous_tab
+
+    # Tokyo Night color scheme
+    background #1a1b26
+    foreground #c0caf5
+    cursor #7dcfff
+    cursor_text_color #1a1b26
+    selection_background #292e42
+    selection_foreground #c0caf5
+
+    color0 #15161e
+    color1 #f7768e
+    color2 #9ece6a
+    color3 #e0af68
+    color4 #7aa2f7
+    color5 #bb9af7
+    color6 #7dcfff
+    color7 #a9b1d6
+    color8 #414868
+    color9 #f7768e
+    color10 #9ece6a
+    color11 #e0af68
+    color12 #7aa2f7
+    color13 #bb9af7
+    color14 #7dcfff
+    color15 #c0caf5
   '';
 
   # Zed editor

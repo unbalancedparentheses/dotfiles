@@ -208,6 +208,7 @@ in
 
       # Development
       "ghostty"
+      "kitty"
       "github"
       "zed"
       "chatgpt"

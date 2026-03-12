@@ -41,7 +41,7 @@
 
       bind c new-window -c "#{pane_current_path}"
 
-      # Clipboard: use OSC 52 passthrough to Ghostty
+      # Clipboard: use OSC 52 passthrough to terminal emulators
       set -g set-clipboard on
       set -g allow-passthrough on
       set -g focus-events on
@@ -64,7 +64,7 @@
       set -g window-status-format '#[fg=#565f89] #I:#W '
       set -g pane-border-style 'fg=#3b4261'
       set -g pane-active-border-style 'fg=#7dcfff'
-      set -ag terminal-overrides ",xterm-256color:RGB,xterm-ghostty:RGB:clipboard"
+      set -ag terminal-overrides ",xterm-256color:RGB,xterm-ghostty:RGB:clipboard,xterm-kitty:RGB,kitty:RGB"
     '';
   };
 }
