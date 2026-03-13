@@ -1,10 +1,5 @@
 # Terminal and editor configurations (Ghostty, Kitty, Zed)
 { config, pkgs, lib, ... }:
-let
-  kittyTmuxLauncher = pkgs.writeShellScript "kitty-tmux-launcher" ''
-    exec ${pkgs.tmux}/bin/tmux new-session -A -s main
-  '';
-in
 {
   # Ghostty terminal
   xdg.configFile."ghostty/config".text = ''
@@ -85,8 +80,7 @@ in
     cursor_blink_interval 0
     shell_integration enabled
 
-    # Launch straight into tmux; tmux itself uses fish as the shell.
-    shell ${kittyTmuxLauncher}
+    shell ${pkgs.fish}/bin/fish
 
     # Window chrome and spacing
     macos_titlebar_color background
