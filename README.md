@@ -50,7 +50,7 @@ Rust, Go, Python, Node, Erlang, Elixir, Zig, Gleam
 ## macOS
 
 ### Apps (Homebrew)
-Brave, Firefox, Ghostty, Zed, Slack, Telegram, WhatsApp, Signal, 1Password, Obsidian, Spotify, Tailscale
+Brave, Firefox, Ghostty, Zed, Slack, Telegram, WhatsApp, Signal, 1Password, Maccy, Obsidian, Spotify, Tailscale
 
 ## Linux
 
