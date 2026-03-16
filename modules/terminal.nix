@@ -17,7 +17,6 @@
     confirm-close-surface = false
     window-save-state = always
     shell-integration = fish
-    command = ${pkgs.tmux}/bin/tmux new-session
 
     # Display
     resize-overlay = never

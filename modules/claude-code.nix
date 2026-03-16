@@ -25,6 +25,21 @@ in
       type = "command";
       command = "~/.claude/statusline.sh";
     };
+    hooks = {
+      # Notify cmux sidebar when a prompt completes
+      PostToolUse = [];
+      Stop = [
+        {
+          matcher = "";
+          hooks = [
+            {
+              type = "command";
+              command = "if [ -n \"$CMUX_WORKSPACE_ID\" ]; then cmux notify --title 'Claude Code' --body 'Task completed'; fi";
+            }
+          ];
+        }
+      ];
+    };
   };
 
   # Permission allowlist
@@ -57,6 +72,22 @@ in
       ];
     };
   };
+
+  # Custom slash commands
+  home.file.".claude/commands/c.md".text = ''
+    Review all staged and unstaged changes with `git diff` and `git status`. Write a concise commit message that focuses on the "why", stage all changes, and commit.
+  '';
+  home.file.".claude/commands/cp.md".text = ''
+    Review all staged and unstaged changes with `git diff` and `git status`. Write a concise commit message that focuses on the "why", stage all changes, commit, and push to the current remote branch. If the branch has no upstream yet, push with `-u origin <branch>`.
+  '';
+  home.file.".claude/commands/ur.md".text = ''
+    Update the project roadmap based on the current state of the code:
+    1. Read the existing roadmap (look for ROADMAP.md, TODO.md, or a roadmap section in README.md).
+    2. Check recent git history with `git log --oneline -20` to see what was done recently.
+    3. Explore the codebase to verify which planned features/tasks are now implemented.
+    4. Update the roadmap: mark completed items as done, remove items that are no longer relevant, and reorder remaining items by priority. Keep the existing format and style.
+    5. If no roadmap file exists, ask the user where to create one.
+  '';
 
   # Custom agent: suckless/OpenBSD Rust simplifier
   home.file.".claude/agents/simplify.md".source = ../agents/simplify.md;
