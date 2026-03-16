@@ -88,6 +88,14 @@ in
     4. Update the roadmap: mark completed items as done, remove items that are no longer relevant, and reorder remaining items by priority. Keep the existing format and style.
     5. If no roadmap file exists, ask the user where to create one.
   '';
+  home.file.".claude/commands/ns.md".text = ''
+    Analyze the project and suggest the next steps:
+    1. Read the roadmap if one exists (ROADMAP.md, TODO.md, or README.md).
+    2. Check recent git history with `git log --oneline -20` to understand recent momentum.
+    3. Look at open issues with `gh issue list --limit 10` if this is a GitHub repo.
+    4. Explore the codebase for TODOs, FIXMEs, and incomplete implementations.
+    5. Suggest 3-5 concrete next steps, ordered by priority. For each, explain why it matters and roughly what it involves. Be specific — reference files, functions, or issues.
+  '';
 
   # Custom agent: suckless/OpenBSD Rust simplifier
   home.file.".claude/agents/simplify.md".source = ../agents/simplify.md;
