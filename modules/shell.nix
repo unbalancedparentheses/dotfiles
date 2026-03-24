@@ -12,8 +12,8 @@
       set -gx LC_ALL en_US.UTF-8
       set -gx LANG en_US.UTF-8
 
-      # Auto-attach tmux when not inside cmux or an existing tmux session
-      if not set -q CMUX_WORKSPACE_ID; and not set -q TMUX; and status is-interactive
+      # Auto-attach tmux (including inside cmux for stable scrollback/copy)
+      if not set -q TMUX; and status is-interactive
         exec ${pkgs.tmux}/bin/tmux new-session
       end
     '';
