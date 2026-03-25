@@ -204,6 +204,7 @@ in
       # Productivity
       "1password"
       "caffeine"
+      "dropbox"
       "maccy"
       "obsidian"
 
