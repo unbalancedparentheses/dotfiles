@@ -6,10 +6,10 @@ let
   homeDir = config.home.homeDirectory;
   # Claude Code encodes paths with dashes for project config directories
   projectDir = builtins.replaceStrings ["/"] ["-"] homeDir;
-in
-{
-  # Global settings
-  home.file.".claude/settings.json".text = builtins.toJSON {
+
+  # Claude Code needs writable settings files, so we copy instead of symlink.
+  # Files are only overwritten when the Nix-managed content changes.
+  settingsJson = builtins.toJSON {
     enabledPlugins = {
       "rust-analyzer-lsp@claude-plugins-official" = true;
       "frontend-design@claude-plugins-official" = true;
@@ -42,8 +42,7 @@ in
     };
   };
 
-  # Permission allowlist
-  home.file.".claude/settings.local.json".text = builtins.toJSON {
+  settingsLocalJson = builtins.toJSON {
     permissions = {
       allow = [
         "WebSearch"
@@ -64,14 +63,50 @@ in
     };
   };
 
-  # Global project settings (Obsidian vault access)
-  home.file.".claude/projects/${projectDir}/settings.json".text = builtins.toJSON {
+  projectSettingsJson = builtins.toJSON {
     permissions = {
       additionalDirectories = [
         "${homeDir}/Library/Mobile Documents/iCloud~md~obsidian/Documents"
       ];
     };
   };
+
+  # Helper: write Nix content to a writable file (copy, not symlink)
+  # Only overwrites if the Nix-managed base content has changed.
+  writableFile = path: content:
+    let
+      nixManaged = pkgs.writeText (builtins.replaceStrings ["/"] ["-"] path) content;
+    in ''
+      mkdir -p "$(dirname "${homeDir}/${path}")"
+      nix_content="${nixManaged}"
+      target="${homeDir}/${path}"
+      marker="${homeDir}/${path}.nix-hash"
+      new_hash=$(sha256sum "$nix_content" | cut -d' ' -f1)
+      if [ -L "$target" ]; then
+        # Replace stale symlink with writable copy
+        rm "$target"
+        cp "$nix_content" "$target"
+        chmod 600 "$target"
+        echo "$new_hash" > "$marker"
+      elif [ ! -f "$target" ]; then
+        cp "$nix_content" "$target"
+        chmod 600 "$target"
+        echo "$new_hash" > "$marker"
+      elif [ ! -f "$marker" ] || [ "$(cat "$marker")" != "$new_hash" ]; then
+        # Nix config changed — overwrite
+        cp "$nix_content" "$target"
+        chmod 600 "$target"
+        echo "$new_hash" > "$marker"
+      fi
+    '';
+in
+{
+  # Deploy writable Claude Code settings on activation
+  home.activation.claudeCodeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    ${writableFile ".claude/settings.json" settingsJson}
+    ${writableFile ".claude/settings.local.json" settingsLocalJson}
+    ${writableFile ".claude/projects/${projectDir}/settings.json" projectSettingsJson}
+  '';
 
   # Custom slash commands
   home.file.".claude/commands/c.md".text = ''

@@ -7,7 +7,7 @@
     lua-language-server
     nil                    # Nix
     yaml-language-server
-    nodePackages.vscode-langservers-extracted  # HTML/CSS/JSON
+    vscode-langservers-extracted  # HTML/CSS/JSON
 
     # Systems
     rust-analyzer

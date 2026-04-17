@@ -170,6 +170,18 @@ in
     ${wallpaperScript}
   '';
 
+  launchd.daemons.nix-gc = {
+    serviceConfig = {
+      ProgramArguments = [
+        "/bin/sh" "-c"
+        "/nix/var/nix/profiles/default/bin/nix-env --delete-generations +3 --profile /nix/var/nix/profiles/system; /nix/var/nix/profiles/default/bin/nix store gc"
+      ];
+      StartCalendarInterval = [{ Weekday = 0; Hour = 3; Minute = 0; }];
+      StandardOutPath = "/tmp/nix-gc.log";
+      StandardErrorPath = "/tmp/nix-gc.log";
+    };
+  };
+
   launchd.user.agents.wallpaper = {
     serviceConfig = {
       ProgramArguments = [ "${wallpaperScript}" ];
