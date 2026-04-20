@@ -47,6 +47,13 @@
       set -g focus-events on
       set -g extended-keys on
 
+      # Scroll 3 lines at a time instead of 5 (smoother feel)
+      bind -T copy-mode-vi WheelUpPane send -X -N 3 scroll-up
+      bind -T copy-mode-vi WheelDownPane send -X -N 3 scroll-down
+
+      # Enter copy mode by scrolling up
+      bind -n WheelUpPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" "if -Ft= '#{pane_in_mode}' 'send-keys -M' 'copy-mode -e'"
+
       # Copy mode (prefix + [ to enter, v to select, y to copy)
       bind -T copy-mode-vi v send -X begin-selection
       bind -T copy-mode-vi C-v send -X rectangle-toggle
