@@ -34,7 +34,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "if [ -n \"$CMUX_WORKSPACE_ID\" ]; then cmux notify --title 'Claude Code' --body 'Task completed'; fi";
+              command = "if [ -n \"$CMUX_WORKSPACE_ID\" ]; then cmux notify --title 'Claude Code' --body 'Task completed' 2>/dev/null; fi; true";
             }
           ];
         }

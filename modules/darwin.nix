@@ -227,7 +227,7 @@ in
       "zed"
       "chatgpt"
       "claude"
-      "claude-code"
+
       "codex"
 
       # Media
